@@ -679,6 +679,37 @@
             }
           });
       });
+
+  const loginForm = document.getElementById('loginForm'); // Change ID if needed
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch('https://your-backend-server.com/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        alert('Login successful!');
+        window.location.href = 'Services.html'; // or homepage
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login Error:', error);
+    }
+  });
+
     </script>
   </body>
 </html>
