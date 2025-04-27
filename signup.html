@@ -825,6 +825,35 @@
     </footer>
 
     <script>
+  const signupForm = document.getElementById('signUpForm'); // Change ID if needed
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const res = await fetch('https://your-backend-server.com/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Signup successful! Please login.');
+        window.location.href = 'login.html';
+      } else {
+        alert(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      console.error('Signup Error:', error);
+    }
+  });
+
       let currentStep = 0;
       const steps = document.querySelectorAll(".step-container");
       const progress = document.getElementById("progress");
