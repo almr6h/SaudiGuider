@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <title>Sign Up - Saudi Guider</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--light);
+        min-height: 100vh;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: var(--light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: var(--box-shadow);
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 10px;
+      }
+
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: var(--light);
+      }
+
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--light);
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color var(--transition-speed) ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .auth-buttons button {
+        background-color: #69a7c8;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color var(--transition-speed) ease;
+      }
+
+      .auth-buttons button:hover,
+      .auth-buttons button:focus {
+        background-color: var(--secondary-dark);
+      }
+
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      main {
+        flex: 1;
+        padding-top: 6rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .signup-container {
+        width: 100%;
+        max-width: 800px;
+        background-color: var(--dark-gray);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+        margin: 2rem auto;
+      }
+
+      .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .signup-header h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .signup-header p {
+        font-size: 1.1rem;
+        color: var(--light);
+      }
+
+      .signup-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .signup-logo img {
+        width: 80px;
+        margin-right: 15px;
+      }
+
+      .signup-logo .logo-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      #progressBar {
+        width: 100%;
+        background-color: var(--medium-gray);
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
+
+      #progressBar .progress-bar {
+        height: 8px;
+        background-color: var(--secondary);
+        width: 0;
+        border-radius: 5px;
+        transition: width var(--transition-speed) ease;
+      }
+
+      .progress-step-text {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+
+      .progress-step-text span {
+        width: 30%;
+        text-align: center;
+        color: var(--light);
+        opacity: 0.7;
+      }
+
+      .progress-step-text span.active {
+        color: var(--secondary);
+        opacity: 1;
+        font-weight: bold;
+      }
+
+      .step-container {
+        display: none;
+      }
+
+      .step-container.active {
+        display: block;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--light);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border-gray);
+        border-radius: 6px;
+        background-color: var(--dark);
+        color: var(--light);
+        font-size: 1rem;
+        transition: border-color var(--transition-speed);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--secondary);
+      }
+
+      .form-group input::placeholder {
+        color: #aaa;
+      }
+
+      .password-container {
+        position: relative;
+      }
+
+      .eye-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--secondary);
+        font-size: 1.2rem;
+      }
+
+      .eye-icon:hover {
+        color: var(--light);
+      }
+
+      .password-conditions {
+        margin-top: 1rem;
+        background-color: var(--dark);
+        padding: 1rem;
+        border-radius: 6px;
+      }
+
+      .password-conditions ul {
+        list-style: none;
+      }
+
+      .password-conditions li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-conditions li span {
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .password-conditions li.invalid {
+        color: #ff6b6b;
+      }
+
+      .password-conditions li.valid {
+        color: #51cf66;
+      }
+
+      .input-error {
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      .step-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+      }
+
+      .step-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        border: none;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-speed);
+      }
+
+      .step-btn.prev {
+        background-color: var(--medium-gray);
+        color: var(--light);
+      }
+
+      .step-btn.prev:hover {
+        background-color: var(--border-gray);
+      }
+
+      .step-btn.next {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .step-btn.next:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .success-message {
+        background-color: var(--secondary);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 2rem;
+        display: none;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .login-redirect {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--light);
+      }
+
+      .login-redirect a {
+        color: var(--secondary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .login-redirect a:hover {
+        text-decoration: underline;
+      }
+
+      /* Footer Styles */
+      footer {
+        background-color: var(--dark);
+        color: var(--light);
+        padding: 2rem 1rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto 1.5rem;
+        text-align: left;
+      }
+
+      .footer-section h3 {
+        color: var(--secondary);
+        margin-bottom: 1rem;
+      }
+
+      .footer-section p,
+      .footer-section address {
+        margin-bottom: 1rem;
+        font-style: normal;
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          background-color: var(--dark);
+          height: calc(100vh - 80px);
+          transition: left var(--transition-speed) ease;
+          z-index: 999;
+          padding: 2rem;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-buttons {
+          margin-right: 1rem;
+        }
+
+        .signup-container {
+          padding: 1.5rem;
+          margin: 1rem;
+        }
+
+        .step-buttons {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .step-btn {
+          width: 100%;
+        }
+
+        .footer-content {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .social-icons {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button
+          onclick="window.location.href='signup.html'"
+          aria-label="Sign up"
+          class="active"
+        >
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div class="signup-container">
+        <div class="signup-header">
+          <div class="signup-logo">
+            <img src="./images/S_NoBack_500x500.png" alt="Saudi Guider logo" />
+            <span class="logo-text">Saudi Guider</span>
+          </div>
+          <h1>Create Your Account</h1>
+          <p>Join Saudi Guider to access exclusive features and services</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div id="progressBar">
+          <div class="progress-bar" id="progress"></div>
+        </div>
+
+        <!-- Progress Step Text -->
+        <div class="progress-step-text">
+          <span id="step1-text" class="active">Step 1: Personal Info</span>
+          <span id="step2-text">Step 2: Contact</span>
+          <span id="step3-text">Step 3: Account</span>
+        </div>
+
+        <form id="signUpForm">
+          <!-- Step 1: Personal Information -->
+          <div class="step-container active" id="step1">
+            <div class="form-group">
+              <label for="id">National ID or Passport:</label>
+              <input
+                type="text"
+                id="id"
+                name="id"
+                placeholder="e.g., 1234567890 or A1234567890"
+                required
+              />
+              <div id="id-error" class="input-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="fname">First Name:</label>
+              <input
+                type="text"
+                id="fname"
+                name="fname"
+                placeholder="e.g., John"
+                required
+              />
+              <div id="fname-error" class="input-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="lname">Last Name:</label>
+              <input
+                type="text"
+                id="lname"
+                name="lname"
+                placeholder="e.g., Doe"
+                required
+              />
+              <div id="lname-error" class="input-error"></div>
+            </div>
+          </div>
+
+          <!-- Step 2: Contact Information -->
+          <div class="step-container" id="step2">
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="e.g., example@domain.com"
+                required
+              />
+              <div id="email-error" class="input-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number:</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="e.g., 966xxxxxxxxx"
+                required
+              />
+              <div id="phone-error" class="input-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="currency">Currency:</label>
+              <select id="currency" name="currency" required>
+                <option value="SAR" selected>Saudi Riyal</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="language">Preferred Language:</label>
+              <select id="language" name="language" required>
+                <option value="English" selected>English</option>
+                <option value="Arabic">Arabic</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 3: Account Information -->
+          <div class="step-container" id="step3">
+            <div class="form-group">
+              <label for="password">Create a Password:</label>
+              <div class="password-container">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a Password"
+                  required
+                />
+                <i class="fas fa-eye eye-icon" id="togglePassword"></i>
+              </div>
+              <div id="password-error" class="input-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="repeatPassword">Repeat Password:</label>
+              <div class="password-container">
+                <input
+                  type="password"
+                  id="repeatPassword"
+                  name="repeatPassword"
+                  placeholder="Repeat Password"
+                  required
+                />
+                <i class="fas fa-eye eye-icon" id="toggleRepeatPassword"></i>
+              </div>
+              <div id="repeatPassword-error" class="input-error"></div>
+            </div>
+
+            <!-- Password Conditions List -->
+            <div class="password-conditions">
+              <ul>
+                <li id="condition1" class="invalid">
+                  <span>✘</span> Password must be at least 8 characters
+                </li>
+                <li id="condition2" class="invalid">
+                  <span>✘</span> Must contain at least one uppercase letter
+                </li>
+                <li id="condition3" class="invalid">
+                  <span>✘</span> Must contain at least one number
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Step Buttons -->
+          <div class="step-buttons">
+            <button
+              type="button"
+              id="prevBtn"
+              class="step-btn prev"
+              onclick="navigateStep(-1)"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              id="nextBtn"
+              class="step-btn next"
+              onclick="navigateStep(1)"
+            >
+              Next
+            </button>
+          </div>
+        </form>
+
+        <!-- Success Message -->
+        <div id="success-message" class="success-message">
+          <i class="fas fa-check-circle"></i> Account Created Successfully!
+        </div>
+
+        <div class="login-redirect">
+          Already have an account? <a href="login.html">Log In</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            AI assistance.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#">Popular Destinations</a></li>
+            <li><a href="#">Travel Guides</a></li>
+            <li><a href="#">Cultural Experiences</a></li>
+            <li><a href="#">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p><i class="fas fa-map-marker-alt"></i> Jeddah, Saudi Arabia</p>
+            <p>
+              <i class="fas fa-phone"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2024</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      let currentStep = 0;
+      const steps = document.querySelectorAll(".step-container");
+      const progress = document.getElementById("progress");
+      const stepTexts = document.querySelectorAll(".progress-step-text span");
+      const successMessage = document.getElementById("success-message");
+      const passwordConditions = document.querySelectorAll(
+        ".password-conditions li"
+      );
+
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set current year in footer
+        document.getElementById("current-year").textContent =
+          new Date().getFullYear();
+
+        // Mobile navigation toggle
+        const mobileToggle = document.querySelector(".mobile-nav-toggle");
+        const nav = document.getElementById("main-nav");
+
+        if (mobileToggle && nav) {
+          mobileToggle.addEventListener("click", function () {
+            const isExpanded = nav.classList.toggle("active");
+            mobileToggle.setAttribute("aria-expanded", isExpanded);
+          });
+        }
+
+        // Show initial step
+        showStep(currentStep);
+      });
+
+      function navigateStep(stepChange) {
+        if (stepChange === -1 || validateStep()) {
+          currentStep += stepChange;
+
+          if (currentStep >= steps.length) {
+            // Form submission would happen here
+            document.getElementById("signUpForm").reset();
+            successMessage.style.display = "block";
+            setTimeout(() => {
+              successMessage.style.display = "none";
+              // Redirect to login or dashboard after successful signup
+              // window.location.href = "dashboard.html";
+            }, 3000);
+            return;
+          }
+
+          showStep(currentStep);
+        }
+      }
+
+      function showStep(stepIndex) {
+        steps.forEach((step, index) => {
+          step.classList.toggle("active", index === stepIndex);
+        });
+
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        prevBtn.style.display = stepIndex === 0 ? "none" : "block";
+        nextBtn.textContent =
+          stepIndex === steps.length - 1 ? "Create Account" : "Next";
+
+        // Update progress steps text
+        stepTexts.forEach((text, index) => {
+          text.classList.toggle("active", index <= stepIndex);
+        });
+
+        updateProgressBar();
+      }
+
+      function updateProgressBar() {
+        const progressWidth = ((currentStep + 1) / steps.length) * 100;
+        progress.style.width = progressWidth + "%";
+      }
+
+      function validateStep() {
+        const currentForm = steps[currentStep];
+        const inputs = currentForm.querySelectorAll("input, select");
+        let valid = true;
+
+        // Clear previous errors
+        document
+          .querySelectorAll(".input-error")
+          .forEach((error) => (error.textContent = ""));
+
+        // Validate inputs
+        inputs.forEach((input) => {
+          const errorElem = document.getElementById(input.id + "-error");
+
+          if (!input.value.trim()) {
+            valid = false;
+            errorElem.textContent = "This field is required";
+            errorElem.style.display = "block";
+            input.focus();
+          }
+
+          // Custom validation for specific fields
+          if (input.id === "fname" || input.id === "lname") {
+            if (!/^[a-zA-Z]+$/.test(input.value.trim())) {
+              valid = false;
+              errorElem.textContent = "Name should contain letters only";
+              errorElem.style.display = "block";
+            }
+          }
+
+          if (input.id === "id") {
+            const idPattern = /^1\d{9}$|^[A-Za-z0-9]{6,15}$/;
+            if (!idPattern.test(input.value.trim())) {
+              valid = false;
+              errorElem.textContent =
+                "ID should be 10 digits starting with 1 or 6-15 alphanumeric characters";
+              errorElem.style.display = "block";
+            }
+          }
+
+          if (
+            input.id === "email" &&
+            !/^[^@]+@[^@]+\.[^@]+$/.test(input.value.trim())
+          ) {
+            valid = false;
+            errorElem.textContent = "Please enter a valid email address";
+            errorElem.style.display = "block";
+          }
+
+          if (input.id === "phone" && !/^\d{12}$/.test(input.value.trim())) {
+            valid = false;
+            errorElem.textContent =
+              "Phone number should be 12 digits (966xxxxxxxxx)";
+            errorElem.style.display = "block";
+          }
+
+          if (input.id === "password") {
+            checkPasswordConditions(input.value.trim());
+            const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordPattern.test(input.value.trim())) {
+              valid = false;
+              errorElem.textContent = "Password doesn't meet requirements";
+              errorElem.style.display = "block";
+            }
+          }
+
+          if (input.id === "repeatPassword") {
+            const password = document.getElementById("password").value.trim();
+            if (input.value.trim() !== password) {
+              valid = false;
+              errorElem.textContent = "Passwords do not match";
+              errorElem.style.display = "block";
+            }
+          }
+        });
+
+        return valid;
+      }
+
+      function checkPasswordConditions(password) {
+        const conditions = [
+          password.length >= 8,
+          /[A-Z]/.test(password),
+          /\d/.test(password),
+        ];
+
+        passwordConditions.forEach((li, index) => {
+          const span = li.querySelector("span");
+          li.classList.remove("valid", "invalid");
+          if (conditions[index]) {
+            span.textContent = "✔";
+            li.classList.add("valid");
+          } else {
+            span.textContent = "✘";
+            li.classList.add("invalid");
+          }
+        });
+      }
+
+      // Toggle password visibility
+      document
+        .getElementById("togglePassword")
+        .addEventListener("click", function () {
+          const passwordField = document.getElementById("password");
+          const type = passwordField.type === "password" ? "text" : "password";
+          passwordField.type = type;
+          this.classList.toggle("fa-eye");
+          this.classList.toggle("fa-eye-slash");
+        });
+
+      document
+        .getElementById("toggleRepeatPassword")
+        .addEventListener("click", function () {
+          const repeatPasswordField = document.getElementById("repeatPassword");
+          const type =
+            repeatPasswordField.type === "password" ? "text" : "password";
+          repeatPasswordField.type = type;
+          this.classList.toggle("fa-eye");
+          this.classList.toggle("fa-eye-slash");
+        });
+
+      // Real-time password validation
+      document
+        .getElementById("password")
+        .addEventListener("input", function () {
+          checkPasswordConditions(this.value.trim());
+        });
+    </script>
+  </body>
+</html>

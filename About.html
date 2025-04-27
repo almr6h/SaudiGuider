@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Saudi Guider</title>
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png">
+    <style>
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        line-height: 1.6;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #5b6a7f, #8fb6c0);
+        color: #e0e0e0;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+      }
+
+      main {
+        flex: 1;
+        padding-top: 6rem;
+      }
+      
+
+      header {
+        background: linear-gradient(135deg, #5b6a7f, #8fb6c0);
+        color: #f0f0f0;
+        display: flex;
+        justify-content: space-between; /* Space between logo/title and nav buttons */
+        align-items: center; /* Center vertically */
+        padding: 1rem 2rem;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        
+      }
+      
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 10px;
+      }
+
+      .logo a {
+        font-size: 1.75rem; /* Logo title size */
+        font-weight: bold;
+        text-decoration: none;
+        color: #fff;
+      }
+
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: #f0f0f0;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+      .auth-buttons button {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        background: #69a7c8;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .auth-buttons button:hover {
+        background-color: #4c8ba9;
+      }
+
+      /* About Section */
+      .about-section {
+        padding: 60px 20px 60px;
+        text-align: center;
+        background-color: #212121;
+        color: white;
+      }
+
+      .about-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      .about-section p {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Story and Values Section */
+      .story-section {
+        padding: 60px 20px;
+        text-align: center;
+        background-color: #2a2a2a;
+        color: white;
+      }
+
+      .story-section h2 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+      }
+
+      .vision-values {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 40px;
+        max-width: 1500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .vision-card,
+      .value-card {
+        background-color: #3a3a3a;
+        border-radius: 8px;
+        padding: 25px;
+        width: 300px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .vision-card:hover,
+      .value-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+      }
+
+      .vision-card h3,
+      .value-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #69a7c8;
+      }
+
+      .value-card i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #69a7c8;
+      }
+
+      .fa-eye{
+        font-size: 35px;
+        color: #4c8ba9;
+        padding-bottom: 20px;
+      }
+
+      /* AI Features Section */
+      .ai-features {
+        padding: 60px 20px;
+        text-align: center;
+        background-color: #212121;
+        color: white;
+      }
+
+      .ai-features h2 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+      }
+
+      .features-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .feature-box {
+        background-color: #3a3a3a;
+        border-radius: 8px;
+        padding: 20px;
+        width: 280px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-box:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-box i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #69a7c8;
+      }
+
+      .feature-box h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: #f0f0f0;
+      }
+
+      /* Team Section */
+      .team-section {
+        padding: 60px 20px;
+        text-align: center;
+        background-color: #2a2a2a;
+      }
+
+      .team-section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 0 auto;
+        gap: 25px;
+        max-width: 1200px;
+      }
+
+      .column {
+        width: 300px;
+        margin: 8px 0;
+        padding: 0 8px;
+        box-sizing: border-box;
+      }
+
+      .card {
+        background-color: #3a3a3a;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        margin: 0 auto;
+        overflow: hidden;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+      }
+
+      .container {
+        padding: 16px;
+        text-align: center;
+      }
+
+      .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .card h2 {
+        font-size: 1.5rem;
+        color: #f0f0f0;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 1rem;
+        color: #ddd;
+        margin-bottom: 10px;
+      }
+
+      .card .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .card .social-links a {
+        color: #69a7c8;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+      }
+
+      .card .social-links a:hover {
+        color: #4c8ba9;
+      }
+
+      .button {
+        border: none;
+        outline: 0;
+        display: inline-block;
+        padding: 10px 15px;
+        color: white;
+        background-color: #69a7c8;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        margin-top: 10px;
+        font-weight: 500;
+      }
+
+      .button:hover {
+        background-color: #4c8ba9;
+      }
+
+      /* Contact Section */
+      .contact-section {
+        padding: 60px 20px;
+        text-align: center;
+        background-color: #212121;
+        color: white;
+      }
+
+      .contact-section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+
+      .contact-details {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 40px;
+        margin: 30px auto;
+        max-width: 1000px;
+      }
+
+      .contact-card {
+        background-color: #3a3a3a;
+        border-radius: 8px;
+        padding: 25px;
+        width: 250px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+      }
+
+      .contact-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .contact-card i {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #69a7c8;
+      }
+
+      .contact-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: #f0f0f0;
+      }
+
+      .contact-card p,
+      .contact-card a {
+        color: #ddd;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .contact-card a:hover {
+        color: #69a7c8;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .social-media {
+        margin: 20px 0;
+      }
+
+      .social-media a {
+        display: inline-block;
+        margin: 0 10px;
+        font-size: 1.5rem;
+        color: #69a7c8;
+        transition: color 0.3s, transform 0.3s;
+      }
+
+      .social-media a:hover {
+        color: #4c8ba9;
+        transform: translateY(-3px);
+      }
+
+      /* Responsive Design */
+      @media screen and (max-width: 768px) {
+        .column {
+          width: 100%;
+          max-width: 350px;
+        }
+
+        
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px; /* Adjusted for header height */
+          left: -100%;
+          width: 100%;
+          height: calc(100vh - 80px);
+          transition: left 0.3s ease;
+          z-index: 999;
+          padding: 2rem;
+          background-color: #212121;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .vision-card,
+        .value-card,
+        .feature-box,
+        .contact-card {
+          width: 100%;
+          max-width: 350px;
+        }
+
+        
+      
+    }
+
+      /* Focus State */
+      nav a:focus,
+      .auth-buttons button:focus,
+      footer a:focus,
+      .button:focus {
+        outline: 3px solid #69a7c8;
+      }
+    </style>
+    <!-- FontAwesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Loading Spinner -->
+    <div
+      id="loading"
+      style="
+        display: none;
+        text-align: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        color: #fff;
+        z-index: 2000;
+      "
+    >
+      <i class="fas fa-spinner fa-spin fa-3x"></i>
+      <p>Loading...</p>
+    </div>
+
+    <header>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="services.html" 
+              >Services</a
+            >
+          </li>
+          <li><a href="about.html" class="active" aria-current="page">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button
+          onclick="window.location.href='signup.html'"
+          aria-label="Sign up"
+        >
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content">
+    <div class="about-section">
+      <h1>About Saudi Guider</h1>
+      <p>
+        Your intelligent travel companion for exploring the wonders of Saudi
+        Arabia
+      </p>
+      <p>
+        Saudi Guider is a revolutionary travel platform designed to transform
+        how tourists and local citizens experience the Kingdom of Saudi Arabia.
+        With our unique AI-powered recommendations and comprehensive booking
+        services, we make exploring Saudi Arabia's rich cultural heritage,
+        stunning landscapes, and modern attractions effortless and personalized.
+      </p>
+    </div>
+
+    <div class="story-section">
+      <h2>Our Story & Mission</h2>
+      <p>
+        Founded in 2024, Saudi Guider was born from a passion to showcase the
+        authentic beauty and hospitality of Saudi Arabia to the world. As the
+        Kingdom opens its doors to international tourism, we recognized the need
+        for a comprehensive platform that could bridge cultural gaps and provide
+        personalized experiences for travelers.
+      </p>
+      <p>
+        Our mission is to become the leading travel companion for anyone
+        exploring Saudi Arabia by combining cutting-edge AI technology with deep
+        local knowledge. We aim to make every journey through the Kingdom
+        memorable, culturally enriching, and hassle-free.
+      </p>
+
+      <div class="vision-values">
+        <div class="vision-card">
+          <i class="fas fa-eye"></i>
+          <h3>Our Vision</h3>
+          <p>
+            To transform Saudi Arabia's tourism experience through technology
+            and personalization, showcasing the Kingdom's rich heritage while
+            supporting Vision 2030's tourism goals.
+          </p>
+        </div>
+
+        <div class="value-card">
+          <i class="fas fa-handshake"></i>
+          <h3>Authenticity</h3>
+          <p>
+            We deliver genuine Saudi experiences that honor the Kingdom's
+            culture while embracing modern hospitality.
+          </p>
+        </div>
+
+        <div class="value-card">
+          <i class="fas fa-lightbulb"></i>
+          <h3>Innovation</h3>
+          <p>
+            We continuously evolve our AI capabilities to create the most
+            intuitive and helpful travel assistant.
+          </p>
+        </div>
+
+        <div class="value-card">
+          <i class="fas fa-users"></i>
+          <h3>Inclusivity</h3>
+          <p>
+            We make Saudi Arabia accessible to all travelers, regardless of
+            language, background, or travel style.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-features">
+      <h2>Our AI-Powered Advantage</h2>
+      <p>
+        What sets Saudi Guider apart is our advanced natural language processing
+        (NLP) AI model that transforms how you plan and experience your journey
+        through Saudi Arabia.
+      </p>
+
+      <div class="features-container">
+        <div class="feature-box">
+          <i class="fas fa-comments"></i>
+          <h3>Interactive Assistant</h3>
+          <p>
+            Our AI assistant engages in natural conversation to understand your
+            preferences and suggest personalized experiences.
+          </p>
+        </div>
+
+        <div class="feature-box">
+          <i class="fas fa-map-marked-alt"></i>
+          <h3>Smart Itineraries</h3>
+          <p>
+            Get custom trip plans based on your budget, timeframe, interests,
+            and travel style — all created instantly by our AI.
+          </p>
+        </div>
+
+        <div class="feature-box">
+          <i class="fas fa-hotel"></i>
+          <h3>Seamless Bookings</h3>
+          <p>
+            Book hotels, restaurants, events, and car rentals directly through
+            our platform with AI-recommended options.
+          </p>
+        </div>
+
+        <div class="feature-box">
+          <i class="fas fa-route"></i>
+          <h3>Interactive Maps</h3>
+          <p>
+            Explore recommended locations with integrated Google Maps showing
+            you exactly where to go.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-section">
+      <h2>Meet Our Team</h2>
+      <div class="row">
+        <div class="column">
+          <div class="card">
+            <img src="./images/SaudiLogo.png" alt="Jasser AlGhamdi" />
+            <div class="container">
+              <h2>Al Jasser AlGhamdi</h2>
+              <p class="title">Co-Founder & Lead Developer</p>
+              <p>Information Systems Student at KAU</p>
+              <p>
+                "Passionate about creating technology that showcases Saudi
+                Arabia's beauty to the world."
+              </p>
+              <div class="social-links">
+                <a href="https://www.linkedin.com/in/aljasser-alghamdi-b30b68237/" aria-label="LinkedIn profile"
+                  ><i class="fab fa-linkedin"></i
+                ></a>
+                
+              </div>
+              <a
+                href="mailto:aalghamdi3900@stu.kau.edu.sa"
+                class="button"
+                aria-label="Contact Jasser"
+              >
+                <i class="fas fa-envelope"></i> Contact
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <img src="./images/SaudiLogo.png" alt="Nawaf Alzahrani" />
+            <div class="container">
+              <h2>Nawaf Alzahrani</h2>
+              <p class="title">Co-Founder & AI Specialist</p>
+              <p>Information Systems Student at KAU</p>
+              <p>
+                "Dedicated to building AI systems that understand Saudi culture
+                and create memorable travel experiences."
+              </p>
+              <div class="social-links">
+                <a href="https://www.linkedin.com/in/nawaf-alzhrani-243ab5244/" aria-label="LinkedIn profile"
+                  ><i class="fab fa-linkedin"></i
+                ></a>
+              </div>
+              <a
+                href="mailto:nalzhrani0164@stu.kau.edu.sa"
+                class="button"
+                aria-label="Contact Nawaf"
+              >
+                <i class="fas fa-envelope"></i> Contact
+              </a>
+            </div>
+          </div>
+        </div>
+
+        
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-section">
+      <h2>Get In Touch</h2>
+      <p>Have questions or feedback? We'd love to hear from you!</p>
+
+      <div class="contact-details">
+        <div class="contact-card">
+          <i class="fas fa-envelope"></i>
+          <h3>Email Us</h3>
+          <p><a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a></p>
+          
+        </div>
+
+        <div class="contact-card">
+          <i class="fas fa-phone-alt"></i>
+          <h3>Call Us</h3>
+          <p><a href="tel:+966556294862">+966 55 629 4862</a></p>
+          <p>9:00 AM - 10:00 PM (Saudi Time)</p>
+        </div>
+
+        <div class="contact-card">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>Visit Us</h3>
+          <p>King Abdulaziz University</p>
+          <p>Jeddah, Saudi Arabia</p>
+        </div>
+
+        
+
+      <a
+        href="contact.html"
+        class="button"
+        style="max-width: 250px; margin: 20px auto; display: block"
+      >
+        <i class="fas fa-paper-plane"></i> Send Us a Message
+      </a>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Saudi Guider</h3>
+        <p>
+          Your ultimate companion for exploring Saudi Arabia with personalized
+          AI assistance.
+        </p>
+        <div class="social-icons">
+          
+          <a href="#" aria-label="Follow us on Twitter"
+            ><i class="fab fa-twitter" aria-hidden="true"></i
+          ></a>
+          <a href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM=" aria-label="Follow us on Instagram"
+            ><i class="fab fa-instagram" aria-hidden="true"></i
+          ></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Explore Saudi Arabia</h3>
+        <ul>
+          <li><a href="#popular-destinations">Popular Destinations</a></li>
+          <li><a href="#travel-guides">Travel Guides</a></li>
+          <li><a href="#cultural-experiences">Cultural Experiences</a></li>
+          <li><a href="#travel-tips">Travel Tips</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact Us</h3>
+        <address>
+          <p>
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
+            Saudi Arabia
+          </p>
+          <p>
+            <i class="fas fa-phone" aria-hidden="true"></i>
+            <a href="tel:+966556294862">+966 55 629 4862</a>
+          </p>
+          <p>
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+          </p>
+        </address>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Saudi Guider. All rights reserved.</p>
+    </div>
+  </footer>
+
+    <script>
+     // REPLACE the entire script section with this:
+document.addEventListener("DOMContentLoaded", function() {
+  // Mobile Nav Toggle (should be the only one)
+  const mobileToggle = document.querySelector(".mobile-nav-toggle");
+  const nav = document.getElementById("main-nav");
+  
+  if (mobileToggle && nav) {
+    mobileToggle.addEventListener("click", function() {
+      const isExpanded = this.getAttribute("aria-expanded") === "true";
+      this.setAttribute("aria-expanded", !isExpanded);
+      nav.classList.toggle("active");
+      
+      // Update icon
+      const icon = this.querySelector("i");
+      if (icon) {
+        icon.classList.toggle("fa-bars");
+        icon.classList.toggle("fa-times");
+      }
+    });
+  }
+
+  // Loading spinner functionality
+  const links = document.querySelectorAll('a:not([target="_blank"])');
+  links.forEach((link) => {
+    link.addEventListener("click", function() {
+      document.getElementById("loading").style.display = "block";
+    });
+  });
+});
+
+function openChat() {
+  alert("Live chat feature coming soon!");
+}
+    </script>
+  </body>
+</html>

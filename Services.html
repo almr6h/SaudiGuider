@@ -1,0 +1,2811 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Book hotels, restaurants, car rentals, and events across Saudi Arabia with Saudi Guider."
+    />
+    <title>Our Services - Saudi Guider</title>
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* CSS Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Base Styles */
+      body {
+        font-family: var(--font-main);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--light);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+        padding-top: 6rem;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      /* Focus States */
+      a:focus,
+      button:focus,
+      input:focus,
+      select:focus {
+        outline: 2px solid var(--light);
+        outline-offset: 2px;
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: var(--light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: var(--box-shadow);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 10px;
+      }
+
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: var(--light);
+      }
+
+      /* Navigation */
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--light);
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color var(--transition-speed) ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      /* Auth Buttons */
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .auth-buttons button {
+        background-color: #69a7c8;
+        border: none;
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color var(--transition-speed) ease;
+      }
+
+      .auth-buttons button:hover,
+      .auth-buttons button:focus {
+        background-color: #4c8ba9;
+      }
+
+      /* Mobile Nav Toggle */
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      #results-container .view-result-btn {
+        display: none !important;
+      }
+
+      /* Hero Section */
+      .services-hero {
+        padding: 4rem 2rem;
+        background-color: var(--dark);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .services-hero h1 {
+        margin-bottom: 0.5rem;
+      }
+
+      .services-hero p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        max-width: 800px;
+      }
+
+      /* Sections */
+      .section {
+        padding: 3rem 2rem;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .section-text {
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        text-align: center;
+      }
+
+      /* Search Section */
+      .search-section {
+        background-color: var(--dark-gray);
+      }
+
+      .search-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .search-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border-gray);
+      }
+
+      .search-tab {
+        padding: 1rem 1.5rem;
+        background: var(--medium-gray);
+        border: none;
+        cursor: pointer;
+        color: var(--light);
+        font-size: 1.1rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .search-tab:first-child {
+        border-top-left-radius: 8px;
+      }
+
+      .search-tab:last-child {
+        border-top-right-radius: 8px;
+      }
+
+      .search-tab.active {
+        background: var(--secondary);
+      }
+
+      .search-tab:hover {
+        background: var(--secondary-dark);
+      }
+
+      .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: var(--medium-gray);
+        border-radius: 0 8px 8px 8px;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-gray);
+        border-radius: 4px;
+        background-color: var(--dark);
+        color: var(--light);
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .search-button {
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color var(--transition-speed);
+        align-self: flex-end;
+      }
+
+      .search-button:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      /* Search Results */
+      .search-results {
+        display: none;
+        background-color: var(--medium-gray);
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 1rem;
+      }
+
+      .search-results.active {
+        display: block;
+      }
+
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .result-item {
+        background-color: var(--dark);
+        border-radius: 8px;
+        padding: 1rem;
+        transition: transform var(--transition-speed);
+      }
+
+      .result-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .result-image {
+        height: 180px;
+        overflow: hidden;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+      }
+
+      .result-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-speed);
+      }
+
+      .result-item:hover .result-image img {
+        transform: scale(1.05);
+      }
+
+      .result-rating {
+        color: #ffd700;
+        margin: 0.5rem 0;
+      }
+
+      .result-price {
+        font-weight: bold;
+        color: var(--secondary);
+        margin: 0.5rem 0;
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .result-button {
+        padding: 0.7rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all var(--transition-speed);
+        flex: 1;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .result-button.view-result-btn {
+        background-color: var(--dark);
+        color: var(--light);
+        border: 1px solid var(--secondary);
+      }
+
+      .result-button.view-result-btn:hover {
+        background-color: var(--border-gray);
+      }
+
+      .result-button.book-result-btn {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .result-button.book-result-btn:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .no-results-message {
+        text-align: center;
+        padding: 2rem;
+        color: var(--light);
+        background: var(--medium-gray);
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .no-results-message i {
+        font-size: 3rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+      }
+
+      .no-results-message h4 {
+        margin-bottom: 0.5rem;
+      }
+
+      .no-results-message p {
+        opacity: 0.8;
+      }
+      .section-flex {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Vertically centers items */
+        gap: 50px; /* Adds space between title & button */
+      }
+      .Aibutton {
+        padding: 0.7rem 1rem;
+        background-color: var(--secondary);
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        text-decoration: none;
+      }
+      .Aibutton:hover {
+        cursor: pointer;
+        background-color: var(--secondary-dark);
+        transition: background-color var(--transition-speed);
+      }
+      /* AI Assistant */
+      .ai-assistant {
+        background-color: var(--darker-gray);
+        padding: 3rem 2rem;
+      }
+
+      .ai-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: var(--medium-gray);
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+      }
+
+      .ai-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .ai-icon {
+        font-size: 2.5rem;
+        color: var(--secondary);
+        margin-right: 1rem;
+      }
+
+      .ai-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .ai-input {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .ai-input textarea {
+        flex: 1;
+        min-height: 100px;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-gray);
+        background-color: var(--dark);
+        color: var(--light);
+        resize: vertical;
+        font-family: inherit;
+        font-size: inherit;
+      }
+
+      .ai-submit {
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        padding: 0 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .ai-submit:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .ai-example-prompts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .example-prompt {
+        background-color: var(--dark);
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color var(--transition-speed);
+      }
+
+      .example-prompt:hover {
+        background-color: var(--secondary);
+      }
+
+      /* AI Results */
+      .ai-results {
+        display: none;
+        background-color: var(--dark);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .ai-results.active {
+        display: block;
+      }
+
+      .ai-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+
+      .ai-loading i {
+        font-size: 2rem;
+        color: var(--secondary);
+        animation: spin 1s linear infinite;
+      }
+
+      .ai-response {
+        line-height: 1.6;
+      }
+
+      .ai-response h3 {
+        color: var(--secondary);
+        margin-bottom: 1rem;
+      }
+
+      .ai-response ul {
+        margin-left: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .ai-response li {
+        margin-bottom: 0.5rem;
+      }
+
+      .ai-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .ai-action-btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all var(--transition-speed);
+        text-align: center;
+      }
+
+      .ai-action-btn.primary {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .ai-action-btn.primary:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .ai-action-btn.secondary {
+        background-color: var(--dark);
+        color: var(--light);
+        border: 1px solid var(--secondary);
+      }
+
+      .ai-action-btn.secondary:hover {
+        background-color: var(--border-gray);
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Map Container */
+      .map-container {
+        width: 100%;
+        height: 300px;
+        background-color: var(--dark);
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        overflow: hidden;
+      }
+
+      .map-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      /* Service Categories */
+      .service-categories {
+        background-color: var(--dark-gray);
+      }
+
+      .category-container {
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+
+      /* Service Cards */
+      .service-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+        justify-content: center;
+      }
+
+      .service-card {
+        background-color: var(--medium-gray);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: transform var(--transition-speed);
+      }
+
+      .service-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .service-card-image {
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .service-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-speed);
+      }
+
+      .service-card:hover .service-card-image img {
+        transform: scale(1.05);
+      }
+
+      .service-card-content {
+        padding: 1.5rem;
+      }
+
+      .service-card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .service-price {
+        color: var(--secondary);
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding-left: 10px;
+      }
+
+      .service-features {
+        list-style: none;
+        margin: 1rem 0;
+      }
+
+      .service-features li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .service-features i {
+        color: var(--secondary);
+        margin-right: 0.5rem;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .service-card-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .view-details-btn,
+      .book-now-btn {
+        padding: 0.7rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-align: center;
+        flex: 1;
+        transition: all var(--transition-speed);
+      }
+
+      .view-details-btn {
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .view-details-btn:hover {
+        background-color: var(--border-gray);
+      }
+
+      .book-now-btn {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .book-now-btn:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        overflow: auto;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+
+      .modal-content {
+        background-color: var(--dark-gray);
+        border-radius: 10px;
+        max-width: 800px;
+        width: 90%;
+        position: relative;
+        animation: modalFadeIn 0.3s;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        margin: 0;
+      }
+
+      .close-modal {
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .modal-image-gallery {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+      }
+
+      .modal-image-gallery img {
+        width: 150px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all var(--transition-speed);
+      }
+
+      .modal-image-gallery img:hover {
+        transform: scale(1.05);
+      }
+
+      .modal-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+
+      .modal-info {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .modal-features {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .detail-list {
+        list-style: none;
+      }
+
+      .detail-list li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .detail-list i {
+        color: var(--secondary);
+        margin-right: 0.5rem;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+      }
+
+      .modal-footer button {
+        background-color: var(--secondary);
+        color: white;
+        padding: 0.7rem 1rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-align: center;
+        transition: background-color var(--transition-speed);
+      }
+
+      .modal-footer button:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Login Message Styling */
+      .login-message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 3000;
+      }
+
+      .login-message-content {
+        background-color: var(--dark-gray);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .login-message p {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+      }
+
+      .login-redirect-btn {
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .login-redirect-btn:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      /* Coming Soon Message */
+      .coming-soon-message {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--secondary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 5px;
+        z-index: 3000;
+        animation: fadeInOut 3s ease-in-out;
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .service-cards {
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          background-color: var(--dark);
+          height: calc(100vh - 80px);
+          transition: left var(--transition-speed) ease;
+          z-index: 999;
+          padding: 2rem;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-buttons {
+          margin-right: 1rem;
+        }
+
+        .section {
+          padding: 2rem 1rem;
+        }
+
+        .services-hero {
+          padding: 3rem 1rem;
+        }
+
+        .services-hero h1 {
+          font-size: 2rem;
+        }
+
+        .search-tabs {
+          overflow-x: auto;
+          width: 100%;
+          padding-bottom: 0.5rem;
+        }
+
+        .search-tab {
+          white-space: nowrap;
+          padding: 0.8rem 1rem;
+        }
+
+        .modal-content {
+          width: 95%;
+        }
+
+        .modal-image-gallery img {
+          width: 120px;
+          height: 80px;
+        }
+
+        .ai-input {
+          flex-direction: column;
+        }
+
+        .ai-submit {
+          padding: 0.8rem;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo a {
+          font-size: 1.5rem;
+        }
+
+        .logo img {
+          width: 40px;
+        }
+
+        .auth-button {
+          padding: 0.4rem 0.8rem;
+          font-size: 0.9rem;
+        }
+
+        .services-hero h1 {
+          font-size: 1.8rem;
+        }
+
+        .section-title {
+          font-size: 1.8rem;
+        }
+
+        .search-form {
+          padding: 1rem;
+        }
+
+        .ai-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .ai-icon {
+          margin-right: 0;
+          margin-bottom: 1rem;
+        }
+
+        .service-card {
+          width: 100%;
+        }
+
+        .ai-actions {
+          flex-direction: column;
+        }
+
+        .result-actions {
+          flex-direction: column;
+        }
+
+        .result-button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="services.html" class="active" aria-current="page"
+              >Services</a
+            >
+          </li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button
+          onclick="window.location.href='signup.html'"
+          aria-label="Sign up"
+        >
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="services-hero" aria-labelledby="services-title">
+        <h1 id="services-title">Our Services</h1>
+        <p>
+          Discover and book the best hotels, restaurants, car rentals, and
+          events throughout Saudi Arabia with personalized recommendations.
+        </p>
+      </section>
+
+      <section
+        class="service-categories section"
+        aria-labelledby="categories-title"
+      >
+        <h2 id="categories-title" class="section-title">Featured Services</h2>
+        <p class="section-text">
+          Explore our most popular services for your Saudi Arabian adventure.
+        </p>
+
+        <div class="category-container">
+          <div class="service-cards">
+            <!-- Hotel Card -->
+            <div class="service-card">
+              <div class="service-card-image">
+                <img
+                  src="./images/hotel-exterior.jpg"
+                  alt="Luxury Hotel Room"
+                  loading="lazy"
+                />
+              </div>
+              <div class="service-card-content">
+                <div class="service-card-title">
+                  <h3>Luxury Hotel Bookings</h3>
+                  <span class="service-price">From $150/night</span>
+                </div>
+                <p>
+                  Book premium hotels across Saudi Arabia with exclusive deals
+                  and benefits for Saudi Guider members.
+                </p>
+                <ul class="service-features">
+                  <li>
+                    <i class="fas fa-check"></i> Access to 500+ premium hotels
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Exclusive rates and room
+                    upgrades
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> 24/7 support for all bookings
+                  </li>
+                </ul>
+                <div class="service-card-actions">
+                  <button
+                    class="view-details-btn"
+                    data-service="hotel"
+                    aria-label="View details for luxury hotel bookings"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    class="book-now-btn"
+                    aria-label="Book a luxury hotel now"
+                  >
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Car Rental Card -->
+            <div class="service-card">
+              <div class="service-card-image">
+                <img
+                  src="./images/Rent-Luxury-Cars-in-Dubai-1-scaled.jpg"
+                  alt="Luxury SUV Rental"
+                  loading="lazy"
+                />
+              </div>
+              <div class="service-card-content">
+                <div class="service-card-title">
+                  <h3>Premium Car Rentals</h3>
+                  <span class="service-price">From $75/day</span>
+                </div>
+                <p>
+                  Choose from our fleet of well-maintained vehicles for
+                  exploring Saudi Arabia with comfort and convenience.
+                </p>
+                <ul class="service-features">
+                  <li>
+                    <i class="fas fa-check"></i> Wide range of vehicles from
+                    economy to luxury
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Flexible pickup and drop-off
+                    locations
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Comprehensive insurance
+                    included
+                  </li>
+                </ul>
+                <div class="service-card-actions">
+                  <button
+                    class="view-details-btn"
+                    data-service="car"
+                    aria-label="View details for premium car rentals"
+                  >
+                    View Details
+                  </button>
+                  <button class="book-now-btn" aria-label="Rent a car now">
+                    Rent Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Restaurant Card -->
+            <div class="service-card">
+              <div class="service-card-image">
+                <img
+                  src="./images/reyhana.jpg"
+                  alt="Fine Dining Restaurant"
+                  loading="lazy"
+                />
+              </div>
+              <div class="service-card-content">
+                <div class="service-card-title">
+                  <h3>Restaurant Reservations</h3>
+                  <span class="service-price">All price ranges</span>
+                </div>
+                <p>
+                  Discover and book the finest dining experiences from
+                  traditional Saudi cuisine to international favorites.
+                </p>
+                <ul class="service-features">
+                  <li>
+                    <i class="fas fa-check"></i> Access to exclusive restaurants
+                    and private dining
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Special Saudi Guider menu
+                    options at select venues
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Dietary preferences
+                    accommodated
+                  </li>
+                </ul>
+                <div class="service-card-actions">
+                  <button
+                    class="view-details-btn"
+                    data-service="restaurant"
+                    aria-label="View details for restaurant reservations"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    class="book-now-btn"
+                    aria-label="Book a restaurant now"
+                  >
+                    Reserve Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Event Card -->
+            <div class="service-card">
+              <div class="service-card-image">
+                <img
+                  src="./images/2-your-ultimate-guide-to-riyadh-season-2023.jpg"
+                  alt="Cultural Festival Event"
+                  loading="lazy"
+                />
+              </div>
+              <div class="service-card-content">
+                <div class="service-card-title">
+                  <h3>Cultural & Entertainment Events</h3>
+                  <span class="service-price">From $25/ticket</span>
+                </div>
+                <p>
+                  Get tickets for the most popular cultural festivals, concerts,
+                  sports events, and exhibitions across Saudi Arabia.
+                </p>
+                <ul class="service-features">
+                  <li>
+                    <i class="fas fa-check"></i> Priority access to sold-out
+                    events
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Exclusive Saudi Guider member
+                    discounts
+                  </li>
+                  <li>
+                    <i class="fas fa-check"></i> Group booking options available
+                  </li>
+                </ul>
+                <div class="service-card-actions">
+                  <button
+                    class="view-details-btn"
+                    data-service="event"
+                    aria-label="View details for cultural and entertainment events"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    class="book-now-btn"
+                    aria-label="Book event tickets now"
+                  >
+                    Get Tickets
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="search-section section"
+        aria-labelledby="search-section-title"
+      >
+        <div class="section-flex">
+          <h2 id="search-section-title" class="section-title">
+            Find What You Need
+          </h2>
+          <a href="#ai" class="Aibutton">Use Our AI</a>
+        </div>
+        <p class="section-text">
+          Use our traditional search tools to find exactly what you're looking
+          for based on your preferences.
+        </p>
+
+        <div class="search-container">
+          <div class="search-tabs" role="tablist">
+            <button
+              class="search-tab active"
+              data-tab="hotels"
+              role="tab"
+              aria-selected="true"
+              aria-controls="hotel-search"
+            >
+              <i class="fas fa-hotel"></i> Hotels
+            </button>
+            <button
+              class="search-tab"
+              data-tab="restaurants"
+              role="tab"
+              aria-selected="false"
+              aria-controls="restaurant-search"
+            >
+              <i class="fas fa-utensils"></i> Restaurants
+            </button>
+            <button
+              class="search-tab"
+              data-tab="cars"
+              role="tab"
+              aria-selected="false"
+              aria-controls="car-search"
+            >
+              <i class="fas fa-car"></i> Car Rentals
+            </button>
+            <button
+              class="search-tab"
+              data-tab="events"
+              role="tab"
+              aria-selected="false"
+              aria-controls="event-search"
+            >
+              <i class="fas fa-ticket-alt"></i> Events
+            </button>
+          </div>
+
+          <form
+            class="search-form"
+            id="hotel-search"
+            role="tabpanel"
+            aria-labelledby="hotels"
+          >
+            <div class="form-group">
+              <label for="destination">Destination</label>
+              <input
+                type="text"
+                id="destination"
+                placeholder="City or region"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-group">
+              <label for="check-in">Check-in</label>
+              <input type="date" id="check-in" required aria-required="true" />
+            </div>
+            <div class="form-group">
+              <label for="check-out">Check-out</label>
+              <input type="date" id="check-out" required aria-required="true" />
+            </div>
+            <div class="form-group">
+              <label for="guests">Guests</label>
+              <select id="guests" required aria-required="true">
+                <option value="1">1 Guest</option>
+                <option value="2" selected>2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+                <option value="5">5+ Guests</option>
+              </select>
+            </div>
+            <button type="submit" class="search-button">
+              <i class="fas fa-search"></i> Search
+            </button>
+          </form>
+
+          <div id="search-results" class="search-results">
+            <h3>Search Results for <span id="search-location">Riyadh</span></h3>
+            <p id="search-dates">
+              Showing results for <span id="check-in-date">today</span> to
+              <span id="check-out-date">tomorrow</span>
+            </p>
+            <div
+              class="results-grid"
+              id="results-container"
+              role="region"
+              aria-live="polite"
+            >
+              <!-- Results will be dynamically inserted here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="ai"
+        class="ai-assistant section"
+        aria-labelledby="ai-assistant-title"
+      >
+        <h2 id="ai-assistant-title" class="section-title">
+          AI Travel Assistant
+        </h2>
+        <p class="section-text">
+          Don't know where to start? Our AI assistant can help plan your perfect
+          trip based on your preferences and budget.
+        </p>
+
+        <div class="ai-container">
+          <div class="ai-header">
+            <div class="ai-icon">
+              <img
+                src="./images/DALL·E 2025-03-23 06.35.39 - A cartoon-style robot wearing a traditional Saudi gutra (headscarf), sitting and working on a laptop. The robot has a friendly appearance and is focus.webp"
+                style="
+                  width: 70px;
+                  height: 70px;
+                  border-radius: 50px;
+                  margin-bottom: 15px;
+                "
+              />
+            </div>
+            <div>
+              <h3>Saudi Guider AI Assistant</h3>
+              <p>
+                Ask me anything about traveling in Saudi Arabia or tell me what
+                you're looking for.
+              </p>
+            </div>
+          </div>
+
+          <div class="ai-content">
+            <div class="ai-input">
+              <textarea
+                id="ai-query"
+                placeholder="Example: I want to plan a 5-day trip to Riyadh and Jeddah for a family of 4 with a budget of $3000."
+                aria-label="Enter your travel question or request"
+              ></textarea>
+              <button
+                class="ai-submit"
+                id="ai-submit-btn"
+                aria-label="Submit your question"
+              >
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+
+            <div>
+              <p><strong>Try these example prompts:</strong></p>
+              <div class="ai-example-prompts">
+                <span class="example-prompt" tabindex="0" role="button">
+                  Best restaurants in Al-Ula for dinner
+                </span>
+                <span class="example-prompt" tabindex="0" role="button">
+                  Family-friendly activities in Riyadh
+                </span>
+                <span class="example-prompt" tabindex="0" role="button">
+                  Luxury hotels with pool in Jeddah
+                </span>
+                <span class="example-prompt" tabindex="0" role="button">
+                  Weekend getaway with cultural experiences
+                </span>
+              </div>
+            </div>
+
+            <div
+              id="ai-results"
+              class="ai-results"
+              role="region"
+              aria-live="polite"
+            >
+              <!-- AI results will be displayed here -->
+            </div>
+
+            <div class="map-container">
+              <div class="map-placeholder">
+                <p>AI suggestions will appear on the map here</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Service Detail Modals -->
+      <!-- Hotel Details Modal -->
+      <div
+        id="hotelModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hotelModalTitle"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="hotelModalTitle" class="modal-title">
+              Luxury Hotel Bookings
+            </h3>
+            <button class="close-modal" aria-label="Close modal">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-details">
+              <div class="modal-info">
+                <h4>Service Details</h4>
+                <p>
+                  Our hotel booking service provides access to the finest
+                  accommodations across Saudi Arabia, from boutique hotels to
+                  luxury resorts. With Saudi Guider, you'll enjoy exclusive
+                  member rates and special amenities.
+                </p>
+
+                <h4>Price Information</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Economy:
+                    $80-150/night
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Premium:
+                    $150-300/night
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Luxury:
+                    $300-800+/night
+                  </li>
+                  <li>
+                    <i class="fas fa-tag"></i> Members receive up to a 15%
+                    discount
+                  </li>
+                </ul>
+              </div>
+
+              <div class="modal-features">
+                <h4>Features & Benefits</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-star"></i> Access to over 500 premium
+                    hotels throughout Saudi Arabia
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Best price guarantee and price
+                    match policy
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Exclusive room upgrades when
+                    available
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Special welcome amenities at
+                    partner hotels
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Flexible cancellation policies
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> 24/7 customer support for all
+                    bookings
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Earn loyalty points with every
+                    booking
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="auth-button">Book Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Car Rental Details Modal -->
+      <div
+        id="carModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="carModalTitle"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="carModalTitle" class="modal-title">Premium Car Rentals</h3>
+            <button class="close-modal" aria-label="Close modal">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-details">
+              <div class="modal-info">
+                <h4>Service Details</h4>
+                <p>
+                  Our car rental service provides well-maintained vehicles from
+                  trusted providers across Saudi Arabia. From economy cars to
+                  luxury SUVs, we have options for every need and budget. All
+                  rentals include comprehensive insurance.
+                </p>
+
+                <h4>Price Information</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Economy: $40-75/day
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Mid-size: $75-150/day
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Luxury: $150-300+/day
+                  </li>
+                  <li>
+                    <i class="fas fa-tag"></i> Weekly rental discounts up to 25%
+                  </li>
+                </ul>
+              </div>
+
+              <div class="modal-features">
+                <h4>Features & Benefits</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-star"></i> Wide range of vehicles from
+                    economy to luxury
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Flexible pickup and drop-off
+                    locations
+                  </li>
+                  <li><i class="fas fa-star"></i> No hidden fees or charges</li>
+                  <li>
+                    <i class="fas fa-star"></i> Comprehensive insurance included
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> 24/7 roadside assistance
+                    throughout Saudi Arabia
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Optional GPS navigation and
+                    child seats
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Fuel options and mileage
+                    packages available
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="auth-button">Rent Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurant Details Modal -->
+      <div
+        id="restaurantModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="restaurantModalTitle"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="restaurantModalTitle" class="modal-title">
+              Restaurant Reservations
+            </h3>
+            <button class="close-modal" aria-label="Close modal">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-details">
+              <div class="modal-info">
+                <h4>Service Details</h4>
+                <p>
+                  Discover and book the best dining experiences across Saudi
+                  Arabia with our restaurant reservation service. From authentic
+                  Saudi cuisine to international fine dining, we help you secure
+                  tables at the most popular and exclusive restaurants.
+                </p>
+
+                <h4>Price Information</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Casual Dining: $15-40
+                    per person
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Mid-range: $40-80 per
+                    person
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Fine Dining: $80-200+
+                    per person
+                  </li>
+                  <li>
+                    <i class="fas fa-tag"></i> Special tasting menus available
+                    at select restaurants
+                  </li>
+                </ul>
+              </div>
+
+              <div class="modal-features">
+                <h4>Features & Benefits</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-star"></i> Access to exclusive restaurants
+                    and private dining experiences
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Special Saudi Guider menu
+                    options at select venues
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Priority reservations even
+                    during peak times
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Dietary preferences and
+                    restrictions accommodated
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Insider recommendations from
+                    local food experts
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Reviews and ratings from
+                    verified Saudi Guider members
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Group booking options for
+                    special occasions
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="auth-button">Reserve Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Details Modal -->
+      <div
+        id="eventModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="eventModalTitle"
+      >
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="eventModalTitle" class="modal-title">
+              Cultural & Entertainment Events
+            </h3>
+            <button class="close-modal" aria-label="Close modal">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-details">
+              <div class="modal-info">
+                <h4>Service Details</h4>
+                <p>
+                  Get tickets to the most popular cultural festivals, concerts,
+                  sports events, and exhibitions across Saudi Arabia. Our event
+                  service provides access to both mainstream and exclusive
+                  experiences, with options for every interest.
+                </p>
+
+                <h4>Price Information</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Cultural Experiences:
+                    $25-75 per ticket
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Concerts & Shows:
+                    $50-200+ per ticket
+                  </li>
+                  <li>
+                    <i class="fas fa-money-bill-wave"></i> Sports Events:
+                    $30-150 per ticket
+                  </li>
+                  <li>
+                    <i class="fas fa-tag"></i> VIP packages available for select
+                    events
+                  </li>
+                </ul>
+              </div>
+
+              <div class="modal-features">
+                <h4>Features & Benefits</h4>
+                <ul class="detail-list">
+                  <li>
+                    <i class="fas fa-star"></i> Priority access to sold-out
+                    events
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Exclusive Saudi Guider member
+                    discounts
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Early access to ticket sales for
+                    major events
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> VIP upgrades and exclusive
+                    experiences
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Group booking options available
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Last-minute ticket availability
+                  </li>
+                  <li>
+                    <i class="fas fa-star"></i> Event recommendations based on
+                    your preferences
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="auth-button">Get Tickets</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            AI assistance.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter" aria-hidden="true"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram" aria-hidden="true"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#popular-destinations">Popular Destinations</a></li>
+            <li><a href="#travel-guides">Travel Guides</a></li>
+            <li><a href="#cultural-experiences">Cultural Experiences</a></li>
+            <li><a href="#travel-tips">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
+              Saudi Arabia
+            </p>
+            <p>
+              <i class="fas fa-phone" aria-hidden="true"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Data for search results
+      const searchData = {
+        hotels: {
+          riyadh: [
+            {
+              id: 1,
+              name: "Luxury Riyadh Hotel",
+              location: "Downtown Riyadh",
+              rating: 4.8,
+              reviews: 245,
+              price: 180,
+              image: "./images/riyadh.jpg",
+              description:
+                "5-star luxury hotel with panoramic city views and premium amenities.",
+            },
+            {
+              id: 2,
+              name: "Desert Oasis Resort",
+              location: "Outside Riyadh",
+              rating: 4.6,
+              reviews: 189,
+              price: 220,
+              image: "./images/resort.jpg",
+              description:
+                "Luxury desert resort with private villas and spa facilities.",
+            },
+            {
+              id: 3,
+              name: "Business Tower Hotel",
+              location: "Financial District",
+              rating: 4.5,
+              reviews: 312,
+              price: 150,
+              image: "./images/businesstower.jpg",
+              description:
+                "Modern business hotel with conference facilities and executive lounge.",
+            },
+          ],
+          jeddah: [
+            {
+              id: 4,
+              name: "Coastal Retreat Jeddah",
+              location: "Jeddah Corniche",
+              rating: 4.7,
+              reviews: 278,
+              price: 195,
+              image: "./images/oia.jpg",
+              description:
+                "Beachfront hotel with private beach access and multiple dining options.",
+            },
+            {
+              id: 5,
+              name: "Red Sea Resort",
+              location: "North Jeddah",
+              rating: 4.4,
+              reviews: 156,
+              price: 175,
+              image: "./images/resortred.jpg",
+              description:
+                "Luxury resort with private beach and water sports facilities.",
+            },
+          ],
+        },
+        restaurants: {
+          riyadh: [
+            {
+              id: 1,
+              name: "Al-Nakheel Restaurant",
+              location: "Historic District",
+              rating: 4.9,
+              reviews: 432,
+              price: "$$$",
+              image: "./images/nakheel.jpg",
+              description:
+                "Authentic Saudi cuisine in a traditional setting with live music.",
+            },
+            {
+              id: 2,
+              name: "Urban Bistro",
+              location: "Riyadh City Center",
+              rating: 4.5,
+              reviews: 198,
+              price: "$$",
+              image: "./images/urban.jpg",
+              description:
+                "Modern international cuisine with creative presentations.",
+            },
+          ],
+          jeddah: [
+            {
+              id: 3,
+              name: "Marina Seafood",
+              location: "Jeddah Waterfront",
+              rating: 4.7,
+              reviews: 321,
+              price: "$$$$",
+              image: "./images/marina.jpg",
+              description:
+                "Fresh seafood with Red Sea views and elegant atmosphere.",
+            },
+          ],
+        },
+        cars: {
+          riyadh: [
+            {
+              id: 1,
+              name: "Luxury Sedan",
+              type: "Mercedes E-Class",
+              rating: 4.8,
+              reviews: 156,
+              price: 120,
+              image: "./images/sedan.jpg",
+              description:
+                "Premium luxury sedan with full amenities and navigation.",
+            },
+            {
+              id: 2,
+              name: "SUV 4x4",
+              type: "Toyota Land Cruiser",
+              rating: 4.7,
+              reviews: 243,
+              price: 150,
+              image: "./images/landc.jpg",
+              description:
+                "Comfortable and powerful SUV for desert exploration.",
+            },
+          ],
+          jeddah: [
+            {
+              id: 3,
+              name: "Economy Car",
+              type: "Toyota Yaris",
+              rating: 4.3,
+              reviews: 187,
+              price: 45,
+              image: "./images/toyota.jpg",
+              description: "Fuel-efficient compact car for city driving.",
+            },
+          ],
+        },
+        events: {
+          riyadh: [
+            {
+              id: 1,
+              name: "Riyadh Season Festival",
+              type: "Cultural Festival",
+              rating: 4.9,
+              reviews: 876,
+              price: 50,
+              image: "./images/riyadseas.jpg",
+              description:
+                "Annual cultural festival with performances, food, and activities.",
+            },
+          ],
+          jeddah: [
+            {
+              id: 2,
+              name: "Jeddah International Concert",
+              type: "Music Concert",
+              rating: 4.8,
+              reviews: 654,
+              price: 120,
+              image: "./images/concert.jpg",
+              description:
+                "International artists performing at the Jeddah Superdome.",
+            },
+            {
+              id: 3,
+              name: "Desert Rally Championship",
+              type: "Sports Event",
+              rating: 4.7,
+              reviews: 432,
+              price: 75,
+              image: "./images/saudirally.jpg",
+              description:
+                "Exciting off-road racing competition in the desert.",
+            },
+          ],
+        },
+      };
+
+      // AI Responses
+      const aiResponses = {
+        "Best restaurants in Al-Ula for dinner": {
+          response: `
+          <div class="ai-response">
+            <h3>Top Dinner Restaurants in Al-Ula</h3>
+            <p>Here are the best dining options for an evening in Al-Ula:</p>
+            <ul>
+              <li><strong>Maraya Social</strong> - Fine dining with stunning views of the Maraya concert hall. International cuisine with local influences.</li>
+              <li><strong>Al-Ula Old Town Restaurant</strong> - Authentic Saudi cuisine in a historic setting with traditional decor.</li>
+              <li><strong>Desert Palm</strong> - Romantic outdoor dining under the stars with a menu featuring grilled specialties.</li>
+              <li><strong>Oasis Grill</strong> - Casual dining with excellent grilled meats and vegetarian options.</li>
+            </ul>
+            <p>Would you like me to make reservations at any of these?</p>
+          </div>
+        `,
+          actions: ["Make Reservations", "See Menus"],
+        },
+        "Family-friendly activities in Riyadh": {
+          response: `
+          <div class="ai-response">
+            <h3>Great Family Activities in Riyadh</h3>
+            <p>Here are excellent options for families visiting Riyadh:</p>
+            <ul>
+              <li><strong>Riyadh Zoo</strong> - Home to over 1,500 animals with playgrounds and picnic areas.</li>
+              <li><strong>Al Hokair Land</strong> - Amusement park with rides for all ages and indoor/outdoor attractions.</li>
+              <li><strong>National Museum</strong> - Interactive exhibits about Saudi history that engage children.</li>
+              <li><strong>Winter Wonderland</strong> - Seasonal festival with games, shows, and carnival rides (Nov-Feb).</li>
+              <li><strong>Boulevard City</strong> - Entertainment district with family-friendly shows and activities.</li>
+            </ul>
+            <p>Would you like more details about any of these?</p>
+          </div>
+        `,
+          actions: ["Show Tickets", "Get Directions"],
+        },
+        "Luxury hotels with pool in Jeddah": {
+          response: `
+          <div class="ai-response">
+            <h3>Luxury Hotels in Jeddah with Pools</h3>
+            <p>Top luxury hotels with excellent pool facilities:</p>
+            <ul>
+              <li><strong>The Ritz-Carlton Jeddah</strong> - Beachfront resort with multiple pools including an infinity pool with Red Sea views. Rates from $350/night.</li>
+              <li><strong>Four Seasons Hotel Jeddah</strong> - Stunning infinity pool with cabana service. Spa and multiple dining options. Rates from $400/night.</li>
+              <li><strong>Park Hyatt Jeddah</strong> - Private pool villas available along with a large main pool. Rates from $380/night.</li>
+              <li><strong>Jeddah Hilton</strong> - Rooftop pool with city views and family pool area. Rates from $280/night.</li>
+            </ul>
+            <p>Current availability is good for most properties. Would you like to check specific dates?</p>
+          </div>
+        `,
+          actions: ["Check Availability", "View Photos"],
+        },
+        "Weekend getaway with cultural experiences": {
+          response: `
+          <div class="ai-response">
+            <h3>Cultural Weekend Getaway Ideas</h3>
+            <p>For a culturally rich weekend, consider these destinations:</p>
+            <ul>
+              <li><strong>Diriyah</strong> - Historic home of the first Saudi state with museums, traditional architecture, and cultural performances. Just 20 minutes from Riyadh.</li>
+              <li><strong>Al-Ula</strong> - Ancient Nabatean tombs (similar to Petra), stunning desert landscapes, and luxury desert camps with cultural programs.</li>
+              <li><strong>Jeddah Historic District</strong> - Traditional coral houses, art galleries, and the floating mosque. Combine with Red Sea relaxation.</li>
+              <li><strong>Taif</strong> - Mountain retreat with rose gardens, historic souks, and cooler temperatures (ideal in summer).</li>
+            </ul>
+            <p>I can help plan a full itinerary including accommodations and guided tours.</p>
+          </div>
+        `,
+          actions: ["Plan Itinerary", "Book Tours"],
+        },
+        default: {
+          response: `
+          <div class="ai-response">
+            <h3>Travel Recommendations</h3>
+            <p>Based on your request, here are some suggestions for Saudi Arabia:</p>
+            <ul>
+              <li>Consider visiting the historic Al-Ula region for a unique cultural experience among ancient ruins</li>
+              <li>For beach lovers, the Red Sea coast offers beautiful resorts with excellent diving and snorkeling</li>
+              <li>Riyadh has excellent shopping and dining options along with modern attractions</li>
+              <li>The mountain city of Abha provides a cool retreat with stunning scenery</li>
+              <li>For adventure seekers, the Empty Quarter offers incredible desert experiences</li>
+            </ul>
+            <p>Would you like more specific recommendations for dates, budget, or group size?</p>
+          </div>
+        `,
+          actions: ["More Details", "Customize"],
+        },
+      };
+
+      // Login and Coming Soon Message Functions
+      function showLoginMessage(action) {
+        const loginMessage = document.createElement("div");
+        loginMessage.className = "login-message";
+        loginMessage.innerHTML = `
+          <div class="login-message-content">
+            <p>Please login to ${action}.</p>
+            <button onclick="window.location.href='login.html'" class="login-redirect-btn">
+              Go to Login Page
+            </button>
+          </div>
+        `;
+        document.body.appendChild(loginMessage);
+
+        // Close when clicking outside
+        loginMessage.addEventListener("click", function (e) {
+          if (e.target === loginMessage) {
+            loginMessage.remove();
+          }
+        });
+      }
+
+      function showComingSoonMessage() {
+        const comingSoonMessage = document.createElement("div");
+        comingSoonMessage.className = "coming-soon-message";
+        comingSoonMessage.innerHTML = `
+          <div class="coming-soon-content">
+            <p>This feature is coming soon!</p>
+          </div>
+        `;
+        document.body.appendChild(comingSoonMessage);
+        setTimeout(() => {
+          comingSoonMessage.remove();
+        }, 3000);
+      }
+
+      // Initialize the application when DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set current year in footer
+        document.getElementById("current-year").textContent =
+          new Date().getFullYear();
+
+        // Mobile navigation toggle
+        const mobileToggle = document.querySelector(".mobile-nav-toggle");
+        const nav = document.getElementById("main-nav");
+
+        mobileToggle.addEventListener("click", function () {
+          const isExpanded = nav.classList.toggle("active");
+          mobileToggle.setAttribute("aria-expanded", isExpanded);
+        });
+
+        // Close mobile nav when clicking on a link
+        document.querySelectorAll("nav a").forEach((link) => {
+          link.addEventListener("click", () => {
+            nav.classList.remove("active");
+            mobileToggle.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        // Search tabs functionality
+        const tabs = document.querySelectorAll(".search-tab");
+        const searchForm = document.getElementById("hotel-search");
+        const resultsContainer = document.getElementById("results-container");
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", function () {
+            // Update tab states
+            tabs.forEach((t) => {
+              t.classList.remove("active");
+              t.setAttribute("aria-selected", "false");
+            });
+            this.classList.add("active");
+            this.setAttribute("aria-selected", "true");
+
+            // Update search form based on selected tab
+            const tabType = this.getAttribute("data-tab");
+            updateSearchForm(tabType);
+          });
+        });
+
+        /**
+         * Updates the search form based on the selected tab type
+         * @param {string} tabType - The type of tab selected (hotels, restaurants, cars, events)
+         */
+        function updateSearchForm(tabType) {
+          const destinationLabel = searchForm.querySelector(
+            'label[for="destination"]'
+          );
+          const destinationInput = searchForm.querySelector("#destination");
+          const checkInGroup = searchForm.querySelector(
+            ".form-group:nth-child(2)"
+          );
+          const checkOutGroup = searchForm.querySelector(
+            ".form-group:nth-child(3)"
+          );
+          const guestsGroup = searchForm.querySelector(
+            ".form-group:nth-child(4)"
+          );
+
+          switch (tabType) {
+            case "hotels":
+              destinationLabel.textContent = "Destination";
+              destinationInput.placeholder = "City or region";
+              checkInGroup.style.display = "block";
+              checkOutGroup.style.display = "block";
+              guestsGroup.style.display = "block";
+              break;
+            case "restaurants":
+              destinationLabel.textContent = "Location";
+              destinationInput.placeholder = "City or neighborhood";
+              checkInGroup.style.display = "none";
+              checkOutGroup.style.display = "none";
+              guestsGroup.style.display = "block";
+              break;
+            case "cars":
+              destinationLabel.textContent = "Pickup Location";
+              destinationInput.placeholder = "City or airport";
+              checkInGroup.style.display = "block";
+              checkOutGroup.style.display = "block";
+              guestsGroup.style.display = "none";
+              break;
+            case "events":
+              destinationLabel.textContent = "Event Location";
+              destinationInput.placeholder = "City or venue";
+              checkInGroup.style.display = "block";
+              checkOutGroup.style.display = "none";
+              guestsGroup.style.display = "block";
+              break;
+          }
+        }
+
+        /**
+         * Generates sample search results for the selected tab type
+         * @param {string} tabType - The type of tab selected (hotels, restaurants, cars, events)
+         * @param {string} location - The location being searched for
+         */
+        function generateSampleResults(tabType, location) {
+          // Check if tab type exists in searchData
+          if (!searchData[tabType]) {
+            showNoResults(tabType, location);
+            return;
+          }
+
+          // Normalize location to lowercase for comparison
+          const normalizedLocation = location ? location.toLowerCase() : "";
+
+          // Determine location key (only works for riyadh and jeddah)
+          let locationKey = null;
+          if (normalizedLocation.includes("jeddah")) {
+            locationKey = "jeddah";
+          } else if (normalizedLocation.includes("riyadh")) {
+            locationKey = "riyadh";
+          }
+
+          // If location not found in our data (not Riyadh or Jeddah)
+          if (!locationKey || !searchData[tabType][locationKey]) {
+            showNoResults(tabType, location);
+            return;
+          }
+
+          const data = searchData[tabType][locationKey];
+
+          document.getElementById("search-location").textContent =
+            location || "Riyadh";
+          resultsContainer.innerHTML = "";
+
+          if (!data || data.length === 0) {
+            showNoResults(tabType, location);
+            return;
+          }
+
+          data.forEach((item) => {
+            const resultItem = document.createElement("div");
+            resultItem.className = "result-item";
+
+            let priceDisplay = "";
+            if (typeof item.price === "number") {
+              priceDisplay =
+                tabType === "cars"
+                  ? `From $${item.price}/day`
+                  : `From $${item.price}/night`;
+            } else {
+              priceDisplay = item.price;
+            }
+
+            resultItem.innerHTML = `
+              <div class="result-image">
+                <img src="${item.image}" alt="${item.name}" loading="lazy">
+              </div>
+              <h4>${item.name}</h4>
+              <p><i class="fas fa-map-marker-alt"></i> ${item.location}</p>
+              <p class="result-rating"><i class="fas fa-star"></i> ${
+                item.rating
+              } (${item.reviews} reviews)</p>
+              <p class="result-price">${priceDisplay}</p>
+              <p>${item.description}</p>
+              <div class="result-actions">
+                <button class="result-button book-result-btn">${
+                  tabType === "restaurants"
+                    ? "Reserve Now"
+                    : tabType === "cars"
+                    ? "Rent Now"
+                    : tabType === "events"
+                    ? "Get Tickets"
+                    : "Book Now"
+                }</button>
+              </div>
+            `;
+
+            // Add event listener to the book button
+            const bookBtn = resultItem.querySelector(".book-result-btn");
+            bookBtn.addEventListener("click", function () {
+              const action =
+                tabType === "restaurants"
+                  ? "make a reservation"
+                  : tabType === "cars"
+                  ? "rent a car"
+                  : tabType === "events"
+                  ? "purchase tickets"
+                  : "book accommodation";
+              showLoginMessage(action);
+            });
+
+            resultsContainer.appendChild(resultItem);
+          });
+        }
+
+        // Helper function to show no results message
+        function showNoResults(tabType, location) {
+          resultsContainer.innerHTML = `
+            <div class="no-results-message">
+              <i class="fas fa-search"></i>
+              <h4>No ${tabType} found in ${location || "this location"}</h4>
+              <p>Try adjusting your search or explore other locations.</p>
+            </div>
+          `;
+          // Ensure results container is visible
+          document.getElementById("search-results").classList.add("active");
+        }
+
+        // Search form submission
+        searchForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const destination = document.getElementById("destination").value;
+          const checkIn = document.getElementById("check-in").value;
+          const checkOut = document.getElementById("check-out").value;
+          const guests = document.getElementById("guests").value;
+
+          // Update search results location and dates
+          document.getElementById("search-location").textContent =
+            destination || "Riyadh";
+
+          const checkInDate = checkIn
+            ? new Date(checkIn).toLocaleDateString()
+            : "today";
+          const checkOutDate = checkOut
+            ? new Date(checkOut).toLocaleDateString()
+            : "tomorrow";
+
+          document.getElementById("check-in-date").textContent = checkInDate;
+          document.getElementById("check-out-date").textContent = checkOutDate;
+
+          // Get active tab
+          const activeTab = document
+            .querySelector(".search-tab.active")
+            .getAttribute("data-tab");
+
+          // Generate results for active tab and location
+          generateSampleResults(activeTab, destination);
+
+          // Show results section only after search
+          document.getElementById("search-results").classList.add("active");
+
+          // Scroll to results
+          document.getElementById("search-results").scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+
+        // AI Assistant functionality
+        const aiSubmitBtn = document.getElementById("ai-submit-btn");
+        const aiQuery = document.getElementById("ai-query");
+        const aiResults = document.getElementById("ai-results");
+
+        // Example prompts click handler
+        document.querySelectorAll(".example-prompt").forEach((prompt) => {
+          prompt.addEventListener("click", function () {
+            aiQuery.value = this.textContent;
+            aiQuery.focus();
+          });
+
+          // Add keyboard support for example prompts
+          prompt.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              aiQuery.value = this.textContent;
+              aiQuery.focus();
+            }
+          });
+        });
+
+        // AI Submit handler
+        aiSubmitBtn.addEventListener("click", function () {
+          const query = aiQuery.value.trim();
+
+          if (query === "") {
+            return;
+          }
+
+          // Show loading state
+          aiResults.innerHTML =
+            '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
+          aiResults.classList.add("active");
+
+          // Simulate API call delay
+          setTimeout(() => {
+            generateAIResponse(query);
+          }, 1500);
+        });
+
+        /**
+         * Generates and displays AI response based on user query
+         * @param {string} query - The user's query/request
+         */
+        function generateAIResponse(query) {
+          // Find matching response or use default
+          let responseKey = "default";
+          for (const key in aiResponses) {
+            if (query.includes(key)) {
+              responseKey = key;
+              break;
+            }
+          }
+
+          const response = aiResponses[responseKey];
+
+          // Display response
+          aiResults.innerHTML = response.response;
+
+          // Add action buttons
+          const actionDiv = document.createElement("div");
+          actionDiv.className = "ai-actions";
+
+          response.actions.forEach((action, index) => {
+            const button = document.createElement("button");
+            button.className = `ai-action-btn ${
+              index === 0 ? "primary" : "secondary"
+            }`;
+            button.textContent = action;
+            button.addEventListener("click", function () {
+              showComingSoonMessage();
+            });
+            actionDiv.appendChild(button);
+          });
+
+          aiResults.appendChild(actionDiv);
+
+          // Scroll to results
+          aiResults.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        // Modal system
+        const modals = {
+          hotel: document.getElementById("hotelModal"),
+          car: document.getElementById("carModal"),
+          restaurant: document.getElementById("restaurantModal"),
+          event: document.getElementById("eventModal"),
+        };
+
+        // Open Modal from featured services
+        document.querySelectorAll(".view-details-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const service = btn.getAttribute("data-service");
+            if (modals[service]) {
+              modals[service].style.display = "flex";
+              document.body.style.overflow = "hidden";
+              modals[service].querySelector(".close-modal").focus();
+            }
+          });
+        });
+
+        // Close Modal
+        document.querySelectorAll(".close-modal").forEach((closeBtn) => {
+          closeBtn.addEventListener("click", () => {
+            Object.values(modals).forEach((m) => {
+              m.style.display = "none";
+              document.body.style.overflow = "";
+            });
+          });
+        });
+
+        // Close modal on outside click
+        window.addEventListener("click", (e) => {
+          Object.values(modals).forEach((modal) => {
+            if (e.target === modal) {
+              modal.style.display = "none";
+              document.body.style.overflow = "";
+            }
+          });
+        });
+
+        // Close modal with Escape key
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            Object.values(modals).forEach((m) => {
+              if (m.style.display === "flex") {
+                m.style.display = "none";
+                document.body.style.overflow = "";
+              }
+            });
+          }
+        });
+
+        // Set default dates for hotel search
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+
+        // Format dates for input fields (YYYY-MM-DD)
+        const formatDate = (date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        document.getElementById("check-in").value = formatDate(today);
+        document.getElementById("check-out").value = formatDate(tomorrow);
+        document.getElementById("check-out").min = formatDate(tomorrow);
+
+        // Update min date for check-out when check-in changes
+        document
+          .getElementById("check-in")
+          .addEventListener("change", function () {
+            document.getElementById("check-out").min = this.value;
+          });
+
+        // Initialize with empty results (don't show results before search)
+        document.getElementById("search-results").classList.remove("active");
+
+        // Add login requirement for all booking buttons in modals
+        document.querySelectorAll(".modal-footer button").forEach((button) => {
+          button.addEventListener("click", function () {
+            const modal = this.closest(".modal");
+            const action = modal.id.includes("hotel")
+              ? "book accommodation"
+              : modal.id.includes("car")
+              ? "rent a car"
+              : modal.id.includes("restaurant")
+              ? "make a reservation"
+              : "purchase tickets";
+            showLoginMessage(action);
+          });
+        });
+
+        // Add login requirement for featured service booking buttons
+        document.querySelectorAll(".book-now-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            const card = this.closest(".service-card");
+            const service = card.querySelector("h3").textContent;
+            showLoginMessage(`book ${service}`);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

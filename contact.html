@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <title>Contact Us - Saudi Guider</title>
+    <style>
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #5b6a7f, #8fb6c0);
+        color: #e0e0e0;
+        overflow-x: hidden; /* Prevent horizontal overflow */
+      }
+
+      header {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: var(--light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: var(--box-shadow);
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1.3rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 10px;
+      }
+
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: var(--light);
+      }
+
+      /* Navigation */
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--light);
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color var(--transition-speed) ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      /* Auth Buttons */
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .auth-buttons button {
+        background-color: #69a7c8;
+        border: none;
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color var(--transition-speed) ease;
+      }
+
+      .auth-buttons button:hover,
+      .auth-buttons button:focus {
+        background-color: #4c8ba9;
+      }
+
+      /* Mobile Nav Toggle */
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .container {
+        margin: 140px auto;
+        max-width: 900px;
+        padding: 30px;
+        background: #2a2a2a;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin: 30px 0 15px;
+        color: #69a7c8;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        font-size: 1rem;
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border: 1px solid #69a7c8;
+      }
+
+      textarea {
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #555;
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        resize: none;
+        height: 150px;
+        transition: height 0.2s ease;
+      }
+
+      textarea:focus {
+        outline: none;
+        border: 1px solid #69a7c8;
+        background: #fffefe;
+      }
+
+      .tooltip {
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center; /* Center the buttons */
+        gap: 100px; /* Space between buttons */
+        margin-top: 20px;
+      }
+
+      button {
+        font-size: 1.1rem;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #4c8ba9;
+      }
+
+      .submit-button {
+        background-color: #69a7c8;
+        color: #fff;
+      }
+
+      .reset-button {
+        background-color: #444;
+        color: #fff;
+      }
+
+      .partnership-button {
+        background-color: #4caf50;
+        color: #fff;
+        margin: 20px auto;
+        display: block;
+      }
+
+      .partnership-button:hover {
+        background-color: #3e8e41;
+      }
+
+      #thankYouMessage,
+      #partnershipThankYou {
+        display: none;
+        margin-top: 25px;
+        background: #1c1c1c;
+        padding: 20px;
+        border-radius: 8px;
+        color: #69a7c8;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      /* Updated Footer Styles */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-section {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .benefits-list {
+        margin: 20px 0;
+        padding-left: 20px;
+      }
+
+      .benefits-list li {
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+
+      .tab-container {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #444;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background: #3a3a3a;
+        margin-right: 5px;
+        border-radius: 5px 5px 0 0;
+      }
+
+      .tab.active {
+        background: #69a7c8;
+        color: #fff;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          background-color: var(--dark);
+          height: calc(100vh - 80px);
+          transition: left var(--transition-speed) ease;
+          z-index: 999;
+          padding: 2rem;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-buttons {
+          margin-right: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+          margin: 120px auto;
+        }
+
+        header {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        nav {
+          justify-content: center;
+          margin-top: 10px;
+          flex-wrap: wrap;
+        }
+
+        .auth-buttons {
+          justify-content: center;
+          margin-top: 10px;
+        }
+
+        .button-container {
+          flex-direction: column;
+          gap: 15px;
+          align-items: center;
+        }
+
+        .tab-container {
+          flex-direction: column;
+        }
+
+        .tab {
+          border-radius: 5px;
+          margin-bottom: 5px;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="services.html">Services</a>
+          </li>
+          <li>
+            <a href="about.html">About</a>
+          </li>
+          <li>
+            <a href="contact.html" class="active" aria-current="page"
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button
+          onclick="window.location.href='signup.html'"
+          aria-label="Sign up"
+        >
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="tab-container">
+        <div class="tab active" onclick="switchTab('contact')">Contact Us</div>
+        <div class="tab" onclick="switchTab('partnership')">
+          Business Partnership
+        </div>
+      </div>
+
+      <div id="contact-tab" class="tab-content active">
+        <h1 style="text-align: center">Contact Us</h1>
+        <form
+          id="contactForm"
+          onsubmit="return showThankYouMessage(event, 'thankYouMessage')"
+        >
+          <label for="fname">First Name</label>
+          <input
+            type="text"
+            id="fname"
+            name="firstname"
+            placeholder="Enter your first name"
+            required
+          />
+
+          <label for="lname">Last Name</label>
+          <input
+            type="text"
+            id="lname"
+            name="lastname"
+            placeholder="Enter your last name"
+            required
+          />
+
+          <label for="country">Country</label>
+          <select id="country" name="country" required>
+            <option value="" disabled selected>Select your country</option>
+            <option value="KSA">Saudi Arabia</option>
+            <option value="UAE">United Arab Emirates</option>
+            <option value="USA">United States</option>
+          </select>
+
+          <label for="subject">Message</label>
+          <textarea
+            id="subject"
+            name="subject"
+            placeholder="Write your message here"
+            required
+          ></textarea>
+
+          <div class="button-container">
+            <button type="reset" class="reset-button">Reset</button>
+            <button type="submit" class="submit-button">Submit</button>
+          </div>
+        </form>
+
+        <div id="thankYouMessage">
+          Thank you for your submission! We'll get back to you soon.
+        </div>
+      </div>
+
+      <div id="partnership-tab" class="tab-content">
+        <h1 style="text-align: center">Business Partnership</h1>
+
+        <h2>Partner with Saudi Guider</h2>
+        <p>
+          Join our network of featured businesses and get more visibility to
+          potential customers.
+        </p>
+
+        <h2>Benefits of Partnership</h2>
+        <ul class="benefits-list">
+          <li>
+            <strong>Increased Visibility:</strong> Your business will be
+            included in our search results and recommended by our AI when
+            appropriate.
+          </li>
+          <li>
+            <strong>Direct Bookings:</strong> Customers can reserve or book your
+            services directly through our platform.
+          </li>
+          <li>
+            <strong>Verified Status:</strong> Gain a verified badge that builds
+            trust with potential customers.
+          </li>
+          <li>
+            <strong>Analytics Dashboard:</strong> Access to customer insights
+            and performance metrics.
+          </li>
+          <li>
+            <strong>Promotional Opportunities:</strong> Featured placements
+            during peak seasons and special promotions.
+          </li>
+        </ul>
+
+        <h2>Partnership Form</h2>
+        <form
+          id="partnershipForm"
+          onsubmit="return showThankYouMessage(event, 'partnershipThankYou')"
+        >
+          <label for="business-name">Business Name</label>
+          <input
+            type="text"
+            id="business-name"
+            name="business-name"
+            placeholder="Enter your business name"
+            required
+          />
+
+          <label for="business-type">Business Type</label>
+          <select id="business-type" name="business-type" required>
+            <option value="" disabled selected>
+              Select your business category
+            </option>
+            <option value="restaurant">Restaurant/Cafe</option>
+            <option value="hotel">Hotel/Accommodation</option>
+            <option value="attraction">Tourist Attraction</option>
+            <option value="tour">Tour Operator</option>
+            <option value="retail">Retail Shop</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label for="business-location">Business Location</label>
+          <input
+            type="text"
+            id="business-location"
+            name="business-location"
+            placeholder="Enter your business address"
+            required
+          />
+
+          <label for="contact-person">Contact Person</label>
+          <input
+            type="text"
+            id="contact-person"
+            name="contact-person"
+            placeholder="Enter contact person's name"
+            required
+          />
+
+          <label for="contact-email">Contact Email</label>
+          <input
+            type="email"
+            id="contact-email"
+            name="contact-email"
+            placeholder="Enter your business email"
+            required
+          />
+
+          <label for="contact-phone">Contact Phone</label>
+          <input
+            type="tel"
+            id="contact-phone"
+            name="contact-phone"
+            placeholder="Enter your business phone number"
+            required
+          />
+
+          <label for="business-description">Business Description</label>
+          <textarea
+            id="business-description"
+            name="business-description"
+            placeholder="Tell us about your business (services, specialties, etc.)"
+            required
+          ></textarea>
+
+          <div class="button-container">
+            <button type="reset" class="reset-button">Reset</button>
+            <button type="submit" class="submit-button">
+              Submit Partnership Request
+            </button>
+          </div>
+        </form>
+
+        <div id="partnershipThankYou">
+          Thank you for your partnership request! Our team will review your
+          application and contact you within 3 business days to discuss next
+          steps.
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            AI assistance.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#">Popular Destinations</a></li>
+            <li><a href="#">Travel Guides</a></li>
+            <li><a href="#">Cultural Experiences</a></li>
+            <li><a href="#">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p><i class="fas fa-map-marker-alt"></i> Jeddah, Saudi Arabia</p>
+            <p>
+              <i class="fas fa-phone"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile Nav Toggle (should be the only one)
+        const mobileToggle = document.querySelector(".mobile-nav-toggle");
+        const nav = document.getElementById("main-nav");
+
+        if (mobileToggle && nav) {
+          mobileToggle.addEventListener("click", function () {
+            const isExpanded = this.getAttribute("aria-expanded") === "true";
+            this.setAttribute("aria-expanded", !isExpanded);
+            nav.classList.toggle("active");
+
+            // Update icon
+            const icon = this.querySelector("i");
+            if (icon) {
+              icon.classList.toggle("fa-bars");
+              icon.classList.toggle("fa-times");
+            }
+          });
+        }
+
+        // Loading spinner functionality
+        const links = document.querySelectorAll('a:not([target="_blank"])');
+        links.forEach((link) => {
+          link.addEventListener("click", function () {
+            document.getElementById("loading").style.display = "block";
+          });
+        });
+      });
+
+      function openChat() {
+        alert("Live chat feature coming soon!");
+      }
+      function showThankYouMessage(event, messageId) {
+        event.preventDefault();
+        document.getElementById(messageId).style.display = "block";
+        document.getElementById(event.target.id).reset();
+        setTimeout(() => {
+          document
+            .getElementById(messageId)
+            .scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+
+      function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll(".tab-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        // Deactivate all tabs
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Activate selected tab and content
+        document.getElementById(tabName + "-tab").classList.add("active");
+        event.currentTarget.classList.add("active");
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Auto-expansion logic for the textarea
+        const textareas = document.querySelectorAll("textarea");
+        textareas.forEach((textarea) => {
+          textarea.addEventListener("input", () => {
+            textarea.style.height = "auto";
+            textarea.style.height = textarea.scrollHeight + "px";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
