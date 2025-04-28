@@ -2502,6 +2502,8 @@
         document.getElementById("current-year").textContent =
           new Date().getFullYear();
 
+        AuthUtils.initAuth();
+        
         // Mobile navigation toggle
         const mobileToggle = document.querySelector(".mobile-nav-toggle");
         const nav = document.getElementById("main-nav");
