@@ -563,17 +563,25 @@
         </ul>
       </nav>
 
-      <div class="auth-buttons">
-        <button onclick="window.location.href='login.html'" aria-label="Log in">
+      <div class="auth-buttons" id="authButtons">
+        <button onclick="window.location.href='login.html'">
           <i class="fas fa-sign-in-alt"></i> Log In
         </button>
-        <button
-          onclick="window.location.href='signup.html'"
-          aria-label="Sign up"
-          class="active"
-        >
+        <button onclick="window.location.href='signup.html'" class="active">
           <i class="fas fa-user-plus"></i> Sign Up
         </button>
+      </div>
+
+      <div class="user-dropdown" id="userDropdown" style="display: none;">
+        <button class="user-toggle">
+          <span id="usernameDisplay"></span>
+          <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
       </div>
     </header>
 
@@ -738,7 +746,6 @@
               type="button"
               id="prevBtn"
               class="step-btn prev"
-              onclick="navigateStep(-1)"
             >
               Previous
             </button>
@@ -746,7 +753,6 @@
               type="button"
               id="nextBtn"
               class="step-btn next"
-              onclick="navigateStep(1)"
             >
               Next
             </button>
@@ -824,282 +830,350 @@
       </div>
     </footer>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let currentStep = 0;
-    const steps = document.querySelectorAll(".step-container");
-    const progress = document.getElementById("progress");
-    const stepTexts = document.querySelectorAll(".progress-step-text span");
-    const successMessage = document.getElementById("success-message");
-    const passwordConditions = document.querySelectorAll(".password-conditions li");
-    const signUpForm = document.getElementById("signUpForm");
+    <script>
+      // Authentication Utilities
+      const AuthUtils = {
+        checkAuth: function() {
+          const token = localStorage.getItem('token');
+          const user = localStorage.getItem('user');
+          return {
+            isAuthenticated: !!token,
+            user: user ? JSON.parse(user) : null
+          };
+        },
 
-    // Set current year in footer
-    document.getElementById("current-year").textContent = new Date().getFullYear();
-
-    // Mobile navigation toggle
-    const mobileToggle = document.querySelector(".mobile-nav-toggle");
-    const nav = document.getElementById("main-nav");
-    if (mobileToggle && nav) {
-      mobileToggle.addEventListener("click", function () {
-        const isExpanded = nav.classList.toggle("active");
-        mobileToggle.setAttribute("aria-expanded", isExpanded);
-      });
-    }
-
-    // Initialize the form
-    showStep(currentStep);
-
-    // Password toggle functionality
-    document.getElementById("togglePassword")?.addEventListener("click", function () {
-      const passwordField = document.getElementById("password");
-      if (passwordField) {
-        const type = passwordField.type === "password" ? "text" : "password";
-        passwordField.type = type;
-        this.classList.toggle("fa-eye");
-        this.classList.toggle("fa-eye-slash");
-      }
-    });
-
-    document.getElementById("toggleRepeatPassword")?.addEventListener("click", function () {
-      const repeatPasswordField = document.getElementById("repeatPassword");
-      if (repeatPasswordField) {
-        const type = repeatPasswordField.type === "password" ? "text" : "password";
-        repeatPasswordField.type = type;
-        this.classList.toggle("fa-eye");
-        this.classList.toggle("fa-eye-slash");
-      }
-    });
-
-    // Password strength checker
-    document.getElementById("password")?.addEventListener("input", function () {
-      checkPasswordConditions(this.value.trim());
-    });
-
-    // Navigation between steps
-    window.navigateStep = function(stepChange) {
-      if (stepChange === 1 && !validateStep(currentStep)) return;
-      
-      currentStep += stepChange;
-
-      if (currentStep >= steps.length) {
-        submitSignup();
-        return;
-      }
-      
-      showStep(currentStep);
-    };
-
-    function showStep(stepIndex) {
-      steps.forEach((step, index) => {
-        step.classList.toggle("active", index === stepIndex);
-      });
-
-      const prevBtn = document.getElementById("prevBtn");
-      const nextBtn = document.getElementById("nextBtn");
-
-      if (prevBtn) prevBtn.style.display = stepIndex === 0 ? "none" : "block";
-      if (nextBtn) nextBtn.textContent = stepIndex === steps.length - 1 ? "Create Account" : "Next";
-
-      stepTexts.forEach((text, index) => {
-        text.classList.toggle("active", index <= stepIndex);
-      });
-
-      updateProgressBar();
-    }
-
-    function updateProgressBar() {
-      if (progress) {
-        const progressWidth = ((currentStep + 1) / steps.length) * 100;
-        progress.style.width = progressWidth + "%";
-      }
-    }
-
-    function validateStep() {
-      const currentForm = steps[currentStep];
-      const inputs = currentForm.querySelectorAll("input, select");
-      let valid = true;
-
-      // Clear previous errors
-      document.querySelectorAll(".input-error").forEach(error => {
-        error.textContent = "";
-        error.style.display = "none";
-      });
-
-      inputs.forEach(input => {
-        const errorElem = document.getElementById(input.id + "-error");
-        const value = input.value.trim();
-
-        if (!value && input.required) {
-          valid = false;
-          if (errorElem) {
-            errorElem.textContent = "This field is required";
-            errorElem.style.display = "block";
+        updateNavigation: function() {
+          const { isAuthenticated, user } = this.checkAuth();
+          const authButtons = document.getElementById('authButtons');
+          const userDropdown = document.getElementById('userDropdown');
+          const usernameDisplay = document.getElementById('usernameDisplay');
+          
+          if (isAuthenticated) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userDropdown) userDropdown.style.display = 'block';
+            if (usernameDisplay) usernameDisplay.textContent = user?.username || 'My Account';
+          } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userDropdown) userDropdown.style.display = 'none';
           }
-          return;
+        },
+
+        logout: function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          this.updateNavigation();
+          window.location.href = 'login.html';
+        },
+
+        initAuth: function() {
+          this.updateNavigation();
+          
+          document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.logout();
+          });
         }
-
-        // Field-specific validation
-        switch(input.id) {
-          case "fname":
-          case "lname":
-            if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(value)) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "Name should contain letters only";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-            
-          case "id":
-            const idPattern = /^1\d{9}$|^[A-Za-z0-9]{6,15}$/;
-            if (!idPattern.test(value)) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "ID must be 10 digits starting with 1 or 6-15 letters/numbers";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-            
-          case "email":
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "Please enter a valid email address";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-            
-          case "phone":
-            if (!/^966\d{9}$/.test(value)) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "Phone number should be 12 digits starting with 966";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-            
-          case "password":
-            checkPasswordConditions(value);
-            const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-            if (!passwordPattern.test(value)) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "Password must have 1 capital letter, 1 number, and 8+ characters";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-            
-          case "repeatPassword":
-            const password = document.getElementById("password")?.value.trim();
-            if (value !== password) {
-              valid = false;
-              if (errorElem) {
-                errorElem.textContent = "Passwords do not match";
-                errorElem.style.display = "block";
-              }
-            }
-            break;
-        }
-      });
-
-      return valid;
-    }
-
-    function checkPasswordConditions(password) {
-      if (!passwordConditions.length) return;
-      
-      const conditions = [
-        password.length >= 8,
-        /[A-Z]/.test(password),
-        /\d/.test(password)
-      ];
-
-      passwordConditions.forEach((li, index) => {
-        const span = li.querySelector("span");
-        if (!span) return;
-        
-        li.classList.remove("valid", "invalid");
-        if (conditions[index]) {
-          span.textContent = "✔";
-          li.classList.add("valid");
-        } else {
-          span.textContent = "✘";
-          li.classList.add("invalid");
-        }
-      });
-    }
-
-    async function submitSignup() {
-      if (!validateStep()) return;
-
-      const formData = {
-        id: document.getElementById("id")?.value.trim(),
-        fname: document.getElementById("fname")?.value.trim(),
-        lname: document.getElementById("lname")?.value.trim(),
-        email: document.getElementById("email")?.value.trim(),
-        phone: document.getElementById("phone")?.value.trim(),
-        currency: document.getElementById("currency")?.value,
-        language: document.getElementById("language")?.value,
-        password: document.getElementById("password")?.value.trim()
       };
 
-      // Combine first and last name for username
-      const username = `${formData.fname} ${formData.lname}`;
+      document.addEventListener("DOMContentLoaded", function() {
+        // Initialize auth system
+        AuthUtils.initAuth();
+        
+        // Set current year in footer
+        document.getElementById("current-year").textContent = new Date().getFullYear();
 
-      try {
-        const response = await fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username,
-            email: formData.email,
-            password: formData.password,
-            // Add other fields your backend expects
-            phone: formData.phone,
-            nationalId: formData.id
-          })
+        // Mobile navigation toggle
+        const mobileToggle = document.querySelector(".mobile-nav-toggle");
+        const nav = document.getElementById("main-nav");
+
+        if (mobileToggle && nav) {
+          mobileToggle.addEventListener("click", function() {
+            const isExpanded = nav.classList.toggle("active");
+            mobileToggle.setAttribute("aria-expanded", isExpanded);
+          });
+        }
+
+        let currentStep = 0;
+        const steps = document.querySelectorAll(".step-container");
+        const progress = document.getElementById("progress");
+        const stepTexts = document.querySelectorAll(".progress-step-text span");
+        const successMessage = document.getElementById("success-message");
+        const passwordConditions = document.querySelectorAll(".password-conditions li");
+        const signUpForm = document.getElementById("signUpForm");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        // Initialize the form
+        showStep(currentStep);
+
+        // Password toggle functionality
+        document.getElementById("togglePassword")?.addEventListener("click", function() {
+          const passwordField = document.getElementById("password");
+          if (passwordField) {
+            const type = passwordField.type === "password" ? "text" : "password";
+            passwordField.type = type;
+            this.classList.toggle("fa-eye");
+            this.classList.toggle("fa-eye-slash");
+          }
         });
 
-        const data = await response.json();
+        document.getElementById("toggleRepeatPassword")?.addEventListener("click", function() {
+          const repeatPasswordField = document.getElementById("repeatPassword");
+          if (repeatPasswordField) {
+            const type = repeatPasswordField.type === "password" ? "text" : "password";
+            repeatPasswordField.type = type;
+            this.classList.toggle("fa-eye");
+            this.classList.toggle("fa-eye-slash");
+          }
+        });
 
-        if (response.ok) {
-          // Show success message
-          if (successMessage) {
-            successMessage.style.display = 'block';
-            signUpForm.style.display = 'none';
+        // Password strength checker
+        document.getElementById("password")?.addEventListener("input", function() {
+          checkPasswordConditions(this.value.trim());
+        });
+
+        // Navigation between steps
+        if (prevBtn && nextBtn) {
+          prevBtn.addEventListener("click", () => navigateStep(-1));
+          nextBtn.addEventListener("click", () => navigateStep(1));
+        }
+
+        function navigateStep(stepChange) {
+          if (stepChange === 1 && !validateStep(currentStep)) return;
+          
+          currentStep += stepChange;
+
+          if (currentStep >= steps.length) {
+            submitSignup();
+            return;
           }
           
-          // Redirect to login after delay
-          setTimeout(() => {
-            window.location.href = 'login.html';
-          }, 2000);
-        } else {
-          // Show error from backend
-          const errorField = document.getElementById("email-error") || 
-                            document.querySelector(".input-error");
-          if (errorField) {
-            errorField.textContent = data.message || 'Signup failed';
-            errorField.style.display = 'block';
+          showStep(currentStep);
+        }
+
+        function showStep(stepIndex) {
+          steps.forEach((step, index) => {
+            step.classList.toggle("active", index === stepIndex);
+          });
+
+          if (prevBtn) prevBtn.style.display = stepIndex === 0 ? "none" : "block";
+          if (nextBtn) nextBtn.textContent = stepIndex === steps.length - 1 ? "Create Account" : "Next";
+
+          stepTexts.forEach((text, index) => {
+            text.classList.toggle("active", index <= stepIndex);
+          });
+
+          updateProgressBar();
+        }
+
+        function updateProgressBar() {
+          if (progress) {
+            const progressWidth = ((currentStep + 1) / steps.length) * 100;
+            progress.style.width = progressWidth + "%";
           }
         }
-      } catch (error) {
-        console.error('Signup Error:', error);
-        const errorField = document.querySelector(".input-error");
-        if (errorField) {
-          errorField.textContent = 'Network error. Please try again.';
-          errorField.style.display = 'block';
+
+        function validateStep() {
+          const currentForm = steps[currentStep];
+          const inputs = currentForm.querySelectorAll("input, select");
+          let valid = true;
+
+          // Clear previous errors
+          document.querySelectorAll(".input-error").forEach(error => {
+            error.textContent = "";
+            error.style.display = "none";
+          });
+
+          inputs.forEach(input => {
+            const errorElem = document.getElementById(input.id + "-error");
+            const value = input.value.trim();
+
+            if (!value && input.required) {
+              valid = false;
+              if (errorElem) {
+                errorElem.textContent = "This field is required";
+                errorElem.style.display = "block";
+              }
+              return;
+            }
+
+            // Field-specific validation
+            switch(input.id) {
+              case "fname":
+              case "lname":
+                if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(value)) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "Name should contain letters only";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+                
+              case "id":
+                const idPattern = /^1\d{9}$|^[A-Za-z0-9]{6,15}$/;
+                if (!idPattern.test(value)) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "ID must be 10 digits starting with 1 or 6-15 letters/numbers";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+                
+              case "email":
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "Please enter a valid email address";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+                
+              case "phone":
+                if (!/^966\d{9}$/.test(value)) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "Phone number should be 12 digits starting with 966";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+                
+              case "password":
+                checkPasswordConditions(value);
+                const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+                if (!passwordPattern.test(value)) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "Password must have 1 capital letter, 1 number, and 8+ characters";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+                
+              case "repeatPassword":
+                const password = document.getElementById("password")?.value.trim();
+                if (value !== password) {
+                  valid = false;
+                  if (errorElem) {
+                    errorElem.textContent = "Passwords do not match";
+                    errorElem.style.display = "block";
+                  }
+                }
+                break;
+            }
+          });
+
+          return valid;
         }
-      }
-    }
-  });
-</script>
 
+        function checkPasswordConditions(password) {
+          if (!passwordConditions.length) return;
+          
+          const conditions = [
+            password.length >= 8,
+            /[A-Z]/.test(password),
+            /\d/.test(password)
+          ];
 
+          passwordConditions.forEach((li, index) => {
+            const span = li.querySelector("span");
+            if (!span) return;
+            
+            li.classList.remove("valid", "invalid");
+            if (conditions[index]) {
+              span.textContent = "✔";
+              li.classList.add("valid");
+            } else {
+              span.textContent = "✘";
+              li.classList.add("invalid");
+            }
+          });
+        }
+
+        async function submitSignup() {
+          if (!validateStep()) return;
+
+          const formData = {
+            id: document.getElementById("id")?.value.trim(),
+            fname: document.getElementById("fname")?.value.trim(),
+            lname: document.getElementById("lname")?.value.trim(),
+            email: document.getElementById("email")?.value.trim(),
+            phone: document.getElementById("phone")?.value.trim(),
+            currency: document.getElementById("currency")?.value,
+            language: document.getElementById("language")?.value,
+            password: document.getElementById("password")?.value.trim()
+          };
+
+          // Combine first and last name for username
+          const username = `${formData.fname} ${formData.lname}`;
+
+          try {
+            // Disable buttons during submission
+            if (prevBtn) prevBtn.disabled = true;
+            if (nextBtn) nextBtn.disabled = true;
+            nextBtn.textContent = "Creating Account...";
+
+            const response = await fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                username,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                nationalId: formData.id
+              })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Store authentication data
+              localStorage.setItem('token', data.token);
+              localStorage.setItem('user', JSON.stringify({
+                username: username,
+                email: formData.email
+              }));
+              
+              // Show success message
+              if (successMessage) {
+                successMessage.style.display = 'block';
+                signUpForm.style.display = 'none';
+              }
+              
+              // Redirect to login after delay
+              setTimeout(() => {
+                window.location.href = 'login.html';
+              }, 2000);
+            } else {
+              // Show error from backend
+              const errorField = document.getElementById("email-error") || 
+                                document.querySelector(".input-error");
+              if (errorField) {
+                errorField.textContent = data.message || 'Signup failed';
+                errorField.style.display = 'block';
+              }
+            }
+          } catch (error) {
+            console.error('Signup Error:', error);
+            const errorField = document.querySelector(".input-error");
+            if (errorField) {
+              errorField.textContent = 'Network error. Please try again.';
+              errorField.style.display = 'block';
+            }
+          } finally {
+            // Re-enable buttons
+            if (prevBtn) prevBtn.disabled = false;
+            if (nextBtn) {
+              nextBtn.disabled = false;
+              nextBtn.textContent = "Create Account";
+            }
+          }
+        }
+      });
+    </script>
   </body>
 </html>
