@@ -243,33 +243,114 @@
         </p>
       </div>
   </footer>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // 1. Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login.html';
+      return;
+    }
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Load user data
-      const user = JSON.parse(localStorage.getItem('user'));
-      
-      if (user) {
-        document.getElementById('profile-name').textContent = user.name || 'Not provided';
-        document.getElementById('profile-email').textContent = user.email || 'Not provided';
-        document.getElementById('profile-phone').textContent = user.phone || 'Not provided';
-        document.getElementById('profile-joined').textContent = new Date(user.createdAt || Date.now()).toLocaleDateString();
+    // 2. Fetch profile data
+    const response = await fetch('https://saudiguiderbackend.onrender.com/api/users/profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-      
-      // Change password button
-      document.getElementById('changePasswordBtn').addEventListener('click', function() {
-        // Implement password change logic
-        alert('Password change functionality will be implemented here');
-        // This would typically open a modal with password change form
-      });
-      
-      // Edit profile button
-      document.getElementById('editProfileBtn').addEventListener('click', function() {
-        // Implement profile edit logic
-        alert('Profile edit functionality will be implemented here');
-        // This would typically open a form to edit profile details
-      });
     });
+
+    if (!response.ok) {
+      throw new Error('Failed to load profile');
+    }
+
+    const user = await response.json();
+
+    // 3. Update DOM elements
+    document.getElementById('profile-name').textContent = user.username || 'Not provided';
+    document.getElementById('profile-email').textContent = user.email || 'Not provided';
+    document.getElementById('profile-phone').textContent = user.phone || 'Not provided';
+    document.getElementById('profile-joined').textContent = 
+      new Date(user.createdAt).toLocaleDateString();
+
+    // 4. Handle password change
+    document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+      const currentPassword = prompt('Enter current password:');
+      const newPassword = prompt('Enter new password:');
+      const confirmPassword = prompt('Confirm new password:');
+
+      if (newPassword !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://saudiguiderbackend.onrender.com/api/users/change-password', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Password change failed');
+
+        alert('Password changed successfully!');
+      } catch (error) {
+        console.error('Password change error:', error);
+        alert(error.message || 'Failed to change password');
+      }
+    });
+
+    // 5. Handle profile edit
+    document.getElementById('editProfileBtn').addEventListener('click', async () => {
+      const newUsername = prompt('Enter new username:', user.username);
+      const newPhone = prompt('Enter new phone number:', user.phone);
+
+      if (newUsername === null || newPhone === null) return;
+
+      try {
+        const response = await fetch('https://saudiguiderbackend.onrender.com/api/users/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            username: newUsername, 
+            phone: newPhone 
+          })
+        });
+
+        const updatedUser = await response.json();
+        if (!response.ok) throw new Error(updatedUser.message || 'Update failed');
+
+        // Update local storage and UI
+        const currentUser = JSON.parse(localStorage.getItem('user'));
+        localStorage.setItem('user', JSON.stringify({
+          ...currentUser,
+          username: updatedUser.username,
+          phone: updatedUser.phone
+        }));
+
+        document.getElementById('profile-name').textContent = updatedUser.username;
+        document.getElementById('profile-phone').textContent = updatedUser.phone;
+        
+        alert('Profile updated successfully!');
+      } catch (error) {
+        console.error('Profile update error:', error);
+        alert(error.message || 'Failed to update profile');
+      }
+    });
+
+  } catch (error) {
+    console.error('Profile load error:', error);
+    alert('Failed to load profile data');
+    window.location.href = '/login.html';
+  }
+});
   </script>
 </body>
 </html>
