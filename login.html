@@ -463,21 +463,27 @@
         </ul>
       </nav>
 
-      <div class="auth-buttons">
-        <button
-          onclick="window.location.href='login.html'"
-          aria-label="Log in"
-          class="active"
-        >
-          <i class="fas fa-sign-in-alt"></i> Log In
-        </button>
-        <button
-          onclick="window.location.href='signup.html'"
-          aria-label="Sign up"
-        >
-          <i class="fas fa-user-plus"></i> Sign Up
-        </button>
-      </div>
+    <div class="auth-buttons" id="authButtons">
+    <button onclick="window.location.href='login.html'">
+      <i class="fas fa-sign-in-alt"></i> Log In
+    </button>
+    <button onclick="window.location.href='signup.html'">
+      <i class="fas fa-user-plus"></i> Sign Up
+    </button>
+  </div>
+
+  <!-- Logged in state -->
+  <div class="user-dropdown" id="userDropdown" style="display: none;">
+    <button class="user-toggle">
+      <span id="usernameDisplay"></span>
+      <i class="fas fa-caret-down"></i>
+    </button>
+    <div class="dropdown-menu">
+      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+      <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+    </div>
+  </div>
     </header>
 
     <main>
@@ -592,6 +598,10 @@
     </footer>
 <script src="js/authUtils.js"></script>
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+  AuthUtils.initAuth();
+});
+  
   document.addEventListener("DOMContentLoaded", function () {
     // Set current year in footer
     document.getElementById("current-year").textContent = new Date().getFullYear();
@@ -703,7 +713,7 @@
   localStorage.setItem('user', JSON.stringify(data.user));
   
   // Update the navigation
-  updateNavigation();
+  AuthUtils.updateNavigation();
   
   // Redirect or show success message
   loadingMessage.textContent = "Login successful! Redirecting...";
