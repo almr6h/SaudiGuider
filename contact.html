@@ -516,64 +516,43 @@
       </div>
     </header>
 
-    <div class="container">
-      <div class="tab-container">
-        <div class="tab active" onclick="switchTab('contact')">Contact Us</div>
-        <div class="tab" onclick="switchTab('partnership')">
-          Business Partnership
+   
+  <div class="container">
+    <div class="tab-container">
+      <div class="tab active" onclick="switchTab('contact')">Contact Us</div>
+      <div class="tab" onclick="switchTab('partnership')">Business Partnership</div>
+    </div>
+
+    <div id="contact-tab" class="tab-content active">
+      <h1 style="text-align: center">Contact Us</h1>
+      <form id="contactForm" onsubmit="submitContactForm(event)">
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" name="firstname" placeholder="Enter your first name" required />
+
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" name="lastname" placeholder="Enter your last name" required />
+
+        <label for="country">Country</label>
+        <select id="country" name="country" required>
+          <option value="" disabled selected>Select your country</option>
+          <option value="KSA">Saudi Arabia</option>
+          <option value="UAE">United Arab Emirates</option>
+          <option value="USA">United States</option>
+        </select>
+
+        <label for="subject">Message</label>
+        <textarea id="subject" name="subject" placeholder="Write your message here" required></textarea>
+
+        <div class="button-container">
+          <button type="reset" class="reset-button">Reset</button>
+          <button type="submit" class="submit-button">Submit</button>
         </div>
+      </form>
+
+      <div id="thankYouMessage" style="display:none;">
+        Thank you for your submission! We'll get back to you soon.
       </div>
-
-      <div id="contact-tab" class="tab-content active">
-        <h1 style="text-align: center">Contact Us</h1>
-        <form
-          id="contactForm"
-          onsubmit="return showThankYouMessage(event, 'thankYouMessage')"
-        >
-          <label for="fname">First Name</label>
-          <input
-            type="text"
-            id="fname"
-            name="firstname"
-            placeholder="Enter your first name"
-            required
-          />
-
-          <label for="lname">Last Name</label>
-          <input
-            type="text"
-            id="lname"
-            name="lastname"
-            placeholder="Enter your last name"
-            required
-          />
-
-          <label for="country">Country</label>
-          <select id="country" name="country" required>
-            <option value="" disabled selected>Select your country</option>
-            <option value="KSA">Saudi Arabia</option>
-            <option value="UAE">United Arab Emirates</option>
-            <option value="USA">United States</option>
-          </select>
-
-          <label for="subject">Message</label>
-          <textarea
-            id="subject"
-            name="subject"
-            placeholder="Write your message here"
-            required
-          ></textarea>
-
-          <div class="button-container">
-            <button type="reset" class="reset-button">Reset</button>
-            <button type="submit" class="submit-button">Submit</button>
-          </div>
-        </form>
-
-        <div id="thankYouMessage">
-          Thank you for your submission! We'll get back to you soon.
-        </div>
-      </div>
+    </div>
 
       <div id="partnership-tab" class="tab-content">
         <h1 style="text-align: center">Business Partnership</h1>
@@ -756,76 +735,89 @@
       </div>
     </footer>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Mobile Nav Toggle (should be the only one)
-        const mobileToggle = document.querySelector(".mobile-nav-toggle");
-        const nav = document.getElementById("main-nav");
+   <script>
+    // Contact Form Submission Function
+    async function submitContactForm(event) {
+      event.preventDefault();
 
-        if (mobileToggle && nav) {
-          mobileToggle.addEventListener("click", function () {
-            const isExpanded = this.getAttribute("aria-expanded") === "true";
-            this.setAttribute("aria-expanded", !isExpanded);
-            nav.classList.toggle("active");
+      const fname = document.getElementById('fname').value;
+      const lname = document.getElementById('lname').value;
+      const subject = document.getElementById('subject').value;
 
-            // Update icon
-            const icon = this.querySelector("i");
-            if (icon) {
-              icon.classList.toggle("fa-bars");
-              icon.classList.toggle("fa-times");
-            }
-          });
+      const name = fname + " " + lname;
+      const email = 'noemail@domain.com'; // Temporary, backend expects an email field
+
+      try {
+        const res = await fetch('https://saudiguiderbackend.onrender.com/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message: subject })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('contactForm').reset();
+          document.getElementById('thankYouMessage').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('thankYouMessage').scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        } else {
+          alert(data.message || 'Failed to submit message.');
         }
+      } catch (error) {
+        console.error('Contact Form Error:', error);
+        alert('An error occurred while sending your message.');
+      }
+    }
 
-        // Loading spinner functionality
-        const links = document.querySelectorAll('a:not([target="_blank"])');
-        links.forEach((link) => {
-          link.addEventListener("click", function () {
-            document.getElementById("loading").style.display = "block";
-          });
+    // Mobile Nav Toggle
+    document.addEventListener("DOMContentLoaded", function () {
+      const mobileToggle = document.querySelector(".mobile-nav-toggle");
+      const nav = document.getElementById("main-nav");
+
+      if (mobileToggle && nav) {
+        mobileToggle.addEventListener("click", function () {
+          const isExpanded = this.getAttribute("aria-expanded") === "true";
+          this.setAttribute("aria-expanded", !isExpanded);
+          nav.classList.toggle("active");
+
+          const icon = this.querySelector("i");
+          if (icon) {
+            icon.classList.toggle("fa-bars");
+            icon.classList.toggle("fa-times");
+          }
         });
+      }
+    });
+
+    function openChat() {
+      alert("Live chat feature coming soon!");
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-content").forEach((content) => {
+        content.classList.remove("active");
       });
 
-      function openChat() {
-        alert("Live chat feature coming soon!");
-      }
-      function showThankYouMessage(event, messageId) {
-        event.preventDefault();
-        document.getElementById(messageId).style.display = "block";
-        document.getElementById(event.target.id).reset();
-        setTimeout(() => {
-          document
-            .getElementById(messageId)
-            .scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.remove("active");
+      });
 
-      function switchTab(tabName) {
-        // Hide all tab contents
-        document.querySelectorAll(".tab-content").forEach((content) => {
-          content.classList.remove("active");
-        });
+      document.getElementById(tabName + "-tab").classList.add("active");
+      event.currentTarget.classList.add("active");
+    }
 
-        // Deactivate all tabs
-        document.querySelectorAll(".tab").forEach((tab) => {
-          tab.classList.remove("active");
-        });
-
-        // Activate selected tab and content
-        document.getElementById(tabName + "-tab").classList.add("active");
-        event.currentTarget.classList.add("active");
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        // Auto-expansion logic for the textarea
-        const textareas = document.querySelectorAll("textarea");
-        textareas.forEach((textarea) => {
-          textarea.addEventListener("input", () => {
-            textarea.style.height = "auto";
-            textarea.style.height = textarea.scrollHeight + "px";
-          });
+    // Auto-expand textarea height
+    document.addEventListener("DOMContentLoaded", () => {
+      const textareas = document.querySelectorAll("textarea");
+      textareas.forEach((textarea) => {
+        textarea.addEventListener("input", () => {
+          textarea.style.height = "auto";
+          textarea.style.height = textarea.scrollHeight + "px";
         });
       });
-    </script>
+    });
+  </script>
   </body>
 </html>
