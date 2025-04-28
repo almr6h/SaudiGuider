@@ -110,48 +110,49 @@
         transition: color var(--transition-speed) ease;
         padding: 0.5rem;
       }
+
       .user-dropdown {
-  position: relative;
-  display: none; /* Hidden by default */
-}
+        position: relative;
+        display: none;
+      }
 
-.user-toggle {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.5rem 1rem;
-}
+      .user-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+      }
 
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: var(--dark-gray);
-  min-width: 200px;
-  box-shadow: var(--box-shadow);
-  border-radius: 6px;
-  z-index: 1001;
-  padding: 0.5rem 0;
-}
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--dark-gray);
+        min-width: 200px;
+        box-shadow: var(--box-shadow);
+        border-radius: 6px;
+        z-index: 1001;
+        padding: 0.5rem 0;
+      }
 
-.dropdown-menu a {
-  color: var(--light);
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  display: block;
-}
+      .dropdown-menu a {
+        color: var(--light);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+      }
 
-.dropdown-menu a:hover {
-  background-color: var(--medium-gray);
-}
+      .dropdown-menu a:hover {
+        background-color: var(--medium-gray);
+      }
 
-.user-dropdown:hover .dropdown-menu {
-  display: block;
-}
+      .user-dropdown:hover .dropdown-menu {
+        display: block;
+      }
       
       nav a:hover,
       nav a:focus {
@@ -505,27 +506,26 @@
         </ul>
       </nav>
 
-    <div class="auth-buttons" id="authButtons">
-    <button onclick="window.location.href='login.html'">
-      <i class="fas fa-sign-in-alt"></i> Log In
-    </button>
-    <button onclick="window.location.href='signup.html'">
-      <i class="fas fa-user-plus"></i> Sign Up
-    </button>
-  </div>
+      <div class="auth-buttons" id="authButtons">
+        <button onclick="window.location.href='login.html'">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button onclick="window.location.href='signup.html'">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
 
-  <!-- Logged in state -->
-  <div class="user-dropdown" id="userDropdown" style="display: none;">
-    <button class="user-toggle">
-      <span id="usernameDisplay"></span>
-      <i class="fas fa-caret-down"></i>
-    </button>
-    <div class="dropdown-menu">
-      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-      <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
-      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-    </div>
-  </div>
+      <div class="user-dropdown" id="userDropdown" style="display: none;">
+        <button class="user-toggle">
+          <span id="usernameDisplay"></span>
+          <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -638,197 +638,196 @@
         </p>
       </div>
     </footer>
-<script src="authUtils.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const AuthUtils = {
-  checkAuth: function() {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    return {
-      isAuthenticated: !!token,
-      user: user ? JSON.parse(user) : null
-    };
-  },
 
-  updateNavigation: function() {
-    const { isAuthenticated, user } = this.checkAuth();
-    const authButtons = document.getElementById('authButtons');
-    const userDropdown = document.getElementById('userDropdown');
-    const usernameDisplay = document.getElementById('usernameDisplay');
-    
-    if (isAuthenticated) {
-      if (authButtons) authButtons.style.display = 'none';
-      if (userDropdown) userDropdown.style.display = 'block';
-      if (usernameDisplay) usernameDisplay.textContent = user?.username || 'My Account';
-    } else {
-      if (authButtons) authButtons.style.display = 'flex';
-      if (userDropdown) userDropdown.style.display = 'none';
-    }
-  },
+    <script>
+      // Authentication Utilities
+      const AuthUtils = {
+        checkAuth: function() {
+          const token = localStorage.getItem('token');
+          const user = localStorage.getItem('user');
+          return {
+            isAuthenticated: !!token,
+            user: user ? JSON.parse(user) : null
+          };
+        },
 
-  logout: function() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.updateNavigation();
-    window.location.href = 'login.html';
-  },
-
-  initAuth: function() {
-    this.updateNavigation();
-    
-    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.logout();
-    });
-  }
-};
-
-// Make available globally
-window.AuthUtils = AuthUtils;
-    // Initialize auth system first
-    AuthUtils.initAuth();
-    
-    // Set current year in footer
-    document.getElementById("current-year").textContent = new Date().getFullYear();
-
-    // Mobile navigation toggle
-    const mobileToggle = document.querySelector(".mobile-nav-toggle");
-    const nav = document.getElementById("main-nav");
-
-    if (mobileToggle && nav) {
-      mobileToggle.addEventListener("click", function () {
-        const isExpanded = nav.classList.toggle("active");
-        mobileToggle.setAttribute("aria-expanded", isExpanded);
-      });
-    }
-
-    // Toggle password visibility
-    const togglePassword = document.getElementById("togglePassword");
-    if (togglePassword) {
-      togglePassword.addEventListener("click", function () {
-        const passwordField = document.getElementById("password");
-        if (passwordField) {
-          const type = passwordField.type === "password" ? "text" : "password";
-          passwordField.type = type;
-          this.classList.toggle("fa-eye");
-          this.classList.toggle("fa-eye-slash");
-        }
-      });
-    }
-
-    // Form submission for backend login
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) {
-      loginForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        // Clear previous errors
-        document.querySelectorAll(".input-error").forEach((error) => {
-          error.textContent = "";
-          error.style.display = "none";
-        });
-
-        const userInput = document.getElementById("user_id");
-        const passwordInput = document.getElementById("password");
-        
-        if (!userInput || !passwordInput) {
-          console.error("Form elements not found");
-          return;
-        }
-
-        const user_id = userInput.value.trim();
-        const password = passwordInput.value.trim();
-        let isValid = true;
-
-        // Validate inputs
-        if (!user_id) {
-          const userIdError = document.getElementById("userIdError");
-          if (userIdError) {
-            userIdError.textContent = "Email or username is required";
-            userIdError.style.display = "block";
+        updateNavigation: function() {
+          const { isAuthenticated, user } = this.checkAuth();
+          const authButtons = document.getElementById('authButtons');
+          const userDropdown = document.getElementById('userDropdown');
+          const usernameDisplay = document.getElementById('usernameDisplay');
+          
+          if (isAuthenticated) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userDropdown) userDropdown.style.display = 'block';
+            if (usernameDisplay) usernameDisplay.textContent = user?.username || 'My Account';
+          } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userDropdown) userDropdown.style.display = 'none';
           }
-          isValid = false;
+        },
+
+        logout: function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          this.updateNavigation();
+          window.location.href = 'login.html';
+        },
+
+        initAuth: function() {
+          this.updateNavigation();
+          
+          document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.logout();
+          });
+        }
+      };
+
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", function() {
+        // Set current year in footer
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+
+        // Initialize auth system
+        AuthUtils.initAuth();
+
+        // Mobile navigation toggle
+        const mobileToggle = document.querySelector(".mobile-nav-toggle");
+        const nav = document.getElementById("main-nav");
+
+        if (mobileToggle && nav) {
+          mobileToggle.addEventListener("click", function() {
+            const isExpanded = nav.classList.toggle("active");
+            mobileToggle.setAttribute("aria-expanded", isExpanded);
+          });
         }
 
-        if (!password) {
-          const passwordError = document.getElementById("passwordError");
-          if (passwordError) {
-            passwordError.textContent = "Password is required";
-            passwordError.style.display = "block";
-          }
-          isValid = false;
+        // Toggle password visibility
+        const togglePassword = document.getElementById("togglePassword");
+        if (togglePassword) {
+          togglePassword.addEventListener("click", function() {
+            const passwordField = document.getElementById("password");
+            if (passwordField) {
+              const type = passwordField.type === "password" ? "text" : "password";
+              passwordField.type = type;
+              this.classList.toggle("fa-eye");
+              this.classList.toggle("fa-eye-slash");
+            }
+          });
         }
 
-        if (isValid) {
-          const loginButton = document.getElementById("loginButton");
-          const loadingMessage = document.getElementById("loadingMessage");
+        // Form submission for backend login
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+          loginForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
 
-          if (loginButton) loginButton.disabled = true;
-          if (loadingMessage) {
-            loadingMessage.textContent = "Logging in...";
-            loadingMessage.style.display = "block";
-          }
-
-          try {
-            const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                email: user_id.includes('@') ? user_id : undefined,
-                username: !user_id.includes('@') ? user_id : undefined,
-                password 
-              })
+            // Clear previous errors
+            document.querySelectorAll(".input-error").forEach((error) => {
+              error.textContent = "";
+              error.style.display = "none";
             });
 
-            const data = await res.json();
+            const userInput = document.getElementById("user_id");
+            const passwordInput = document.getElementById("password");
+            
+            if (!userInput || !passwordInput) {
+              console.error("Form elements not found");
+              return;
+            }
 
-            if (res.ok) {
-              // Store authentication data
-              localStorage.setItem('token', data.token);
-              localStorage.setItem('user', JSON.stringify({
-                id: data.user?.id,
-                username: data.user?.username || data.username,
-                email: data.user?.email || user_id.includes('@') ? user_id : undefined
-              }));
-              
-              // Update UI immediately
-              AuthUtils.updateNavigation();
-              
-              loadingMessage.textContent = "Login successful! Redirecting...";
-              
-              // Redirect after short delay
-              setTimeout(() => {
-                const redirectUrl = new URLSearchParams(window.location.search).get('from') || 'services.html';
-                window.location.href = redirectUrl;
-              }, 1500);
-            } else {
-              // Handle errors
-              if (loadingMessage) loadingMessage.style.display = "none";
-              if (loginButton) loginButton.disabled = false;
-              
-              const errorField = document.getElementById("userIdError");
-              if (errorField) {
-                errorField.textContent = data.message || 'Login failed';
-                errorField.style.display = "block";
+            const user_id = userInput.value.trim();
+            const password = passwordInput.value.trim();
+            let isValid = true;
+
+            // Validate inputs
+            if (!user_id) {
+              const userIdError = document.getElementById("userIdError");
+              if (userIdError) {
+                userIdError.textContent = "Email or username is required";
+                userIdError.style.display = "block";
+              }
+              isValid = false;
+            }
+
+            if (!password) {
+              const passwordError = document.getElementById("passwordError");
+              if (passwordError) {
+                passwordError.textContent = "Password is required";
+                passwordError.style.display = "block";
+              }
+              isValid = false;
+            }
+
+            if (isValid) {
+              const loginButton = document.getElementById("loginButton");
+              const loadingMessage = document.getElementById("loadingMessage");
+
+              if (loginButton) loginButton.disabled = true;
+              if (loadingMessage) {
+                loadingMessage.textContent = "Logging in...";
+                loadingMessage.style.display = "block";
+              }
+
+              try {
+                const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                    email: user_id.includes('@') ? user_id : undefined,
+                    username: !user_id.includes('@') ? user_id : undefined,
+                    password 
+                  })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                  // Store authentication data
+                  localStorage.setItem('token', data.token);
+                  localStorage.setItem('user', JSON.stringify({
+                    id: data.user?.id,
+                    username: data.user?.username || data.username,
+                    email: data.user?.email || (user_id.includes('@') ? user_id : undefined)
+                  }));
+                  
+                  // Update UI immediately
+                  AuthUtils.updateNavigation();
+                  
+                  loadingMessage.textContent = "Login successful! Redirecting...";
+                  
+                  // Redirect after short delay
+                  setTimeout(() => {
+                    const redirectUrl = new URLSearchParams(window.location.search).get('from') || 'services.html';
+                    window.location.href = redirectUrl;
+                  }, 1500);
+                } else {
+                  // Handle errors
+                  if (loadingMessage) loadingMessage.style.display = "none";
+                  if (loginButton) loginButton.disabled = false;
+                  
+                  const errorField = document.getElementById("userIdError");
+                  if (errorField) {
+                    errorField.textContent = data.message || 'Login failed';
+                    errorField.style.display = "block";
+                  }
+                }
+              } catch (error) {
+                console.error('Login Error:', error);
+                if (loadingMessage) loadingMessage.style.display = "none";
+                if (loginButton) loginButton.disabled = false;
+                
+                const errorField = document.getElementById("userIdError");
+                if (errorField) {
+                  errorField.textContent = 'Network error. Please try again.';
+                  errorField.style.display = "block";
+                }
               }
             }
-          } catch (error) {
-            console.error('Login Error:', error);
-            if (loadingMessage) loadingMessage.style.display = "none";
-            if (loginButton) loginButton.disabled = false;
-            
-            const errorField = document.getElementById("userIdError");
-            if (errorField) {
-              errorField.textContent = 'Network error. Please try again.';
-              errorField.style.display = "block";
-            }
-          }
+          });
         }
       });
-    }
-  });
-</script>
-
+    </script>
   </body>
 </html>
