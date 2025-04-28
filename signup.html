@@ -649,7 +649,7 @@
           </div>
 
           <!-- Step 2: Contact Information -->
-          <div class="step-container" id="step2">
+        <div class="step-container" id="step2">
             <div class="form-group">
               <label for="email">Email:</label>
               <input
@@ -664,13 +664,24 @@
 
             <div class="form-group">
               <label for="phone">Phone Number:</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                placeholder="e.g., 966xxxxxxxxx"
-                required
-              />
+              <div style="display: flex; gap: 10px;">
+                <select id="countryCode" style="flex: 0 0 100px;">
+                  <option value="966">Saudi (+966)</option>
+                  <option value="1">USA (+1)</option>
+                  <option value="44">UK (+44)</option>
+                  <option value="971">UAE (+971)</option>
+                  <option value="20">Egypt (+20)</option>
+                  <!-- Add more country codes as needed -->
+                </select>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="e.g., 501234567"
+                  required
+                  style="flex: 1;"
+                />
+              </div>
               <div id="phone-error" class="input-error"></div>
             </div>
 
