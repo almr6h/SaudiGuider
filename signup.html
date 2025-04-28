@@ -952,39 +952,55 @@
         }
 
         function showStep(stepIndex) {
+          if (!steps || steps.length === 0) return;
+          
           steps.forEach((step, index) => {
-            step.classList.toggle("active", index === stepIndex);
+            if (step) {
+              step.classList.toggle("active", index === stepIndex);
+            }
           });
 
           if (prevBtn) prevBtn.style.display = stepIndex === 0 ? "none" : "block";
           if (nextBtn) nextBtn.textContent = stepIndex === steps.length - 1 ? "Create Account" : "Next";
 
-          stepTexts.forEach((text, index) => {
-            text.classList.toggle("active", index <= stepIndex);
-          });
+          if (stepTexts && stepTexts.length > 0) {
+            stepTexts.forEach((text, index) => {
+              if (text) {
+                text.classList.toggle("active", index <= stepIndex);
+              }
+            });
+          }
 
           updateProgressBar();
         }
 
         function updateProgressBar() {
-          if (progress) {
+          if (progress && steps && steps.length > 0) {
             const progressWidth = ((currentStep + 1) / steps.length) * 100;
             progress.style.width = progressWidth + "%";
           }
         }
 
-        function validateStep() {
-          const currentForm = steps[currentStep];
-          const inputs = currentForm.querySelectorAll("input, select");
+        function validateStep(stepIndex) {
+          const currentStepElement = steps[stepIndex];
+          if (!currentStepElement) return false;
+          
+          const inputs = currentStepElement.querySelectorAll("input, select");
+          if (!inputs || inputs.length === 0) return false;
+          
           let valid = true;
 
           // Clear previous errors
           document.querySelectorAll(".input-error").forEach(error => {
-            error.textContent = "";
-            error.style.display = "none";
+            if (error) {
+              error.textContent = "";
+              error.style.display = "none";
+            }
           });
 
           inputs.forEach(input => {
+            if (!input) return;
+            
             const errorElem = document.getElementById(input.id + "-error");
             const value = input.value.trim();
 
@@ -1070,7 +1086,7 @@
         }
 
         function checkPasswordConditions(password) {
-          if (!passwordConditions.length) return;
+          if (!passwordConditions || passwordConditions.length === 0) return;
           
           const conditions = [
             password.length >= 8,
@@ -1079,6 +1095,8 @@
           ];
 
           passwordConditions.forEach((li, index) => {
+            if (!li) return;
+            
             const span = li.querySelector("span");
             if (!span) return;
             
@@ -1094,7 +1112,7 @@
         }
 
         async function submitSignup() {
-          if (!validateStep()) return;
+          if (!validateStep(currentStep)) return;
 
           const formData = {
             id: document.getElementById("id")?.value.trim(),
@@ -1141,7 +1159,7 @@
               // Show success message
               if (successMessage) {
                 successMessage.style.display = 'block';
-                signUpForm.style.display = 'none';
+                if (signUpForm) signUpForm.style.display = 'none';
               }
               
               // Redirect to login after delay
