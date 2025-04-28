@@ -178,6 +178,49 @@
         background-color: #4c8ba9;
       }
 
+       .user-dropdown {
+        position: relative;
+        display: none;
+      }
+
+      .user-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--dark-gray);
+        min-width: 200px;
+        box-shadow: var(--box-shadow);
+        border-radius: 6px;
+        z-index: 1001;
+        padding: 0.5rem 0;
+      }
+
+      .dropdown-menu a {
+        color: var(--light);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: var(--medium-gray);
+      }
+
+      .user-dropdown:hover .dropdown-menu {
+        display: block;
+      }
+      
       /* Mobile Nav Toggle */
       .mobile-nav-toggle {
         display: none;
