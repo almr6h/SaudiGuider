@@ -608,108 +608,150 @@
     }
 
     // Toggle password visibility
-    document.getElementById("togglePassword").addEventListener("click", function () {
-      const passwordField = document.getElementById("password");
-      const type = passwordField.type === "password" ? "text" : "password";
-      passwordField.type = type;
-      this.classList.toggle("fa-eye");
-      this.classList.toggle("fa-eye-slash");
-    });
+    const togglePassword = document.getElementById("togglePassword");
+    if (togglePassword) {
+      togglePassword.addEventListener("click", function () {
+        const passwordField = document.getElementById("password");
+        if (passwordField) {
+          const type = passwordField.type === "password" ? "text" : "password";
+          passwordField.type = type;
+          this.classList.toggle("fa-eye");
+          this.classList.toggle("fa-eye-slash");
+        }
+      });
+    }
 
     // Form submission for backend login
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-      // Clear previous errors
-      document.querySelectorAll(".input-error").forEach((error) => {
-        error.textContent = "";
-        error.style.display = "none";
-      });
+        // Clear previous errors
+        document.querySelectorAll(".input-error").forEach((error) => {
+          error.textContent = "";
+          error.style.display = "none";
+        });
 
-      const user_id = document.getElementById("user_id").value.trim();
-      const password = document.getElementById("password").value.trim();
-      let isValid = true;
+        const userInput = document.getElementById("user_id");
+        const passwordInput = document.getElementById("password");
+        
+        // Check if elements exist before accessing their values
+        if (!userInput || !passwordInput) {
+          console.error("Form elements not found");
+          return;
+        }
 
-      // Validate inputs
-      if (!user_id) {
-        document.getElementById("userIdError").textContent = "Email or username is required";
-        document.getElementById("userIdError").style.display = "block";
-        isValid = false;
-      }
+        const user_id = userInput.value.trim();
+        const password = passwordInput.value.trim();
+        let isValid = true;
 
-      if (!password) {
-        document.getElementById("passwordError").textContent = "Password is required";
-        document.getElementById("passwordError").style.display = "block";
-        isValid = false;
-      } else if (password.length < 8) {
-        document.getElementById("passwordError").textContent = "Password must be at least 8 characters";
-        document.getElementById("passwordError").style.display = "block";
-        isValid = false;
-      }
+        // Validate inputs
+        if (!user_id) {
+          const userIdError = document.getElementById("userIdError");
+          if (userIdError) {
+            userIdError.textContent = "Email or username is required";
+            userIdError.style.display = "block";
+          }
+          isValid = false;
+        }
 
-      if (isValid) {
-        const loginButton = document.getElementById("loginButton");
-        const loadingMessage = document.getElementById("loadingMessage");
+        if (!password) {
+          const passwordError = document.getElementById("passwordError");
+          if (passwordError) {
+            passwordError.textContent = "Password is required";
+            passwordError.style.display = "block";
+          }
+          isValid = false;
+        } else if (password.length < 8) {
+          const passwordError = document.getElementById("passwordError");
+          if (passwordError) {
+            passwordError.textContent = "Password must be at least 8 characters";
+            passwordError.style.display = "block";
+          }
+          isValid = false;
+        }
 
-        loginButton.disabled = true;
-        loadingMessage.textContent = "Logging in...";
-        loadingMessage.style.display = "block";
+        if (isValid) {
+          const loginButton = document.getElementById("loginButton");
+          const loadingMessage = document.getElementById("loadingMessage");
 
-        try {
-          const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              email: user_id.includes('@') ? user_id : undefined,
-              username: !user_id.includes('@') ? user_id : undefined,
-              password 
-            })
-          });
+          if (loginButton) loginButton.disabled = true;
+          if (loadingMessage) {
+            loadingMessage.textContent = "Logging in...";
+            loadingMessage.style.display = "block";
+          }
 
-          const data = await res.json();
+          try {
+            const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                email: user_id.includes('@') ? user_id : undefined,
+                username: !user_id.includes('@') ? user_id : undefined,
+                password 
+              })
+            });
 
-          if (res.ok) {
-            // Store authentication data
-            localStorage.setItem('token', data.token);
-            if (data.username) {
-              localStorage.setItem('username', data.username);
-            }
-            if (data.email) {
-              localStorage.setItem('email', data.email);
-            }
+            const data = await res.json();
 
-            loadingMessage.textContent = "Login successful! Redirecting...";
-            setTimeout(() => {
-              window.location.href = 'services.html';
-            }, 1500);
-          } else {
-            loadingMessage.style.display = "none";
-            loginButton.disabled = false;
-            
-            // Show backend error messages if available
-            if (data.errors) {
-              if (data.errors.email) {
-                document.getElementById("userIdError").textContent = data.errors.email;
-                document.getElementById("userIdError").style.display = "block";
+            if (res.ok) {
+              // Store authentication data
+              localStorage.setItem('token', data.token);
+              if (data.username) {
+                localStorage.setItem('username', data.username);
               }
-              if (data.errors.password) {
-                document.getElementById("passwordError").textContent = data.errors.password;
-                document.getElementById("passwordError").style.display = "block";
+              if (data.email) {
+                localStorage.setItem('email', data.email);
               }
+
+              if (loadingMessage) {
+                loadingMessage.textContent = "Login successful! Redirecting...";
+              }
+              setTimeout(() => {
+                window.location.href = 'services.html';
+              }, 1500);
             } else {
-              document.getElementById("userIdError").textContent = data.message || 'Login failed';
-              document.getElementById("userIdError").style.display = "block";
+              if (loadingMessage) loadingMessage.style.display = "none";
+              if (loginButton) loginButton.disabled = false;
+              
+              // Show backend error messages if available
+              if (data.errors) {
+                if (data.errors.email) {
+                  const userIdError = document.getElementById("userIdError");
+                  if (userIdError) {
+                    userIdError.textContent = data.errors.email;
+                    userIdError.style.display = "block";
+                  }
+                }
+                if (data.errors.password) {
+                  const passwordError = document.getElementById("passwordError");
+                  if (passwordError) {
+                    passwordError.textContent = data.errors.password;
+                    passwordError.style.display = "block";
+                  }
+                }
+              } else {
+                const userIdError = document.getElementById("userIdError");
+                if (userIdError) {
+                  userIdError.textContent = data.message || 'Login failed';
+                  userIdError.style.display = "block";
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Login Error:', error);
+            if (loadingMessage) loadingMessage.style.display = "none";
+            if (loginButton) loginButton.disabled = false;
+            const userIdError = document.getElementById("userIdError");
+            if (userIdError) {
+              userIdError.textContent = 'Network error. Please try again.';
+              userIdError.style.display = "block";
             }
           }
-        } catch (error) {
-          console.error('Login Error:', error);
-          loadingMessage.style.display = "none";
-          loginButton.disabled = false;
-          document.getElementById("userIdError").textContent = 'Network error. Please try again.';
-          document.getElementById("userIdError").style.display = "block";
         }
-      }
-    });
+      });
+    }
   });
 </script>
 
