@@ -2,52 +2,274 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Account - Saudi Guider</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Saudi Guider</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+   
+    .profile-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #3a3a3a;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 2rem;
+      border: 3px solid #8fb6c0;
+    }
+    
+    .profile-details {
+      flex: 1;
+    }
+    
+    .detail-group {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #5b6a7f;
+    }
+    
+    .detail-label {
+      color: #8fb6c0;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .detail-value {
+      font-size: 1.1rem;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background-color: #8fb6c0;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #4c8ba9;
+    }
+    
+    .btn-secondary {
+      background-color: #5b6a7f;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #4a5769;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Account</h1>
+  <!-- Use the same header as your services page -->
+  <header>
+         <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
 
-  <div id="accountInfo">
-    Loading your profile...
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="services.html" class="active" aria-current="page"
+              >Services</a
+            >
+          </li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+  <button onclick="window.location.href='login.html'" aria-label="Log in">
+    <i class="fas fa-sign-in-alt"></i> Log In
+  </button>
+  <button onclick="window.location.href='signup.html'" aria-label="Sign up">
+    <i class="fas fa-user-plus"></i> Sign Up
+  </button>
+</div>
+
+<div class="user-dropdown" id="userDropdown" style="display: none;">
+  <button class="user-toggle">
+    <span id="usernameDisplay"></span>
+    <i class="fas fa-caret-down"></i>
+  </button>
+  <div class="dropdown-menu">
+    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+    <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
   </div>
+</div>
+  </header>
 
-  <button onclick="logout()">Logout</button>
+  <main>
+    <section class="profile-container">
+      <div class="profile-header">
+        <img src="./images/default-profile.jpg" alt="Profile Picture" class="profile-pic">
+        <h1>My Profile</h1>
+      </div>
+      
+      <div class="detail-group">
+        <span class="detail-label">Full Name</span>
+        <div class="detail-value" id="profile-name">Loading...</div>
+      </div>
+      
+      <div class="detail-group">
+        <span class="detail-label">Email</span>
+        <div class="detail-value" id="profile-email">Loading...</div>
+      </div>
+      
+      <div class="detail-group">
+        <span class="detail-label">Phone Number</span>
+        <div class="detail-value" id="profile-phone">Loading...</div>
+      </div>
+      
+      <div class="detail-group">
+        <span class="detail-label">Member Since</span>
+        <div class="detail-value" id="profile-joined">Loading...</div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+        <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Use the same footer as your services page -->
+  <footer>
+     <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            AI assistance.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter" aria-hidden="true"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram" aria-hidden="true"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#popular-destinations">Popular Destinations</a></li>
+            <li><a href="#travel-guides">Travel Guides</a></li>
+            <li><a href="#cultural-experiences">Cultural Experiences</a></li>
+            <li><a href="#travel-tips">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
+              Saudi Arabia
+            </p>
+            <p>
+              <i class="fas fa-phone" aria-hidden="true"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+  </footer>
 
   <script>
-    async function loadProfile() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        window.location.href = 'login.html';
-        return;
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user data
+      const user = JSON.parse(localStorage.getItem('user'));
+      
+      if (user) {
+        document.getElementById('profile-name').textContent = user.name || 'Not provided';
+        document.getElementById('profile-email').textContent = user.email || 'Not provided';
+        document.getElementById('profile-phone').textContent = user.phone || 'Not provided';
+        document.getElementById('profile-joined').textContent = new Date(user.createdAt || Date.now()).toLocaleDateString();
       }
-
-      try {
-        const res = await fetch('https://saudiguiderbackend.onrender.com/api/users/me
-', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        const user = await res.json();
-
-        document.getElementById('accountInfo').innerHTML = `
-          <p><strong>Username:</strong> ${user.username}</p>
-          <p><strong>Email:</strong> ${user.email}</p>
-        `;
-      } catch (error) {
-        console.error('Profile Fetch Error:', error);
-        alert('Session expired. Please login again.');
-        window.location.href = 'login.html';
-      }
-    }
-
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
-
-    loadProfile();
+      
+      // Change password button
+      document.getElementById('changePasswordBtn').addEventListener('click', function() {
+        // Implement password change logic
+        alert('Password change functionality will be implemented here');
+        // This would typically open a modal with password change form
+      });
+      
+      // Edit profile button
+      document.getElementById('editProfileBtn').addEventListener('click', function() {
+        // Implement profile edit logic
+        alert('Profile edit functionality will be implemented here');
+        // This would typically open a form to edit profile details
+      });
+    });
   </script>
 </body>
 </html>
