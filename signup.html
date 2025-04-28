@@ -830,7 +830,7 @@
       </div>
     </footer>
 
-     <script>
+    <script>
       // Authentication Utilities
       const AuthUtils = {
         checkAuth: function() {
@@ -1057,10 +1057,10 @@
                 break;
                 
               case "phone":
-                if (!/^966\d{9}$/.test(value)) {
+                if (!/^\d{7,15}$/.test(value)) {
                   valid = false;
                   if (errorElem) {
-                    errorElem.textContent = "Phone number should be 12 digits starting with 966";
+                    errorElem.textContent = "Please enter a valid phone number (7-15 digits)";
                     errorElem.style.display = "block";
                   }
                 }
@@ -1144,7 +1144,7 @@
             fname: document.getElementById("fname")?.value.trim(),
             lname: document.getElementById("lname")?.value.trim(),
             email: document.getElementById("email")?.value.trim(),
-            phone: document.getElementById("phone")?.value.trim(),
+            phone: document.getElementById("countryCode")?.value + document.getElementById("phone")?.value.trim(),
             currency: document.getElementById("currency")?.value,
             language: document.getElementById("language")?.value,
             password: document.getElementById("password")?.value.trim()
@@ -1193,11 +1193,27 @@
               }, 2000);
             } else {
               // Show error from backend
-              const errorField = document.getElementById("email-error") || 
-                                document.querySelector(".input-error");
+              let errorField = null;
+              let errorMessage = data.message || 'Signup failed';
+              
+              // Check for duplicate email or ID errors
+              if (data.message.includes('email') || data.message.includes('Email')) {
+                errorField = document.getElementById("email-error");
+                errorMessage = "This email is already registered. Please use a different email.";
+              } else if (data.message.includes('ID') || data.message.includes('id') || data.message.includes('national')) {
+                errorField = document.getElementById("id-error");
+                errorMessage = "This ID is already registered. Please check your ID or contact support.";
+              } else {
+                errorField = document.getElementById("email-error") || 
+                            document.querySelector(".input-error");
+              }
+              
               if (errorField) {
-                errorField.textContent = data.message || 'Signup failed';
+                errorField.textContent = errorMessage;
                 errorField.style.display = 'block';
+                
+                // Scroll to the error field
+                errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }
             }
           } catch (error) {
