@@ -2806,6 +2806,54 @@
           });
         });
       });
+      async function searchServices() {
+  const type = document.getElementById('type').value;
+  const location = document.getElementById('location').value;
+  const priceRange = document.getElementById('priceRange').value;
+
+  const query = new URLSearchParams({ type, location, priceRange }).toString();
+
+  try {
+    const res = await fetch(`https://your-backend-server.com/api/services/search?${query}`);
+    const services = await res.json();
+
+    // Now render services dynamically on page
+    console.log(services);
+  } catch (error) {
+    console.error('Service Search Error:', error);
+  }
+}
+
+      async function bookService(serviceId) {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert('Please login first to book a service!');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    const res = await fetch('https://your-backend-server.com/api/services/book', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ serviceId })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert('Booking successful!');
+    } else {
+      alert(data.message || 'Booking failed');
+    }
+  } catch (error) {
+    console.error('Booking Error:', error);
+  }
+}
     </script>
   </body>
 </html>
