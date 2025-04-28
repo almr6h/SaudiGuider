@@ -616,7 +616,7 @@
       this.classList.toggle("fa-eye-slash");
     });
 
-    // Correct Form submission for real backend login
+    // Form submission for backend login
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -626,13 +626,13 @@
         error.style.display = "none";
       });
 
-      const email = document.getElementById("email").value.trim();
+      const user_id = document.getElementById("user_id").value.trim();
       const password = document.getElementById("password").value.trim();
       let isValid = true;
 
       // Validate inputs
-      if (!email) {
-        document.getElementById("userIdError").textContent = "Email is required";
+      if (!user_id) {
+        document.getElementById("userIdError").textContent = "Email or username is required";
         document.getElementById("userIdError").style.display = "block";
         isValid = false;
       }
@@ -659,30 +659,54 @@
           const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ 
+              email: user_id.includes('@') ? user_id : undefined,
+              username: !user_id.includes('@') ? user_id : undefined,
+              password 
+            })
           });
 
           const data = await res.json();
 
           if (res.ok) {
+            // Store authentication data
             localStorage.setItem('token', data.token);
-            localStorage.setItem('username', data.username);
+            if (data.username) {
+              localStorage.setItem('username', data.username);
+            }
+            if (data.email) {
+              localStorage.setItem('email', data.email);
+            }
 
             loadingMessage.textContent = "Login successful! Redirecting...";
-
-            setTimeout(function () {
+            setTimeout(() => {
               window.location.href = 'services.html';
             }, 1500);
           } else {
             loadingMessage.style.display = "none";
             loginButton.disabled = false;
-            alert(data.message || 'Login failed');
+            
+            // Show backend error messages if available
+            if (data.errors) {
+              if (data.errors.email) {
+                document.getElementById("userIdError").textContent = data.errors.email;
+                document.getElementById("userIdError").style.display = "block";
+              }
+              if (data.errors.password) {
+                document.getElementById("passwordError").textContent = data.errors.password;
+                document.getElementById("passwordError").style.display = "block";
+              }
+            } else {
+              document.getElementById("userIdError").textContent = data.message || 'Login failed';
+              document.getElementById("userIdError").style.display = "block";
+            }
           }
         } catch (error) {
           console.error('Login Error:', error);
           loadingMessage.style.display = "none";
           loginButton.disabled = false;
-          alert('Login failed. Please try again.');
+          document.getElementById("userIdError").textContent = 'Network error. Please try again.';
+          document.getElementById("userIdError").style.display = "block";
         }
       }
     });
