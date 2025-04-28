@@ -846,48 +846,15 @@
 
     showStep(currentStep);
 
-    document.getElementById('signUpForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      if (!validateStep()) return;
-
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      try {
-        const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ username, email, password })
-});
-
-        const data = await res.json();
-
-        if (res.ok) {
-          successMessage.style.display = 'block';
-          setTimeout(() => {
-            successMessage.style.display = 'none';
-            window.location.href = 'login.html';
-          }, 1500);
-        } else {
-          alert(data.message || 'Signup failed');
-        }
-      } catch (error) {
-        console.error('Signup Error:', error);
-        alert('Signup failed. Please try again.');
-      }
-    });
-
     function navigateStep(stepChange) {
-      if (stepChange === -1 || validateStep()) {
-        currentStep += stepChange;
-        if (currentStep >= steps.length) {
-          document.getElementById('signUpForm').dispatchEvent(new Event('submit'));
-          return;
-        }
-        showStep(currentStep);
+      if (stepChange === 1 && !validateStep()) return; // Only allow next if valid
+      currentStep += stepChange;
+
+      if (currentStep >= steps.length) {
+        submitSignup();
+        return;
       }
+      showStep(currentStep);
     }
 
     function showStep(stepIndex) {
@@ -927,7 +894,6 @@
           valid = false;
           errorElem.textContent = "This field is required";
           errorElem.style.display = "block";
-          input.focus();
         }
 
         if (input.id === "fname" || input.id === "lname") {
@@ -982,11 +948,41 @@
       return valid;
     }
 
+    function submitSignup() {
+      const fname = document.getElementById('fname').value.trim();
+      const lname = document.getElementById('lname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const username = fname + ' ' + lname; // Combine fname and lname as username
+
+      fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token || data.message?.includes('success')) {
+          successMessage.style.display = 'block';
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 1500);
+        } else {
+          alert(data.message || 'Signup failed');
+        }
+      })
+      .catch(error => {
+        console.error('Signup Error:', error);
+        alert('Signup failed. Please try again.');
+      });
+    }
+
     function checkPasswordConditions(password) {
       const conditions = [
         password.length >= 8,
         /[A-Z]/.test(password),
-        /\d/.test(password),
+        /\d/.test(password)
       ];
 
       passwordConditions.forEach((li, index) => {
@@ -1002,7 +998,6 @@
       });
     }
 
-    // Password visibility toggles
     document.getElementById("togglePassword").addEventListener("click", function () {
       const passwordField = document.getElementById("password");
       const type = passwordField.type === "password" ? "text" : "password";
@@ -1022,8 +1017,12 @@
     document.getElementById("password").addEventListener("input", function () {
       checkPasswordConditions(this.value.trim());
     });
+
+    // Attach navigateStep globally
+    window.navigateStep = navigateStep;
   });
 </script>
+
 
   </body>
 </html>
