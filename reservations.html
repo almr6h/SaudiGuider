@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Reservations - Saudi Guider</title>
+</head>
+<body>
+  <h1>My Reservations</h1>
+
+  <div id="bookingsList">
+    Loading your reservations...
+  </div>
+
+  <button onclick="logout()">Logout</button>
+
+  <script>
+    async function loadBookings() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch('https://your-backend-server.com/api/bookings/my', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const bookings = await res.json();
+
+        if (bookings.length === 0) {
+          document.getElementById('bookingsList').innerHTML = '<p>No reservations found.</p>';
+          return;
+        }
+
+        document.getElementById('bookingsList').innerHTML = bookings.map(booking => `
+          <div style="margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+            <h3>${booking.service.title}</h3>
+            <p>${booking.service.description}</p>
+            <p>Booked at: ${new Date(booking.createdAt).toLocaleString()}</p>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Bookings Fetch Error:', error);
+        alert('Session expired. Please login again.');
+        window.location.href = 'login.html';
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    loadBookings();
+  </script>
+</body>
+</html>
