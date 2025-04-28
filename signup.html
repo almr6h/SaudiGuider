@@ -830,7 +830,7 @@
       </div>
     </footer>
 
-    <script>
+     <script>
       // Authentication Utilities
       const AuthUtils = {
         checkAuth: function() {
@@ -982,10 +982,11 @@
         }
 
         function validateStep(stepIndex) {
-          const currentStepElement = steps[stepIndex];
-          if (!currentStepElement) return false;
+          if (!steps || !steps[stepIndex]) return false;
           
+          const currentStepElement = steps[stepIndex];
           const inputs = currentStepElement.querySelectorAll("input, select");
+          
           if (!inputs || inputs.length === 0) return false;
           
           let valid = true;
