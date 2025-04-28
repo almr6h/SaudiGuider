@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/loadCommon.js" defer></script>
     <title>Contact Us - Saudi Guider</title>
     <style>
       :root {
@@ -138,6 +140,49 @@
       .auth-buttons button:hover,
       .auth-buttons button:focus {
         background-color: #4c8ba9;
+      }
+
+       .user-dropdown {
+        position: relative;
+        display: none;
+      }
+
+      .user-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--dark-gray);
+        min-width: 200px;
+        box-shadow: var(--box-shadow);
+        border-radius: 6px;
+        z-index: 1001;
+        padding: 0.5rem 0;
+      }
+
+      .dropdown-menu a {
+        color: var(--light);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: var(--medium-gray);
+      }
+
+      .user-dropdown:hover .dropdown-menu {
+        display: block;
       }
 
       /* Mobile Nav Toggle */
@@ -503,28 +548,26 @@
         </ul>
       </nav>
 
-      <div class="auth-buttons">
-        <button onclick="window.location.href='login.html'" aria-label="Log in">
-          <i class="fas fa-sign-in-alt"></i> Log In
-        </button>
-        <button
-          onclick="window.location.href='signup.html'"
-          aria-label="Sign up"
-        >
-          <i class="fas fa-user-plus"></i> Sign Up
-        </button>
-      </div>
-      <div class="user-dropdown" id="userDropdown" style="display: none;">
-    <button class="user-toggle">
-      <span id="usernameDisplay"></span>
-      <i class="fas fa-caret-down"></i>
-    </button>
-    <div class="dropdown-menu">
-      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-      <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
-      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-    </div>
+        <div class="auth-buttons">
+  <button onclick="window.location.href='login.html'" aria-label="Log in">
+    <i class="fas fa-sign-in-alt"></i> Log In
+  </button>
+  <button onclick="window.location.href='signup.html'" aria-label="Sign up">
+    <i class="fas fa-user-plus"></i> Sign Up
+  </button>
+</div>
+
+<div class="user-dropdown" id="userDropdown" style="display: none;">
+  <button class="user-toggle">
+    <span id="usernameDisplay"></span>
+    <i class="fas fa-caret-down"></i>
+  </button>
+  <div class="dropdown-menu">
+    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+    <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
   </div>
+</div>
     </header>
 
    
