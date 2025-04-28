@@ -2855,9 +2855,8 @@
   }
 }
 
-      async function handleAiAssistantSubmit() {
+  async function handleAiAssistantSubmit() {
   const userInput = document.getElementById('aiInput').value;
-
   if (!userInput) return;
 
   try {
@@ -2869,10 +2868,23 @@
 
     const data = await res.json();
 
-    if (res.ok) {
-      document.getElementById('aiResults').innerText = data.reply;
-    } else {
-      alert(data.message || 'AI request failed.');
+    const aiResults = document.getElementById('aiResults');
+    aiResults.innerHTML = ''; // Clear previous
+
+    if (data.type === 'trip-plan') {
+      data.plan.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'trip-card';
+        card.innerHTML = `
+          <h3>${item.type}: ${item.service.title}</h3>
+          <p>${item.service.description}</p>
+          <p>Price: ${item.service.price} SAR</p>
+          <button onclick="bookService('${item.service._id}')">Reserve</button>
+        `;
+        aiResults.appendChild(card);
+      });
+    } else if (data.type === 'text') {
+      aiResults.innerText = data.reply;
     }
   } catch (error) {
     console.error('AI Assistant Error:', error);
