@@ -935,7 +935,14 @@
         // Navigation between steps
         if (prevBtn && nextBtn) {
           prevBtn.addEventListener("click", () => navigateStep(-1));
-          nextBtn.addEventListener("click", () => navigateStep(1));
+          nextBtn.addEventListener("click", () => {
+            // On last step, validate and submit
+            if (currentStep === steps.length - 1) {
+              submitSignup();
+            } else {
+              navigateStep(1);
+            }
+          });
         }
 
         function navigateStep(stepChange) {
@@ -944,7 +951,6 @@
           currentStep += stepChange;
 
           if (currentStep >= steps.length) {
-            submitSignup();
             return;
           }
           
@@ -961,7 +967,9 @@
           });
 
           if (prevBtn) prevBtn.style.display = stepIndex === 0 ? "none" : "block";
-          if (nextBtn) nextBtn.textContent = stepIndex === steps.length - 1 ? "Create Account" : "Next";
+          if (nextBtn) {
+            nextBtn.textContent = stepIndex === steps.length - 1 ? "Create Account" : "Next";
+          }
 
           if (stepTexts && stepTexts.length > 0) {
             stepTexts.forEach((text, index) => {
@@ -1113,7 +1121,23 @@
         }
 
         async function submitSignup() {
-          if (!validateStep(currentStep)) return;
+          // Validate all steps before submission
+          let allValid = true;
+          for (let i = 0; i < steps.length; i++) {
+            if (!validateStep(i)) {
+              allValid = false;
+              // Show the first invalid step
+              if (i !== currentStep) {
+                currentStep = i;
+                showStep(currentStep);
+              }
+              break;
+            }
+          }
+
+          if (!allValid) {
+            return;
+          }
 
           const formData = {
             id: document.getElementById("id")?.value.trim(),
