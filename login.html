@@ -695,23 +695,22 @@
 
             const data = await res.json();
 
-            if (res.ok) {
-              // Store authentication data
-              localStorage.setItem('token', data.token);
-              if (data.username) {
-                localStorage.setItem('username', data.username);
-              }
-              if (data.email) {
-                localStorage.setItem('email', data.email);
-              }
-
-              if (loadingMessage) {
-                loadingMessage.textContent = "Login successful! Redirecting...";
-              }
-              setTimeout(() => {
-                window.location.href = 'services.html';
-              }, 1500);
-            } else {
+      if (res.ok) {
+  const data = await res.json();
+  
+  // Store user data in localStorage
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(data.user));
+  
+  // Update the navigation
+  updateNavigation();
+  
+  // Redirect or show success message
+  loadingMessage.textContent = "Login successful! Redirecting...";
+  setTimeout(() => {
+    window.location.href = 'services.html'; // or wherever you want to redirect
+  }, 1500);
+} else {
               if (loadingMessage) loadingMessage.style.display = "none";
               if (loginButton) loginButton.disabled = false;
               
