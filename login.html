@@ -591,126 +591,103 @@
       </div>
     </footer>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Set current year in footer
-        document.getElementById("current-year").textContent =
-          new Date().getFullYear();
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Set current year in footer
+    document.getElementById("current-year").textContent = new Date().getFullYear();
 
-        // Mobile navigation toggle
-        const mobileToggle = document.querySelector(".mobile-nav-toggle");
-        const nav = document.getElementById("main-nav");
+    // Mobile navigation toggle
+    const mobileToggle = document.querySelector(".mobile-nav-toggle");
+    const nav = document.getElementById("main-nav");
 
-        if (mobileToggle && nav) {
-          mobileToggle.addEventListener("click", function () {
-            const isExpanded = nav.classList.toggle("active");
-            mobileToggle.setAttribute("aria-expanded", isExpanded);
-          });
-        }
-
-        // Toggle password visibility
-        document
-          .getElementById("togglePassword")
-          .addEventListener("click", function () {
-            const passwordField = document.getElementById("password");
-            const type =
-              passwordField.type === "password" ? "text" : "password";
-            passwordField.type = type;
-            this.classList.toggle("fa-eye");
-            this.classList.toggle("fa-eye-slash");
-          });
-
-        // Form submission
-        document
-          .getElementById("loginForm")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            // Clear previous errors
-            document.querySelectorAll(".input-error").forEach((error) => {
-              error.textContent = "";
-              error.style.display = "none";
-            });
-
-            const userId = document.getElementById("user_id").value.trim();
-            const password = document.getElementById("password").value.trim();
-            let isValid = true;
-
-            // Validate inputs
-            if (!userId) {
-              document.getElementById("userIdError").textContent =
-                "Email or username is required";
-              document.getElementById("userIdError").style.display = "block";
-              isValid = false;
-            }
-
-            if (!password) {
-              document.getElementById("passwordError").textContent =
-                "Password is required";
-              document.getElementById("passwordError").style.display = "block";
-              isValid = false;
-            } else if (password.length < 8) {
-              document.getElementById("passwordError").textContent =
-                "Password must be at least 8 characters";
-              document.getElementById("passwordError").style.display = "block";
-              isValid = false;
-            }
-
-            if (isValid) {
-              // Show loading state
-              const loginButton = document.getElementById("loginButton");
-              const loadingMessage = document.getElementById("loadingMessage");
-
-              loginButton.disabled = true;
-              loadingMessage.textContent = "Logging in...";
-              loadingMessage.style.display = "block";
-
-              // Simulate login process (replace with actual AJAX call)
-              setTimeout(function () {
-                // Here you would typically make an AJAX call to your server
-                // For demonstration, we'll just show a success message
-                loadingMessage.textContent = "Login successful! Redirecting...";
-
-                // Redirect to dashboard after successful login
-                setTimeout(function () {
-                  window.location.href = "dashboard.html";
-                }, 1500);
-              }, 2000);
-            }
-          });
+    if (mobileToggle && nav) {
+      mobileToggle.addEventListener("click", function () {
+        const isExpanded = nav.classList.toggle("active");
+        mobileToggle.setAttribute("aria-expanded", isExpanded);
       });
-
-  const loginForm = document.getElementById('loginForm'); // Change ID if needed
-
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-      const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login
-', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('username', data.username);
-        alert('Login successful!');
-        window.location.href = 'Services.html'; // or homepage
-      } else {
-        alert(data.message || 'Login failed');
-      }
-    } catch (error) {
-      console.error('Login Error:', error);
     }
-  });
 
-    </script>
+    // Toggle password visibility
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const passwordField = document.getElementById("password");
+      const type = passwordField.type === "password" ? "text" : "password";
+      passwordField.type = type;
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+    });
+
+    // Correct Form submission for real backend login
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Clear previous errors
+      document.querySelectorAll(".input-error").forEach((error) => {
+        error.textContent = "";
+        error.style.display = "none";
+      });
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      let isValid = true;
+
+      // Validate inputs
+      if (!email) {
+        document.getElementById("userIdError").textContent = "Email is required";
+        document.getElementById("userIdError").style.display = "block";
+        isValid = false;
+      }
+
+      if (!password) {
+        document.getElementById("passwordError").textContent = "Password is required";
+        document.getElementById("passwordError").style.display = "block";
+        isValid = false;
+      } else if (password.length < 8) {
+        document.getElementById("passwordError").textContent = "Password must be at least 8 characters";
+        document.getElementById("passwordError").style.display = "block";
+        isValid = false;
+      }
+
+      if (isValid) {
+        const loginButton = document.getElementById("loginButton");
+        const loadingMessage = document.getElementById("loadingMessage");
+
+        loginButton.disabled = true;
+        loadingMessage.textContent = "Logging in...";
+        loadingMessage.style.display = "block";
+
+        try {
+          const res = await fetch('https://saudiguiderbackend.onrender.com/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('username', data.username);
+
+            loadingMessage.textContent = "Login successful! Redirecting...";
+
+            setTimeout(function () {
+              window.location.href = 'services.html';
+            }, 1500);
+          } else {
+            loadingMessage.style.display = "none";
+            loginButton.disabled = false;
+            alert(data.message || 'Login failed');
+          }
+        } catch (error) {
+          console.error('Login Error:', error);
+          loadingMessage.style.display = "none";
+          loginButton.disabled = false;
+          alert('Login failed. Please try again.');
+        }
+      }
+    });
+  });
+</script>
+
   </body>
 </html>
