@@ -2854,6 +2854,30 @@
     console.error('Booking Error:', error);
   }
 }
+
+      async function handleAiAssistantSubmit() {
+  const userInput = document.getElementById('aiInput').value;
+
+  if (!userInput) return;
+
+  try {
+    const res = await fetch('https://your-backend-server.com/api/ai/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: userInput })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('aiResults').innerText = data.reply;
+    } else {
+      alert(data.message || 'AI request failed.');
+    }
+  } catch (error) {
+    console.error('AI Assistant Error:', error);
+  }
+}
     </script>
   </body>
 </html>
