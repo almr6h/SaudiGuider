@@ -598,11 +598,10 @@
     </footer>
 <script src="js/authUtils.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  AuthUtils.initAuth();
-});
-  
   document.addEventListener("DOMContentLoaded", function () {
+    // Initialize auth system first
+    AuthUtils.initAuth();
+    
     // Set current year in footer
     document.getElementById("current-year").textContent = new Date().getFullYear();
 
@@ -646,7 +645,6 @@
         const userInput = document.getElementById("user_id");
         const passwordInput = document.getElementById("password");
         
-        // Check if elements exist before accessing their values
         if (!userInput || !passwordInput) {
           console.error("Form elements not found");
           return;
@@ -670,13 +668,6 @@
           const passwordError = document.getElementById("passwordError");
           if (passwordError) {
             passwordError.textContent = "Password is required";
-            passwordError.style.display = "block";
-          }
-          isValid = false;
-        } else if (password.length < 8) {
-          const passwordError = document.getElementById("passwordError");
-          if (passwordError) {
-            passwordError.textContent = "Password must be at least 8 characters";
             passwordError.style.display = "block";
           }
           isValid = false;
@@ -705,57 +696,45 @@
 
             const data = await res.json();
 
-      if (res.ok) {
-  const data = await res.json();
-  
-  // Store user data in localStorage
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('user', JSON.stringify(data.user));
-  
-  // Update the navigation
-  AuthUtils.updateNavigation();
-  
-  // Redirect or show success message
-  loadingMessage.textContent = "Login successful! Redirecting...";
-  setTimeout(() => {
-    window.location.href = 'services.html'; // or wherever you want to redirect
-  }, 1500);
-} else {
+            if (res.ok) {
+              // Store authentication data
+              localStorage.setItem('token', data.token);
+              localStorage.setItem('user', JSON.stringify({
+                id: data.user?.id,
+                username: data.user?.username || data.username,
+                email: data.user?.email || user_id.includes('@') ? user_id : undefined
+              }));
+              
+              // Update UI immediately
+              AuthUtils.updateNavigation();
+              
+              loadingMessage.textContent = "Login successful! Redirecting...";
+              
+              // Redirect after short delay
+              setTimeout(() => {
+                const redirectUrl = new URLSearchParams(window.location.search).get('from') || 'services.html';
+                window.location.href = redirectUrl;
+              }, 1500);
+            } else {
+              // Handle errors
               if (loadingMessage) loadingMessage.style.display = "none";
               if (loginButton) loginButton.disabled = false;
               
-              // Show backend error messages if available
-              if (data.errors) {
-                if (data.errors.email) {
-                  const userIdError = document.getElementById("userIdError");
-                  if (userIdError) {
-                    userIdError.textContent = data.errors.email;
-                    userIdError.style.display = "block";
-                  }
-                }
-                if (data.errors.password) {
-                  const passwordError = document.getElementById("passwordError");
-                  if (passwordError) {
-                    passwordError.textContent = data.errors.password;
-                    passwordError.style.display = "block";
-                  }
-                }
-              } else {
-                const userIdError = document.getElementById("userIdError");
-                if (userIdError) {
-                  userIdError.textContent = data.message || 'Login failed';
-                  userIdError.style.display = "block";
-                }
+              const errorField = document.getElementById("userIdError");
+              if (errorField) {
+                errorField.textContent = data.message || 'Login failed';
+                errorField.style.display = "block";
               }
             }
           } catch (error) {
             console.error('Login Error:', error);
             if (loadingMessage) loadingMessage.style.display = "none";
             if (loginButton) loginButton.disabled = false;
-            const userIdError = document.getElementById("userIdError");
-            if (userIdError) {
-              userIdError.textContent = 'Network error. Please try again.';
-              userIdError.style.display = "block";
+            
+            const errorField = document.getElementById("userIdError");
+            if (errorField) {
+              errorField.textContent = 'Network error. Please try again.';
+              errorField.style.display = "block";
             }
           }
         }
