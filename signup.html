@@ -1150,19 +1150,19 @@
         return;
       }
 
-       const formData = {
+        const formData = {
     id: document.getElementById("id")?.value.trim(),
     firstName: document.getElementById("fname")?.value.trim(),
     lastName: document.getElementById("lname")?.value.trim(),
     email: document.getElementById("email")?.value.trim(),
-    phoneNumber: document.getElementById("phone")?.value.trim(), // Changed to phoneNumber
+    phoneNumber: document.getElementById("phone")?.value.trim(),
     countryCode: document.getElementById("countryCode")?.value,
     currency: document.getElementById("currency")?.value,
     preferredLanguage: document.getElementById("language")?.value === "Arabic" ? "ar" : "en",
     password: document.getElementById("password")?.value.trim()
   };
 
-    try {
+     try {
     // Disable buttons during submission
     if (prevBtn) prevBtn.disabled = true;
     if (nextBtn) {
@@ -1170,13 +1170,7 @@
       nextBtn.textContent = "Creating Account...";
     }
 
-    // Format phone data correctly for backend
-    const phoneData = {
-      number: formData.phoneNumber,
-      countryCode: formData.countryCode || '966'
-    };
-
-        const response = await fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
+    const response = await fetch('https://saudiguiderbackend.onrender.com/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1185,9 +1179,12 @@
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        phone: phoneData, // Send as structured object
-        currency: formData.currency || 'SAR',
-        preferredLanguage: formData.preferredLanguage || 'en'
+        phone: {
+          number: formData.phoneNumber,
+          countryCode: formData.countryCode
+        },
+        currency: formData.currency,
+        preferredLanguage: formData.preferredLanguage
       })
     });
 
