@@ -432,10 +432,6 @@
         return true;
       } catch (error) {
         debug.error('Token verification error:', error);
-        // Don't clear tokens on connection errors
-        if (error.message.includes('Failed to fetch')) {
-          return true; // Assume token is valid if we can't verify
-        }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         return false;
@@ -445,9 +441,8 @@
     // Load profile data
     const loadProfileData = async () => {
       try {
-        // First verify token (but continue even if verification fails due to connection)
-        const tokenValid = await verifyToken();
-        if (!tokenValid) {
+        // First verify token
+        if (!(await verifyToken())) {
           window.location.href = 'login.html?reason=session_expired';
           return;
         }
@@ -461,17 +456,26 @@
         });
 
         if (!response.ok) {
+          let errorText = await response.text();
           let errorData = { message: 'Unknown error' };
+          
           try {
-            errorData = await response.json();
+            // Try to parse as JSON first
+            errorData = JSON.parse(errorText);
           } catch (e) {
-            debug.error('Failed to parse error response:', e);
+            // If not JSON, use the raw text (might be HTML)
+            debug.error('Failed to parse error response as JSON:', errorText);
+            if (response.status === 404) {
+              errorData = { message: 'Profile not found' };
+            } else {
+              errorData = { message: `Server error: ${response.status}` };
+            }
           }
           
           debug.error('Profile load failed:', errorData);
           
           if (response.status === 404) {
-            showAlert('Profile not found', 'error');
+            showAlert('Profile not found. Please contact support.', 'error');
             return;
           }
           
@@ -533,9 +537,9 @@
       } catch (error) {
         debug.error('Profile load error:', error);
         
-        // Don't redirect for connection errors
-        if (error.message.includes('Failed to fetch')) {
-          showAlert('Connection error. Please check your internet and try again.', 'error');
+        // Don't redirect for 404 errors
+        if (error.message.includes('404')) {
+          showAlert('Profile not found. Please contact support.', 'error');
           return;
         }
         
@@ -582,8 +586,17 @@
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || `HTTP ${response.status}`);
+          let errorText = await response.text();
+          let errorData = { message: 'Update failed' };
+          
+          try {
+            errorData = JSON.parse(errorText);
+          } catch (e) {
+            debug.error('Failed to parse error response:', errorText);
+            errorData = { message: `Server error: ${response.status}` };
+          }
+          
+          throw new Error(errorData.message);
         }
 
         const responseData = await response.json();
@@ -649,8 +662,17 @@
           });
 
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP ${response.status}`);
+            let errorText = await response.text();
+            let errorData = { message: 'Upload failed' };
+            
+            try {
+              errorData = JSON.parse(errorText);
+            } catch (e) {
+              debug.error('Failed to parse error response:', errorText);
+              errorData = { message: `Server error: ${response.status}` };
+            }
+            
+            throw new Error(errorData.message);
           }
 
           const uploadData = await response.json();
