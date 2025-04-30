@@ -387,12 +387,6 @@
       }
     };
 
-    // Validate critical elements exist
-    if (!elements.form || !elements.profileImage) {
-      debug.error('Critical DOM elements missing');
-      return;
-    }
-
     // Set reliable default profile image
     const DEFAULT_PROFILE_IMAGE = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png';
     elements.profileImage.src = DEFAULT_PROFILE_IMAGE;
@@ -413,11 +407,48 @@
       }, duration);
     };
 
+    // Verify token with backend
+    const verifyToken = async () => {
+      try {
+        debug.log('Verifying token...');
+        const response = await fetch('https://saudiguiderbackend.onrender.com/api/auth/verify', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        if (!result.success) {
+          throw new Error('Token verification failed');
+        }
+        
+        debug.log('Token is valid');
+        return true;
+      } catch (error) {
+        debug.error('Token verification error:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return false;
+      }
+    };
+
     // Load profile data
     const loadProfileData = async () => {
       try {
+        // First verify token
+        if (!(await verifyToken())) {
+          window.location.href = 'login.html?reason=session_expired';
+          return;
+        }
+
         debug.log('Loading profile data for user:', userId);
-        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/me`, {
+        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/users/${userId}`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -425,14 +456,21 @@
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch {
+            errorData = { message: 'Failed to parse error response' };
+          }
+          
           debug.error('Profile load failed:', errorData);
           
-          if (response.status === 401 || response.status === 403) {
-            if (errorData.message?.includes('Not authorized')) {
-              showAlert('You can only view your own profile', 'error');
-              return;
-            }
+          if (response.status === 403) {
+            showAlert('You are not authorized to access this profile', 'error');
+            return;
+          }
+          
+          if (response.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html?reason=session_expired';
@@ -444,7 +482,7 @@
 
         const profileData = await response.json();
         
-        if (!profileData?.user) {
+        if (!profileData || !profileData.user) {
           throw new Error('Invalid profile data structure');
         }
 
@@ -491,6 +529,7 @@
       } catch (error) {
         debug.error('Profile load error:', error);
         
+        // Don't redirect for non-auth errors
         if (error.message.includes('401') || error.message.includes('403')) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
@@ -524,7 +563,7 @@
         };
 
         debug.log('Submitting update:', formData);
-        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/me`, {
+        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/users/${userId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -589,7 +628,7 @@
         formData.append('profilePicture', file);
 
         try {
-          const response = await fetch('https://saudiguiderbackend.onrender.com/api/profile/upload-picture', {
+          const response = await fetch(`https://saudiguiderbackend.onrender.com/api/users/${userId}/upload-picture`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
