@@ -432,6 +432,10 @@
         return true;
       } catch (error) {
         debug.error('Token verification error:', error);
+        // Don't clear tokens on connection errors
+        if (error.message.includes('Failed to fetch')) {
+          return true; // Assume token is valid if we can't verify
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         return false;
@@ -441,8 +445,9 @@
     // Load profile data
     const loadProfileData = async () => {
       try {
-        // First verify token
-        if (!(await verifyToken())) {
+        // First verify token (but continue even if verification fails due to connection)
+        const tokenValid = await verifyToken();
+        if (!tokenValid) {
           window.location.href = 'login.html?reason=session_expired';
           return;
         }
@@ -456,21 +461,21 @@
         });
 
         if (!response.ok) {
-          let errorData;
+          let errorData = { message: 'Unknown error' };
           try {
             errorData = await response.json();
-          } catch {
-            errorData = { message: 'Failed to parse error response' };
+          } catch (e) {
+            debug.error('Failed to parse error response:', e);
           }
           
           debug.error('Profile load failed:', errorData);
           
-          if (response.status === 403) {
-            showAlert('You are not authorized to access this profile', 'error');
+          if (response.status === 404) {
+            showAlert('Profile not found', 'error');
             return;
           }
           
-          if (response.status === 401) {
+          if (response.status === 401 || response.status === 403) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html?reason=session_expired';
@@ -489,6 +494,12 @@
         debug.log('Profile data loaded:', profileData);
 
         // Update UI
+        const updateField = (field, value) => {
+          if (elements.fields[field]) {
+            elements.fields[field].value = value || '';
+          }
+        };
+
         if (elements.fields.name) {
           elements.fields.name.textContent = 
             `${profileData.user.firstName || ''} ${profileData.user.lastName || ''}`.trim();
@@ -497,13 +508,6 @@
         if (elements.fields.email) {
           elements.fields.email.textContent = profileData.user.email || '';
         }
-
-        // Update form fields
-        const updateField = (field, value) => {
-          if (elements.fields[field]) {
-            elements.fields[field].value = value || '';
-          }
-        };
 
         updateField('nationalId', profileData.user.nationalId);
         updateField('emailInput', profileData.user.email);
@@ -529,7 +533,12 @@
       } catch (error) {
         debug.error('Profile load error:', error);
         
-        // Don't redirect for non-auth errors
+        // Don't redirect for connection errors
+        if (error.message.includes('Failed to fetch')) {
+          showAlert('Connection error. Please check your internet and try again.', 'error');
+          return;
+        }
+        
         if (error.message.includes('401') || error.message.includes('403')) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
@@ -571,6 +580,11 @@
           },
           body: JSON.stringify(formData)
         });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP ${response.status}`);
+        }
 
         const responseData = await response.json();
         debug.log('Update response:', responseData);
@@ -633,6 +647,11 @@
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
           });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP ${response.status}`);
+          }
 
           const uploadData = await response.json();
           debug.log('Upload response:', uploadData);
