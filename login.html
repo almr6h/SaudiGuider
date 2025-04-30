@@ -661,15 +661,12 @@ const AuthUtils = {
       if (authButtons) authButtons.style.display = 'none';
       if (userDropdown) userDropdown.style.display = 'block';
       
-      // Updated this line to show first + last name
+      // Always use firstName + lastName if available
       if (usernameDisplay) {
-        if (user?.firstName && user?.lastName) {
-          usernameDisplay.textContent = `${user.firstName} ${user.lastName}`;
-        } else if (user?.username) {
-          usernameDisplay.textContent = user.username;
-        } else {
-          usernameDisplay.textContent = 'My Account';
-        }
+        const displayName = user?.firstName 
+          ? `${user.firstName} ${user.lastName || ''}`.trim()
+          : (user?.username || 'My Account');
+        usernameDisplay.textContent = displayName;
       }
     } else {
       if (authButtons) authButtons.style.display = 'flex';
@@ -691,6 +688,9 @@ const AuthUtils = {
       e.preventDefault();
       this.logout();
     });
+
+    // Add storage event listener to sync across tabs
+    window.addEventListener('storage', this.updateNavigation);
   }
 };
 
