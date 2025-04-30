@@ -24,7 +24,7 @@ const AuthUtils = {
   updateNavigation: function() {
     try {
       const { isAuthenticated, user } = this.checkAuth();
-      const authButtons = document.querySelector('.auth-buttons'); // Changed to class selector
+      const authButtons = document.querySelector('.auth-buttons');
       const userDropdown = document.getElementById('userDropdown');
       const usernameDisplay = document.getElementById('usernameDisplay');
       
@@ -37,7 +37,19 @@ const AuthUtils = {
       }
       
       if (usernameDisplay && user) {
-        usernameDisplay.textContent = user.username || 'My Account';
+        // First try firstName + lastName
+        if (user.firstName) {
+          const lastNameInitial = user.lastName ? ` ${user.lastName.charAt(0)}.` : '';
+          usernameDisplay.textContent = `${user.firstName}${lastNameInitial}`;
+        } 
+        // Fallback to username if no firstName
+        else if (user.username) {
+          usernameDisplay.textContent = user.username;
+        }
+        // Final fallback
+        else {
+          usernameDisplay.textContent = 'My Account';
+        }
       }
     } catch (error) {
       console.error('Error updating navigation:', error);
@@ -72,8 +84,18 @@ const AuthUtils = {
           this.logout();
         });
       }
+
+      // Add storage event listener to handle cross-tab updates
+      window.addEventListener('storage', () => {
+        this.updateNavigation();
+      });
     } catch (error) {
       console.error('Error initializing auth:', error);
     }
   }
 };
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  AuthUtils.initAuth();
+});
