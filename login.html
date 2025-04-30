@@ -795,15 +795,18 @@ const AuthUtils = {
 
                 if (res.ok) {
                   // Store authentication data
-                  localStorage.setItem('token', data.token);
-                  localStorage.setItem('user', JSON.stringify({
-                    id: data.user?.id,
-                    username: data.user?.username || data.username,
-                    email: data.user?.email || (user_id.includes('@') ? user_id : undefined)
-                  }));
-                  
-                  // Update UI immediately
-                  AuthUtils.updateNavigation();
+                 // After successful login
+localStorage.setItem('token', data.token);
+localStorage.setItem('user', JSON.stringify({
+  id: data.user.id,
+  firstName: data.user.firstName, // Make sure backend includes these
+  lastName: data.user.lastName,   // in login response
+  email: data.user.email,
+  username: data.user.username
+}));
+
+// Force immediate UI update
+AuthUtils.updateNavigation();
                   
                   loadingMessage.textContent = "Login successful! Redirecting...";
                   
