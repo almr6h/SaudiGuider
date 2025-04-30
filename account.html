@@ -419,7 +419,7 @@
                         bio: document.getElementById('bio').value
                     };
 
-                    const response = await fetch(`https://your-render-backend.onrender.com/api/profile/${userId}`, {
+                    const response = await fetch(`https://saudiguiderbackend.onrender.com//api/profile/${userId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -446,40 +446,6 @@
                 }
             });
 
-            // Handle profile picture upload
-            uploadTrigger.addEventListener('click', function() {
-                uploadInput.click();
-            });
-
-            uploadInput.addEventListener('change', async function() {
-                if (!uploadInput.files.length) return;
-
-                const file = uploadInput.files[0];
-                const formData = new FormData();
-                formData.append('profilePicture', file);
-
-                try {
-                    const response = await fetch('https://your-render-backend.onrender.com/api/profile/upload-picture', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: formData
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        showAlert('Profile picture updated!', 'success');
-                        document.getElementById('profile-picture').src = data.user.profilePicture;
-                    } else {
-                        throw new Error(data.message || 'Failed to upload picture');
-                    }
-                } catch (error) {
-                    console.error('Error uploading profile picture:', error);
-                    showAlert(error.message || 'Failed to upload picture', 'error');
-                }
-            });
 
             // Show alert message
             function showAlert(message, type) {
