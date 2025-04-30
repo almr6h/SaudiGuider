@@ -796,10 +796,16 @@ const AuthUtils = {
                 if (res.ok) {
                   // Store authentication data
                  // After successful login
+// After successful login
 localStorage.setItem('token', data.token);
-localStorage.setItem('userId', data.user._id || data.user.id); // Handle both cases
-localStorage.setItem('user', JSON.stringify(data.user));
-}));
+localStorage.setItem('userId', data.user._id || data.user.id); // Handle both _id/id
+localStorage.setItem('user', JSON.stringify({
+  id: data.user._id || data.user.id, // Consistent ID
+  firstName: data.user.firstName,
+  lastName: data.user.lastName,
+  email: data.user.email,
+  username: data.user.username
+}));  // <-- Now properly closed
 
 // Force immediate UI update
 AuthUtils.updateNavigation();
