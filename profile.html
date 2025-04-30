@@ -333,7 +333,7 @@
         </div>
     </div>
 
- <script>
+<script>
   document.addEventListener('DOMContentLoaded', async function() {
     // Debugging setup
     const debug = {
@@ -387,6 +387,12 @@
       }
     };
 
+    // Validate critical elements exist
+    if (!elements.form || !elements.profileImage) {
+      debug.error('Critical DOM elements missing');
+      return;
+    }
+
     // Set reliable default profile image
     const DEFAULT_PROFILE_IMAGE = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png';
     elements.profileImage.src = DEFAULT_PROFILE_IMAGE;
@@ -410,65 +416,72 @@
     // Load profile data
     const loadProfileData = async () => {
       try {
-        debug.log('Loading profile data...');
-        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/${userId}`, {
+        debug.log('Loading profile data for user:', userId);
+        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/me`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        // First check if response is ok
         if (!response.ok) {
-          const errorText = await response.text();
-          debug.error('Profile load failed:', errorText);
+          const errorData = await response.json().catch(() => ({}));
+          debug.error('Profile load failed:', errorData);
           
           if (response.status === 401 || response.status === 403) {
+            if (errorData.message?.includes('Not authorized')) {
+              showAlert('You can only view your own profile', 'error');
+              return;
+            }
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html?reason=session_expired';
             return;
           }
           
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
+          throw new Error(errorData.message || `HTTP ${response.status}`);
         }
 
-        // Then try to parse JSON
-        let profileData;
-        try {
-          profileData = await response.json();
-        } catch (e) {
-          throw new Error('Invalid JSON response from server');
-        }
+        const profileData = await response.json();
         
-        // Check if we got valid data structure
-        if (!profileData || !profileData.user) {
+        if (!profileData?.user) {
           throw new Error('Invalid profile data structure');
         }
 
         debug.log('Profile data loaded:', profileData);
 
         // Update UI
-        elements.fields.name.textContent = 
-          `${profileData.user.firstName || ''} ${profileData.user.lastName || ''}`.trim();
-        elements.fields.email.textContent = profileData.user.email || '';
+        if (elements.fields.name) {
+          elements.fields.name.textContent = 
+            `${profileData.user.firstName || ''} ${profileData.user.lastName || ''}`.trim();
+        }
+        
+        if (elements.fields.email) {
+          elements.fields.email.textContent = profileData.user.email || '';
+        }
 
-        // Form fields
-        elements.fields.nationalId.value = profileData.user.nationalId || '';
-        elements.fields.emailInput.value = profileData.user.email || '';
-        elements.fields.firstName.value = profileData.user.firstName || '';
-        elements.fields.lastName.value = profileData.user.lastName || '';
+        // Update form fields
+        const updateField = (field, value) => {
+          if (elements.fields[field]) {
+            elements.fields[field].value = value || '';
+          }
+        };
+
+        updateField('nationalId', profileData.user.nationalId);
+        updateField('emailInput', profileData.user.email);
+        updateField('firstName', profileData.user.firstName);
+        updateField('lastName', profileData.user.lastName);
         
         // Phone
         if (profileData.user.phone) {
-          elements.fields.countryCode.value = profileData.user.phone.countryCode || '966';
-          elements.fields.phone.value = profileData.user.phone.number || '';
+          updateField('countryCode', profileData.user.phone.countryCode || '966');
+          updateField('phone', profileData.user.phone.number);
         }
         
         // Preferences
-        elements.fields.currency.value = profileData.user.currency || 'SAR';
-        elements.fields.language.value = profileData.user.preferredLanguage || 'ar';
-        elements.fields.bio.value = profileData.user.bio || '';
+        updateField('currency', profileData.user.currency || 'SAR');
+        updateField('language', profileData.user.preferredLanguage || 'ar');
+        updateField('bio', profileData.user.bio);
         
         // Profile picture
         if (profileData.user.profilePicture) {
@@ -478,7 +491,6 @@
       } catch (error) {
         debug.error('Profile load error:', error);
         
-        // Don't redirect for non-auth errors
         if (error.message.includes('401') || error.message.includes('403')) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
@@ -493,24 +505,26 @@
     elements.form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      if (!elements.saveBtn || !elements.saveLoading) return;
+      
       elements.saveBtn.disabled = true;
       elements.saveLoading.classList.remove('hidden');
       
       try {
         const formData = {
-          firstName: elements.fields.firstName.value.trim(),
-          lastName: elements.fields.lastName.value.trim(),
+          firstName: elements.fields.firstName?.value.trim() || '',
+          lastName: elements.fields.lastName?.value.trim() || '',
           phone: {
-            countryCode: elements.fields.countryCode.value,
-            number: elements.fields.phone.value.trim()
+            countryCode: elements.fields.countryCode?.value || '966',
+            number: elements.fields.phone?.value.trim() || ''
           },
-          currency: elements.fields.currency.value,
-          preferredLanguage: elements.fields.language.value,
-          bio: elements.fields.bio.value.trim()
+          currency: elements.fields.currency?.value || 'SAR',
+          preferredLanguage: elements.fields.language?.value || 'ar',
+          bio: elements.fields.bio?.value.trim() || ''
         };
 
         debug.log('Submitting update:', formData);
-        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/${userId}`, {
+        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/profile/me`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -526,16 +540,22 @@
           showAlert('Profile updated successfully!', 'success');
           
           // Update local user data
-          const user = JSON.parse(localStorage.getItem('user'));
-          if (user) {
-            user.firstName = responseData.user.firstName;
-            user.lastName = responseData.user.lastName;
-            localStorage.setItem('user', JSON.stringify(user));
+          try {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+              user.firstName = responseData.user.firstName;
+              user.lastName = responseData.user.lastName;
+              localStorage.setItem('user', JSON.stringify(user));
+            }
+          } catch (e) {
+            debug.error('Failed to update local user data:', e);
           }
           
           // Update displayed name
-          elements.fields.name.textContent = 
-            `${responseData.user.firstName} ${responseData.user.lastName}`;
+          if (elements.fields.name) {
+            elements.fields.name.textContent = 
+              `${responseData.user.firstName} ${responseData.user.lastName}`;
+          }
         } else {
           throw new Error(responseData.message || 'Update failed');
         }
@@ -543,56 +563,64 @@
         debug.error('Update error:', error);
         showAlert(error.message || 'Failed to update profile. Please try again.');
       } finally {
-        elements.saveBtn.disabled = false;
-        elements.saveLoading.classList.add('hidden');
+        if (elements.saveBtn && elements.saveLoading) {
+          elements.saveBtn.disabled = false;
+          elements.saveLoading.classList.add('hidden');
+        }
       }
     });
 
     // Handle profile picture upload
-    elements.uploadTrigger.addEventListener('click', () => {
-      elements.uploadInput.click();
-    });
+    if (elements.uploadTrigger && elements.uploadInput) {
+      elements.uploadTrigger.addEventListener('click', () => {
+        elements.uploadInput.click();
+      });
 
-    elements.uploadInput.addEventListener('change', async (e) => {
-      if (!e.target.files?.length) return;
+      elements.uploadInput.addEventListener('change', async (e) => {
+        if (!e.target.files?.length) return;
 
-      const file = e.target.files[0];
-      if (file.size > 2 * 1024 * 1024) {
-        showAlert('Image must be less than 2MB');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('profilePicture', file);
-
-      try {
-        const response = await fetch('https://saudiguiderbackend.onrender.com/api/profile/upload-picture', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
-        });
-
-        const uploadData = await response.json();
-        debug.log('Upload response:', uploadData);
-
-        if (uploadData.success && uploadData.user?.profilePicture) {
-          showAlert('Profile picture updated!', 'success');
-          elements.profileImage.src = uploadData.user.profilePicture;
-          
-          // Update local user data
-          const user = JSON.parse(localStorage.getItem('user'));
-          if (user) {
-            user.profilePicture = uploadData.user.profilePicture;
-            localStorage.setItem('user', JSON.stringify(user));
-          }
-        } else {
-          throw new Error(uploadData.message || 'Upload failed');
+        const file = e.target.files[0];
+        if (file.size > 2 * 1024 * 1024) {
+          showAlert('Image must be less than 2MB');
+          return;
         }
-      } catch (error) {
-        debug.error('Upload error:', error);
-        showAlert('Failed to upload picture. Please try again.');
-      }
-    });
+
+        const formData = new FormData();
+        formData.append('profilePicture', file);
+
+        try {
+          const response = await fetch('https://saudiguiderbackend.onrender.com/api/profile/upload-picture', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+
+          const uploadData = await response.json();
+          debug.log('Upload response:', uploadData);
+
+          if (uploadData.success && uploadData.user?.profilePicture) {
+            showAlert('Profile picture updated!', 'success');
+            elements.profileImage.src = uploadData.user.profilePicture;
+            
+            // Update local user data
+            try {
+              const user = JSON.parse(localStorage.getItem('user'));
+              if (user) {
+                user.profilePicture = uploadData.user.profilePicture;
+                localStorage.setItem('user', JSON.stringify(user));
+              }
+            } catch (e) {
+              debug.error('Failed to update local user data:', e);
+            }
+          } else {
+            throw new Error(uploadData.message || 'Upload failed');
+          }
+        } catch (error) {
+          debug.error('Upload error:', error);
+          showAlert('Failed to upload picture. Please try again.');
+        }
+      });
+    }
 
     // Initialize
     loadProfileData();
