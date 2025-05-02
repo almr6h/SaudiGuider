@@ -1125,6 +1125,104 @@
         }
       }
 
+      /* Booking Success Modal */
+      .booking-success-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 3000;
+      }
+
+      .booking-success-modal .modal-content {
+        background-color: var(--dark-gray);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .booking-success-modal i {
+        font-size: 4rem;
+        color: #4CAF50;
+        margin-bottom: 1rem;
+      }
+
+      .booking-success-modal h3 {
+        margin-bottom: 1rem;
+      }
+
+      .booking-success-modal p {
+        margin-bottom: 2rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .modal-actions button {
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .modal-actions button:first-child {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      .modal-actions button:first-child:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .modal-actions button:last-child {
+        background-color: var(--dark);
+        color: var(--light);
+        border: 1px solid var(--secondary);
+      }
+
+      .modal-actions button:last-child:hover {
+        background-color: var(--border-gray);
+      }
+
+      /* Loading Spinner */
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+      }
+
+      .loading-spinner i {
+        font-size: 2rem;
+        color: var(--secondary);
+        animation: spin 1s linear infinite;
+      }
+
+      /* Error Message */
+      .error-message {
+        text-align: center;
+        padding: 2rem;
+        color: var(--light);
+      }
+
+      .error-message i {
+        font-size: 3rem;
+        color: #ff5252;
+        margin-bottom: 1rem;
+      }
+
       /* Responsive Design */
       @media (max-width: 992px) {
         .service-cards {
@@ -1204,6 +1302,14 @@
 
         .ai-submit {
           padding: 0.8rem;
+          width: 100%;
+        }
+
+        .modal-actions {
+          flex-direction: column;
+        }
+
+        .modal-actions button {
           width: 100%;
         }
       }
@@ -2150,317 +2256,21 @@
     </footer>
 
     <script>
-   // Move this to the top of your script section, before any other code
-      // Data for search results
-      const searchData = {
-        hotels: {
-          riyadh: [
-            {
-              id: 1,
-              name: "Luxury Riyadh Hotel",
-              location: "Downtown Riyadh",
-              rating: 4.8,
-              reviews: 245,
-              price: 180,
-              image: "./images/riyadh.jpg",
-              description:
-                "5-star luxury hotel with panoramic city views and premium amenities.",
-            },
-            {
-              id: 2,
-              name: "Desert Oasis Resort",
-              location: "Outside Riyadh",
-              rating: 4.6,
-              reviews: 189,
-              price: 220,
-              image: "./images/resort.jpg",
-              description:
-                "Luxury desert resort with private villas and spa facilities.",
-            },
-            {
-              id: 3,
-              name: "Business Tower Hotel",
-              location: "Financial District",
-              rating: 4.5,
-              reviews: 312,
-              price: 150,
-              image: "./images/businesstower.jpg",
-              description:
-                "Modern business hotel with conference facilities and executive lounge.",
-            },
-          ],
-          jeddah: [
-            {
-              id: 4,
-              name: "Coastal Retreat Jeddah",
-              location: "Jeddah Corniche",
-              rating: 4.7,
-              reviews: 278,
-              price: 195,
-              image: "./images/oia.jpg",
-              description:
-                "Beachfront hotel with private beach access and multiple dining options.",
-            },
-            {
-              id: 5,
-              name: "Red Sea Resort",
-              location: "North Jeddah",
-              rating: 4.4,
-              reviews: 156,
-              price: 175,
-              image: "./images/resortred.jpg",
-              description:
-                "Luxury resort with private beach and water sports facilities.",
-            },
-          ],
-        },
-        restaurants: {
-          riyadh: [
-            {
-              id: 1,
-              name: "Al-Nakheel Restaurant",
-              location: "Historic District",
-              rating: 4.9,
-              reviews: 432,
-              price: "$$$",
-              image: "./images/nakheel.jpg",
-              description:
-                "Authentic Saudi cuisine in a traditional setting with live music.",
-            },
-            {
-              id: 2,
-              name: "Urban Bistro",
-              location: "Riyadh City Center",
-              rating: 4.5,
-              reviews: 198,
-              price: "$$",
-              image: "./images/urban.jpg",
-              description:
-                "Modern international cuisine with creative presentations.",
-            },
-          ],
-          jeddah: [
-            {
-              id: 3,
-              name: "Marina Seafood",
-              location: "Jeddah Waterfront",
-              rating: 4.7,
-              reviews: 321,
-              price: "$$$$",
-              image: "./images/marina.jpg",
-              description:
-                "Fresh seafood with Red Sea views and elegant atmosphere.",
-            },
-          ],
-        },
-        cars: {
-          riyadh: [
-            {
-              id: 1,
-              name: "Luxury Sedan",
-              type: "Mercedes E-Class",
-              rating: 4.8,
-              reviews: 156,
-              price: 120,
-              image: "./images/sedan.jpg",
-              description:
-                "Premium luxury sedan with full amenities and navigation.",
-            },
-            {
-              id: 2,
-              name: "SUV 4x4",
-              type: "Toyota Land Cruiser",
-              rating: 4.7,
-              reviews: 243,
-              price: 150,
-              image: "./images/landc.jpg",
-              description:
-                "Comfortable and powerful SUV for desert exploration.",
-            },
-          ],
-          jeddah: [
-            {
-              id: 3,
-              name: "Economy Car",
-              type: "Toyota Yaris",
-              rating: 4.3,
-              reviews: 187,
-              price: 45,
-              image: "./images/toyota.jpg",
-              description: "Fuel-efficient compact car for city driving.",
-            },
-          ],
-        },
-        events: {
-          riyadh: [
-            {
-              id: 1,
-              name: "Riyadh Season Festival",
-              type: "Cultural Festival",
-              rating: 4.9,
-              reviews: 876,
-              price: 50,
-              image: "./images/riyadseas.jpg",
-              description:
-                "Annual cultural festival with performances, food, and activities.",
-            },
-          ],
-          jeddah: [
-            {
-              id: 2,
-              name: "Jeddah International Concert",
-              type: "Music Concert",
-              rating: 4.8,
-              reviews: 654,
-              price: 120,
-              image: "./images/concert.jpg",
-              description:
-                "International artists performing at the Jeddah Superdome.",
-            },
-            {
-              id: 3,
-              name: "Desert Rally Championship",
-              type: "Sports Event",
-              rating: 4.7,
-              reviews: 432,
-              price: 75,
-              image: "./images/saudirally.jpg",
-              description:
-                "Exciting off-road racing competition in the desert.",
-            },
-          ],
-        },
-      };
-
-      // AI Responses
-      const aiResponses = {
-        "Best restaurants in Al-Ula for dinner": {
-          response: `
-          <div class="ai-response">
-            <h3>Top Dinner Restaurants in Al-Ula</h3>
-            <p>Here are the best dining options for an evening in Al-Ula:</p>
-            <ul>
-              <li><strong>Maraya Social</strong> - Fine dining with stunning views of the Maraya concert hall. International cuisine with local influences.</li>
-              <li><strong>Al-Ula Old Town Restaurant</strong> - Authentic Saudi cuisine in a historic setting with traditional decor.</li>
-              <li><strong>Desert Palm</strong> - Romantic outdoor dining under the stars with a menu featuring grilled specialties.</li>
-              <li><strong>Oasis Grill</strong> - Casual dining with excellent grilled meats and vegetarian options.</li>
-            </ul>
-            <p>Would you like me to make reservations at any of these?</p>
-          </div>
-        `,
-          actions: ["Make Reservations", "See Menus"],
-        },
-        "Family-friendly activities in Riyadh": {
-          response: `
-          <div class="ai-response">
-            <h3>Great Family Activities in Riyadh</h3>
-            <p>Here are excellent options for families visiting Riyadh:</p>
-            <ul>
-              <li><strong>Riyadh Zoo</strong> - Home to over 1,500 animals with playgrounds and picnic areas.</li>
-              <li><strong>Al Hokair Land</strong> - Amusement park with rides for all ages and indoor/outdoor attractions.</li>
-              <li><strong>National Museum</strong> - Interactive exhibits about Saudi history that engage children.</li>
-              <li><strong>Winter Wonderland</strong> - Seasonal festival with games, shows, and carnival rides (Nov-Feb).</li>
-              <li><strong>Boulevard City</strong> - Entertainment district with family-friendly shows and activities.</li>
-            </ul>
-            <p>Would you like more details about any of these?</p>
-          </div>
-        `,
-          actions: ["Show Tickets", "Get Directions"],
-        },
-        "Luxury hotels with pool in Jeddah": {
-          response: `
-          <div class="ai-response">
-            <h3>Luxury Hotels in Jeddah with Pools</h3>
-            <p>Top luxury hotels with excellent pool facilities:</p>
-            <ul>
-              <li><strong>The Ritz-Carlton Jeddah</strong> - Beachfront resort with multiple pools including an infinity pool with Red Sea views. Rates from $350/night.</li>
-              <li><strong>Four Seasons Hotel Jeddah</strong> - Stunning infinity pool with cabana service. Spa and multiple dining options. Rates from $400/night.</li>
-              <li><strong>Park Hyatt Jeddah</strong> - Private pool villas available along with a large main pool. Rates from $380/night.</li>
-              <li><strong>Jeddah Hilton</strong> - Rooftop pool with city views and family pool area. Rates from $280/night.</li>
-            </ul>
-            <p>Current availability is good for most properties. Would you like to check specific dates?</p>
-          </div>
-        `,
-          actions: ["Check Availability", "View Photos"],
-        },
-        "Weekend getaway with cultural experiences": {
-          response: `
-          <div class="ai-response">
-            <h3>Cultural Weekend Getaway Ideas</h3>
-            <p>For a culturally rich weekend, consider these destinations:</p>
-            <ul>
-              <li><strong>Diriyah</strong> - Historic home of the first Saudi state with museums, traditional architecture, and cultural performances. Just 20 minutes from Riyadh.</li>
-              <li><strong>Al-Ula</strong> - Ancient Nabatean tombs (similar to Petra), stunning desert landscapes, and luxury desert camps with cultural programs.</li>
-              <li><strong>Jeddah Historic District</strong> - Traditional coral houses, art galleries, and the floating mosque. Combine with Red Sea relaxation.</li>
-              <li><strong>Taif</strong> - Mountain retreat with rose gardens, historic souks, and cooler temperatures (ideal in summer).</li>
-            </ul>
-            <p>I can help plan a full itinerary including accommodations and guided tours.</p>
-          </div>
-        `,
-          actions: ["Plan Itinerary", "Book Tours"],
-        },
-        default: {
-          response: `
-          <div class="ai-response">
-            <h3>Travel Recommendations</h3>
-            <p>Based on your request, here are some suggestions for Saudi Arabia:</p>
-            <ul>
-              <li>Consider visiting the historic Al-Ula region for a unique cultural experience among ancient ruins</li>
-              <li>For beach lovers, the Red Sea coast offers beautiful resorts with excellent diving and snorkeling</li>
-              <li>Riyadh has excellent shopping and dining options along with modern attractions</li>
-              <li>The mountain city of Abha provides a cool retreat with stunning scenery</li>
-              <li>For adventure seekers, the Empty Quarter offers incredible desert experiences</li>
-            </ul>
-            <p>Would you like more specific recommendations for dates, budget, or group size?</p>
-          </div>
-        `,
-          actions: ["More Details", "Customize"],
-        },
-      };
-
-      // Login and Coming Soon Message Functions
-      function showLoginMessage(action) {
-        const loginMessage = document.createElement("div");
-        loginMessage.className = "login-message";
-        loginMessage.innerHTML = `
-          <div class="login-message-content">
-            <p>Please login to ${action}.</p>
-            <button onclick="window.location.href='login.html'" class="login-redirect-btn">
-              Go to Login Page
-            </button>
-          </div>
-        `;
-        document.body.appendChild(loginMessage);
-
-        // Close when clicking outside
-        loginMessage.addEventListener("click", function (e) {
-          if (e.target === loginMessage) {
-            loginMessage.remove();
-          }
-        });
-      }
-
-      function showComingSoonMessage() {
-        const comingSoonMessage = document.createElement("div");
-        comingSoonMessage.className = "coming-soon-message";
-        comingSoonMessage.innerHTML = `
-          <div class="coming-soon-content">
-            <p>This feature is coming soon!</p>
-          </div>
-        `;
-        document.body.appendChild(comingSoonMessage);
-        setTimeout(() => {
-          comingSoonMessage.remove();
-        }, 3000);
-      }
-
       // Initialize the application when DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
         // Set current year in footer
         document.getElementById("current-year").textContent =
           new Date().getFullYear();
 
-        
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+          document.querySelector('.auth-buttons').style.display = 'none';
+          document.getElementById('userDropdown').style.display = 'block';
+          // You would typically fetch user info here
+          document.getElementById('usernameDisplay').textContent = 'User';
+        }
+
         // Mobile navigation toggle
         const mobileToggle = document.querySelector(".mobile-nav-toggle");
         const nav = document.getElementById("main-nav");
@@ -2550,117 +2360,8 @@
           }
         }
 
-        /**
-         * Generates sample search results for the selected tab type
-         * @param {string} tabType - The type of tab selected (hotels, restaurants, cars, events)
-         * @param {string} location - The location being searched for
-         */
-        function generateSampleResults(tabType, location) {
-          // Check if tab type exists in searchData
-          if (!searchData[tabType]) {
-            showNoResults(tabType, location);
-            return;
-          }
-
-          // Normalize location to lowercase for comparison
-          const normalizedLocation = location ? location.toLowerCase() : "";
-
-          // Determine location key (only works for riyadh and jeddah)
-          let locationKey = null;
-          if (normalizedLocation.includes("jeddah")) {
-            locationKey = "jeddah";
-          } else if (normalizedLocation.includes("riyadh")) {
-            locationKey = "riyadh";
-          }
-
-          // If location not found in our data (not Riyadh or Jeddah)
-          if (!locationKey || !searchData[tabType][locationKey]) {
-            showNoResults(tabType, location);
-            return;
-          }
-
-          const data = searchData[tabType][locationKey];
-
-          document.getElementById("search-location").textContent =
-            location || "Riyadh";
-          resultsContainer.innerHTML = "";
-
-          if (!data || data.length === 0) {
-            showNoResults(tabType, location);
-            return;
-          }
-
-          data.forEach((item) => {
-            const resultItem = document.createElement("div");
-            resultItem.className = "result-item";
-
-            let priceDisplay = "";
-            if (typeof item.price === "number") {
-              priceDisplay =
-                tabType === "cars"
-                  ? `From $${item.price}/day`
-                  : `From $${item.price}/night`;
-            } else {
-              priceDisplay = item.price;
-            }
-
-            resultItem.innerHTML = `
-              <div class="result-image">
-                <img src="${item.image}" alt="${item.name}" loading="lazy">
-              </div>
-              <h4>${item.name}</h4>
-              <p><i class="fas fa-map-marker-alt"></i> ${item.location}</p>
-              <p class="result-rating"><i class="fas fa-star"></i> ${
-                item.rating
-              } (${item.reviews} reviews)</p>
-              <p class="result-price">${priceDisplay}</p>
-              <p>${item.description}</p>
-              <div class="result-actions">
-                <button class="result-button book-result-btn">${
-                  tabType === "restaurants"
-                    ? "Reserve Now"
-                    : tabType === "cars"
-                    ? "Rent Now"
-                    : tabType === "events"
-                    ? "Get Tickets"
-                    : "Book Now"
-                }</button>
-              </div>
-            `;
-
-            // Add event listener to the book button
-            const bookBtn = resultItem.querySelector(".book-result-btn");
-            bookBtn.addEventListener("click", function () {
-              const action =
-                tabType === "restaurants"
-                  ? "make a reservation"
-                  : tabType === "cars"
-                  ? "rent a car"
-                  : tabType === "events"
-                  ? "purchase tickets"
-                  : "book accommodation";
-              showLoginMessage(action);
-            });
-
-            resultsContainer.appendChild(resultItem);
-          });
-        }
-
-        // Helper function to show no results message
-        function showNoResults(tabType, location) {
-          resultsContainer.innerHTML = `
-            <div class="no-results-message">
-              <i class="fas fa-search"></i>
-              <h4>No ${tabType} found in ${location || "this location"}</h4>
-              <p>Try adjusting your search or explore other locations.</p>
-            </div>
-          `;
-          // Ensure results container is visible
-          document.getElementById("search-results").classList.add("active");
-        }
-
         // Search form submission
-        searchForm.addEventListener("submit", function (e) {
+        searchForm.addEventListener("submit", async function (e) {
           e.preventDefault();
 
           // Get form values
@@ -2669,170 +2370,250 @@
           const checkOut = document.getElementById("check-out").value;
           const guests = document.getElementById("guests").value;
 
-          // Update search results location and dates
-          document.getElementById("search-location").textContent =
-            destination || "Riyadh";
-
-          const checkInDate = checkIn
-            ? new Date(checkIn).toLocaleDateString()
-            : "today";
-          const checkOutDate = checkOut
-            ? new Date(checkOut).toLocaleDateString()
-            : "tomorrow";
-
-          document.getElementById("check-in-date").textContent = checkInDate;
-          document.getElementById("check-out-date").textContent = checkOutDate;
-
           // Get active tab
           const activeTab = document
             .querySelector(".search-tab.active")
             .getAttribute("data-tab");
 
-          // Generate results for active tab and location
-          generateSampleResults(activeTab, destination);
+          try {
+            // Show loading state
+            document.getElementById("search-results").innerHTML = 
+              '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+            document.getElementById("search-results").classList.add("active");
 
-          // Show results section only after search
-          document.getElementById("search-results").classList.add("active");
-
-          // Scroll to results
-          document.getElementById("search-results").scrollIntoView({
-            behavior: "smooth",
-          });
-        });
-
-        // AI Assistant functionality
-        const aiSubmitBtn = document.getElementById("ai-submit-btn");
-        const aiQuery = document.getElementById("ai-query");
-        const aiResults = document.getElementById("ai-results");
-
-        // Example prompts click handler
-        document.querySelectorAll(".example-prompt").forEach((prompt) => {
-          prompt.addEventListener("click", function () {
-            aiQuery.value = this.textContent;
-            aiQuery.focus();
-          });
-
-          // Add keyboard support for example prompts
-          prompt.addEventListener("keydown", function (e) {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              aiQuery.value = this.textContent;
-              aiQuery.focus();
+            // Build query parameters
+            const params = new URLSearchParams();
+            params.append('type', activeTab);
+            if (destination) params.append('location', destination);
+            
+            // For hotels: add date filters
+            if (activeTab === 'hotels' && checkIn) {
+              params.append('date', checkIn);
             }
-          });
-        });
+            
+            // For events: use check-in date
+            if (activeTab === 'events' && checkIn) {
+              params.append('date', checkIn);
+            }
 
-        // AI Submit handler
-        aiSubmitBtn.addEventListener("click", function () {
-          const query = aiQuery.value.trim();
+            // Make API call to backend
+            const response = await fetch(`https://saudiguiderbackend.onrender.com/api/services/search?${params}`);
+            const data = await response.json();
 
-          if (query === "") {
-            return;
+            if (!response.ok) {
+              throw new Error(data.message || 'Failed to fetch results');
+            }
+
+            // Update search results location and dates
+            document.getElementById("search-location").textContent =
+              destination || "Riyadh";
+
+            const checkInDate = checkIn
+              ? new Date(checkIn).toLocaleDateString()
+              : "today";
+            const checkOutDate = checkOut
+              ? new Date(checkOut).toLocaleDateString()
+              : "tomorrow";
+
+            document.getElementById("check-in-date").textContent = checkInDate;
+            document.getElementById("check-out-date").textContent = checkOutDate;
+
+            // Display results
+            displaySearchResults(data.data, activeTab);
+            
+          } catch (error) {
+            console.error('Search error:', error);
+            document.getElementById("search-results").innerHTML = `
+              <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load search results. Please try again.</p>
+              </div>
+            `;
           }
-
-          // Show loading state
-          aiResults.innerHTML =
-            '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
-          aiResults.classList.add("active");
-
-          // Simulate API call delay
-          setTimeout(() => {
-            generateAIResponse(query);
-          }, 1500);
         });
 
         /**
-         * Generates and displays AI response based on user query
-         * @param {string} query - The user's query/request
+         * Displays search results in the results container
+         * @param {Array} services - Array of service objects
+         * @param {string} type - Type of service (hotels, restaurants, cars, events)
          */
-        function generateAIResponse(query) {
-          // Find matching response or use default
-          let responseKey = "default";
-          for (const key in aiResponses) {
-            if (query.includes(key)) {
-              responseKey = key;
-              break;
-            }
+        function displaySearchResults(services, type) {
+          const resultsContainer = document.getElementById("results-container");
+          resultsContainer.innerHTML = '';
+
+          if (!services || services.length === 0) {
+            resultsContainer.innerHTML = `
+              <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h4>No ${type} found matching your criteria</h4>
+                <p>Try adjusting your search filters</p>
+              </div>
+            `;
+            return;
           }
 
-          const response = aiResponses[responseKey];
+          services.forEach(service => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            
+            // Determine price display based on service type
+            let priceDisplay;
+            if (type === 'hotels') {
+              priceDisplay = `From ${service.price} SAR/night`;
+            } else if (type === 'restaurants') {
+              priceDisplay = `Average meal: ${service.price} SAR`;
+            } else if (type === 'cars') {
+              priceDisplay = `From ${service.price} SAR/day`;
+            } else {
+              priceDisplay = `From ${service.price} SAR`;
+            }
 
-          // Display response
-          aiResults.innerHTML = response.response;
+            // Build stars for rating
+            const stars = Array(Math.floor(service.rating || 0))
+              .fill('<i class="fas fa-star"></i>')
+              .join('');
 
-          // Add action buttons
-          const actionDiv = document.createElement("div");
-          actionDiv.className = "ai-actions";
+            resultItem.innerHTML = `
+              <div class="result-image">
+                <img src="${service.imageUrl || './images/default-service.jpg'}" 
+                     alt="${service.title}" loading="lazy">
+              </div>
+              <h4>${service.title}</h4>
+              <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
+              <div class="result-rating">
+                ${stars}
+                <span>${service.rating || 'No'} rating</span>
+              </div>
+              <p class="result-price">${priceDisplay}</p>
+              <p class="description">${service.description || 'No description available'}</p>
+              <div class="result-actions">
+                <button class="result-button book-result-btn" data-id="${service._id}">
+                  ${type === 'restaurants' ? 'Reserve' : 
+                    type === 'cars' ? 'Rent Now' : 
+                    type === 'events' ? 'Get Tickets' : 'Book Now'}
+                </button>
+              </div>
+            `;
 
-          response.actions.forEach((action, index) => {
-            const button = document.createElement("button");
-            button.className = `ai-action-btn ${
-              index === 0 ? "primary" : "secondary"
-            }`;
-            button.textContent = action;
-            button.addEventListener("click", function () {
-              showComingSoonMessage();
+            // Add event listener to the book button
+            resultItem.querySelector('.book-result-btn').addEventListener('click', () => {
+              bookService(service._id, type);
             });
-            actionDiv.appendChild(button);
+
+            resultsContainer.appendChild(resultItem);
           });
-
-          aiResults.appendChild(actionDiv);
-
-          // Scroll to results
-          aiResults.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
 
-        // Modal system
-        const modals = {
-          hotel: document.getElementById("hotelModal"),
-          car: document.getElementById("carModal"),
-          restaurant: document.getElementById("restaurantModal"),
-          event: document.getElementById("eventModal"),
-        };
-
-        // Open Modal from featured services
-        document.querySelectorAll(".view-details-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const service = btn.getAttribute("data-service");
-            if (modals[service]) {
-              modals[service].style.display = "flex";
-              document.body.style.overflow = "hidden";
-              modals[service].querySelector(".close-modal").focus();
-            }
-          });
-        });
-
-        // Close Modal
-        document.querySelectorAll(".close-modal").forEach((closeBtn) => {
-          closeBtn.addEventListener("click", () => {
-            Object.values(modals).forEach((m) => {
-              m.style.display = "none";
-              document.body.style.overflow = "";
-            });
-          });
-        });
-
-        // Close modal on outside click
-        window.addEventListener("click", (e) => {
-          Object.values(modals).forEach((modal) => {
-            if (e.target === modal) {
-              modal.style.display = "none";
-              document.body.style.overflow = "";
-            }
-          });
-        });
-
-        // Close modal with Escape key
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") {
-            Object.values(modals).forEach((m) => {
-              if (m.style.display === "flex") {
-                m.style.display = "none";
-                document.body.style.overflow = "";
-              }
-            });
+        /**
+         * Books a service by making an API call to the backend
+         * @param {string} serviceId - ID of the service to book
+         * @param {string} serviceType - Type of service (hotels, restaurants, cars, events)
+         */
+        async function bookService(serviceId, serviceType) {
+          const token = localStorage.getItem('token');
+          
+          if (!token) {
+            const action = serviceType === 'restaurants' ? 'make a reservation' :
+                          serviceType === 'cars' ? 'rent a car' :
+                          serviceType === 'events' ? 'purchase tickets' : 'book accommodation';
+            showLoginMessage(action);
+            return;
           }
-        });
+
+          try {
+            const response = await fetch('https://saudiguiderbackend.onrender.com/api/services/book', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ serviceId })
+            });
+            
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.message || 'Booking failed');
+            }
+
+            showBookingSuccess(serviceId);
+          } catch (error) {
+            console.error('Booking error:', error);
+            showBookingError(error.message || 'Failed to complete booking');
+          }
+        }
+
+        /**
+         * Shows a success message after booking
+         * @param {string} serviceId - ID of the booked service
+         */
+        function showBookingSuccess(serviceId) {
+          const modal = document.createElement('div');
+          modal.className = 'booking-success-modal';
+          modal.innerHTML = `
+            <div class="modal-content">
+              <i class="fas fa-check-circle"></i>
+              <h3>Booking Confirmed!</h3>
+              <p>Your reservation has been successfully created.</p>
+              <div class="modal-actions">
+                <button onclick="window.location.href='reservations.html'">
+                  View My Reservations
+                </button>
+                <button onclick="this.closest('.booking-success-modal').remove()">
+                  Continue Browsing
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+        }
+
+        /**
+         * Shows an error message when booking fails
+         * @param {string} message - Error message to display
+         */
+        function showBookingError(message) {
+          const modal = document.createElement('div');
+          modal.className = 'booking-success-modal';
+          modal.innerHTML = `
+            <div class="modal-content">
+              <i class="fas fa-exclamation-circle" style="color: #ff5252;"></i>
+              <h3>Booking Failed</h3>
+              <p>${message}</p>
+              <div class="modal-actions">
+                <button onclick="this.closest('.booking-success-modal').remove()">
+                  OK
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+        }
+
+        /**
+         * Shows login message when user tries to book without being logged in
+         * @param {string} action - The action requiring login (e.g., "book accommodation")
+         */
+        function showLoginMessage(action) {
+          const loginMessage = document.createElement("div");
+          loginMessage.className = "login-message";
+          loginMessage.innerHTML = `
+            <div class="login-message-content">
+              <p>Please login to ${action}.</p>
+              <button onclick="window.location.href='login.html'" class="login-redirect-btn">
+                Go to Login Page
+              </button>
+            </div>
+          `;
+          document.body.appendChild(loginMessage);
+
+          // Close when clicking outside
+          loginMessage.addEventListener("click", function (e) {
+            if (e.target === loginMessage) {
+              loginMessage.remove();
+            }
+          });
+        }
 
         // Set default dates for hotel search
         const today = new Date();
@@ -2884,94 +2665,131 @@
             showLoginMessage(`book ${service}`);
           });
         });
+
+        // Logout functionality
+        document.getElementById('logoutBtn')?.addEventListener('click', function() {
+          localStorage.removeItem('token');
+          window.location.href = 'index.html';
+        });
       });
-      async function searchServices() {
-  const type = document.getElementById('type').value;
-  const location = document.getElementById('location').value;
-  const priceRange = document.getElementById('priceRange').value;
 
-  const query = new URLSearchParams({ type, location, priceRange }).toString();
+      // AI Assistant functionality
+      document.getElementById('ai-submit-btn')?.addEventListener('click', async function() {
+        const query = document.getElementById('ai-query').value.trim();
+        const aiResults = document.getElementById('ai-results');
 
-  try {
-    const res = await fetch(`https://saudiguiderbackend.onrender.com/api/services/search
-?${query}`);
-    const services = await res.json();
+        if (!query) return;
 
-    // Now render services dynamically on page
-    console.log(services);
-  } catch (error) {
-    console.error('Service Search Error:', error);
-  }
-}
+        try {
+          // Show loading state
+          aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
+          aiResults.classList.add('active');
 
-      async function bookService(serviceId) {
-  const token = localStorage.getItem('token');
+          // Make API call to backend AI endpoint
+          const response = await fetch('https://saudiguiderbackend.onrender.com/api/ai/ask', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: query })
+          });
 
-  if (!token) {
-    alert('Please login first to book a service!');
-    window.location.href = 'login.html';
-    return;
-  }
+          const data = await response.json();
 
-  try {
-    const res = await fetch('https://saudiguiderbackend.onrender.com/api/services/book
-', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ serviceId })
-    });
+          if (!response.ok) {
+            throw new Error(data.message || 'AI request failed');
+          }
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert('Booking successful!');
-    } else {
-      alert(data.message || 'Booking failed');
-    }
-  } catch (error) {
-    console.error('Booking Error:', error);
-  }
-}
-
-  async function handleAiAssistantSubmit() {
-  const userInput = document.getElementById('aiInput').value;
-  if (!userInput) return;
-
-  try {
-    const res = await fetch('https://saudiguiderbackend.onrender.com/api/ai/ask
-', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: userInput })
-    });
-
-    const data = await res.json();
-
-    const aiResults = document.getElementById('aiResults');
-    aiResults.innerHTML = ''; // Clear previous
-
-    if (data.type === 'trip-plan') {
-      data.plan.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'trip-card';
-        card.innerHTML = `
-          <h3>${item.type}: ${item.service.title}</h3>
-          <p>${item.service.description}</p>
-          <p>Price: ${item.service.price} SAR</p>
-          <button onclick="bookService('${item.service._id}')">Reserve</button>
-        `;
-        aiResults.appendChild(card);
+          // Display AI response
+          displayAIResponse(data);
+        } catch (error) {
+          console.error('AI error:', error);
+          aiResults.innerHTML = `
+            <div class="error-message">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>Failed to get AI response. Please try again.</p>
+            </div>
+          `;
+        }
       });
-    } else if (data.type === 'text') {
-      aiResults.innerText = data.reply;
-    }
-  } catch (error) {
-    console.error('AI Assistant Error:', error);
-  }
-}
+
+      /**
+       * Displays the AI response in the results section
+       * @param {Object} data - Response data from the AI endpoint
+       */
+      function displayAIResponse(data) {
+        const aiResults = document.getElementById('ai-results');
+        
+        if (data.type === 'trip-plan') {
+          // Display trip plan with services
+          aiResults.innerHTML = `
+            <div class="ai-response">
+              <h3>${data.title || 'Your Trip Plan'}</h3>
+              <p>${data.description || 'Here are our recommendations for your trip:'}</p>
+            </div>
+          `;
+
+          // Create cards for each service in the plan
+          data.plan.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'trip-card';
+            
+            let priceDisplay;
+            if (item.service.type === 'hotels') {
+              priceDisplay = `From ${item.service.price} SAR/night`;
+            } else if (item.service.type === 'restaurants') {
+              priceDisplay = `Average meal: ${item.service.price} SAR`;
+            } else if (item.service.type === 'cars') {
+              priceDisplay = `From ${item.service.price} SAR/day`;
+            } else {
+              priceDisplay = `From ${item.service.price} SAR`;
+            }
+
+            card.innerHTML = `
+              <h3>${item.type}: ${item.service.title}</h3>
+              <p>${item.service.description || 'No description available'}</p>
+              <p>Location: ${item.service.location}</p>
+              <p>Price: ${priceDisplay}</p>
+              <button data-id="${item.service._id}">Reserve</button>
+            `;
+
+            // Add click handler to reserve button
+            card.querySelector('button').addEventListener('click', () => {
+              bookService(item.service._id, item.service.type);
+            });
+
+            aiResults.appendChild(card);
+          });
+        } else {
+          // Display text response
+          aiResults.innerHTML = `
+            <div class="ai-response">
+              <h3>Travel Recommendations</h3>
+              <p>${data.reply || 'No response from AI assistant.'}</p>
+            </div>
+          `;
+        }
+
+        // Scroll to results
+        aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Example prompts click handler
+      document.querySelectorAll('.example-prompt').forEach((prompt) => {
+        prompt.addEventListener('click', function() {
+          document.getElementById('ai-query').value = this.textContent;
+          document.getElementById('ai-query').focus();
+        });
+
+        // Add keyboard support for example prompts
+        prompt.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            document.getElementById('ai-query').value = this.textContent;
+            document.getElementById('ai-query').focus();
+          }
+        });
+      });
     </script>
   </body>
 </html>
