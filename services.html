@@ -367,31 +367,7 @@
       .search-button:hover {
         background-color: var(--secondary-dark);
       }
-      .trip-card {
-  background-color: #3a3a3a;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
 
-.trip-card h3 {
-  margin-bottom: 0.5rem;
-}
-
-.trip-card button {
-  margin-top: 1rem;
-  background: #8fb6c0;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
-.trip-card button:hover {
-  background: #4c8ba9;
-}
       /* Search Results */
       .search-results {
         display: none;
@@ -417,6 +393,7 @@
         border-radius: 8px;
         padding: 1rem;
         transition: transform var(--transition-speed);
+        position: relative;
       }
 
       .result-item:hover {
@@ -428,6 +405,7 @@
         overflow: hidden;
         border-radius: 6px;
         margin-bottom: 1rem;
+        position: relative;
       }
 
       .result-image img {
@@ -514,8 +492,8 @@
       .section-flex {
         display: flex;
         align-items: center;
-        justify-content: center; /* Vertically centers items */
-        gap: 50px; /* Adds space between title & button */
+        justify-content: center;
+        gap: 50px;
       }
       .Aibutton {
         padding: 0.7rem 1rem;
@@ -530,6 +508,110 @@
         background-color: var(--secondary-dark);
         transition: background-color var(--transition-speed);
       }
+
+      /* Search form enhancements */
+      .sort-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-gray);
+      }
+
+      .sort-options {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .sort-options select {
+        padding: 0.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+        border: 1px solid var(--border-gray);
+        border-radius: 4px;
+      }
+
+      .results-count {
+        color: var(--secondary);
+        font-weight: 600;
+      }
+
+      /* Amenities tags */
+      .amenities {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+        flex-wrap: wrap;
+      }
+
+      .amenity-tag {
+        background-color: var(--secondary-dark);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+      }
+
+      /* Featured badge */
+      .featured-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--secondary);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+
+      /* Multi-select styling */
+      select[multiple] {
+        height: auto;
+        min-height: 100px;
+      }
+
+      select[multiple] option {
+        padding: 0.5rem;
+        margin: 0.2rem 0;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      select[multiple] option:checked {
+        background-color: var(--secondary);
+        color: white;
+      }
+
+      /* Trip cards for AI results */
+      .trip-card {
+        background-color: #3a3a3a;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+
+      .trip-card h3 {
+        margin-bottom: 0.5rem;
+      }
+
+      .trip-card button {
+        margin-top: 1rem;
+        background: #8fb6c0;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+      }
+      .trip-card button:hover {
+        background: #4c8ba9;
+      }
+
       /* AI Assistant */
       .ai-assistant {
         background-color: var(--darker-gray);
@@ -1406,25 +1488,25 @@
       </nav>
 
       <div class="auth-buttons">
-  <button onclick="window.location.href='login.html'" aria-label="Log in">
-    <i class="fas fa-sign-in-alt"></i> Log In
-  </button>
-  <button onclick="window.location.href='signup.html'" aria-label="Sign up">
-    <i class="fas fa-user-plus"></i> Sign Up
-  </button>
-</div>
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button onclick="window.location.href='signup.html'" aria-label="Sign up">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
 
-<div class="user-dropdown" id="userDropdown" style="display: none;">
-  <button class="user-toggle">
-    <span id="usernameDisplay"></span>
-    <i class="fas fa-caret-down"></i>
-  </button>
-  <div class="dropdown-menu">
-    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
-    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-  </div>
-</div>
+      <div class="user-dropdown" id="userDropdown" style="display: none;">
+        <button class="user-toggle">
+          <span id="usernameDisplay"></span>
+          <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+      </div>
     </header>
 
     <main id="main-content">
@@ -1731,6 +1813,36 @@
                 <option value="3">3 Guests</option>
                 <option value="4">4 Guests</option>
                 <option value="5">5+ Guests</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="price-range">Price Range</label>
+              <select id="price-range">
+                <option value="all">Any Price</option>
+                <option value="0-100">Under 100 SAR</option>
+                <option value="100-300">100-300 SAR</option>
+                <option value="300-500">300-500 SAR</option>
+                <option value="500-1000">500-1000 SAR</option>
+                <option value="1000+">Over 1000 SAR</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="min-rating">Minimum Rating</label>
+              <select id="min-rating">
+                <option value="0">Any Rating</option>
+                <option value="3">3+ Stars</option>
+                <option value="4">4+ Stars</option>
+                <option value="4.5">4.5+ Stars</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="amenities">Amenities</label>
+              <select id="amenities" multiple>
+                <option value="wifi">Free WiFi</option>
+                <option value="parking">Free Parking</option>
+                <option value="pool">Swimming Pool</option>
+                <option value="gym">Fitness Center</option>
+                <option value="breakfast">Free Breakfast</option>
               </select>
             </div>
             <button type="submit" class="search-button">
@@ -2314,48 +2426,41 @@
          * @param {string} tabType - The type of tab selected (hotels, restaurants, cars, events)
          */
         function updateSearchForm(tabType) {
-          const destinationLabel = searchForm.querySelector(
-            'label[for="destination"]'
-          );
-          const destinationInput = searchForm.querySelector("#destination");
-          const checkInGroup = searchForm.querySelector(
-            ".form-group:nth-child(2)"
-          );
-          const checkOutGroup = searchForm.querySelector(
-            ".form-group:nth-child(3)"
-          );
-          const guestsGroup = searchForm.querySelector(
-            ".form-group:nth-child(4)"
-          );
-
+          const formGroups = searchForm.querySelectorAll(".form-group");
+          
+          // Hide all form groups first
+          formGroups.forEach(group => group.style.display = "none");
+          
+          // Always show destination field
+          formGroups[0].style.display = "block";
+          
+          // Show relevant fields based on service type
           switch (tabType) {
             case "hotels":
-              destinationLabel.textContent = "Destination";
-              destinationInput.placeholder = "City or region";
-              checkInGroup.style.display = "block";
-              checkOutGroup.style.display = "block";
-              guestsGroup.style.display = "block";
+              formGroups[1].style.display = "block"; // Check-in
+              formGroups[2].style.display = "block"; // Check-out
+              formGroups[3].style.display = "block"; // Guests
+              formGroups[4].style.display = "block"; // Price range
+              formGroups[5].style.display = "block"; // Rating
+              formGroups[6].style.display = "block"; // Amenities
               break;
             case "restaurants":
-              destinationLabel.textContent = "Location";
-              destinationInput.placeholder = "City or neighborhood";
-              checkInGroup.style.display = "none";
-              checkOutGroup.style.display = "none";
-              guestsGroup.style.display = "block";
+              formGroups[3].style.display = "block"; // Guests
+              formGroups[4].style.display = "block"; // Price range
+              formGroups[5].style.display = "block"; // Rating
+              formGroups[6].style.display = "block"; // Amenities
               break;
             case "cars":
-              destinationLabel.textContent = "Pickup Location";
-              destinationInput.placeholder = "City or airport";
-              checkInGroup.style.display = "block";
-              checkOutGroup.style.display = "block";
-              guestsGroup.style.display = "none";
+              formGroups[1].style.display = "block"; // Pickup date
+              formGroups[2].style.display = "block"; // Dropoff date
+              formGroups[4].style.display = "block"; // Price range
+              formGroups[5].style.display = "block"; // Rating
               break;
             case "events":
-              destinationLabel.textContent = "Event Location";
-              destinationInput.placeholder = "City or venue";
-              checkInGroup.style.display = "block";
-              checkOutGroup.style.display = "none";
-              guestsGroup.style.display = "block";
+              formGroups[1].style.display = "block"; // Event date
+              formGroups[3].style.display = "block"; // Tickets
+              formGroups[4].style.display = "block"; // Price range
+              formGroups[7].style.display = "block"; // Categories
               break;
           }
         }
@@ -2366,14 +2471,16 @@
 
           // Get form values
           const destination = document.getElementById("destination").value;
-          const checkIn = document.getElementById("check-in").value;
-          const checkOut = document.getElementById("check-out").value;
-          const guests = document.getElementById("guests").value;
+          const checkIn = document.getElementById("check-in")?.value;
+          const checkOut = document.getElementById("check-out")?.value;
+          const guests = document.getElementById("guests")?.value;
+          const priceRange = document.getElementById("price-range")?.value;
+          const minRating = document.getElementById("min-rating")?.value;
+          const amenities = Array.from(document.getElementById("amenities")?.selectedOptions || []).map(o => o.value);
+          const categories = Array.from(document.getElementById("categories")?.selectedOptions || []).map(o => o.value);
 
           // Get active tab
-          const activeTab = document
-            .querySelector(".search-tab.active")
-            .getAttribute("data-tab");
+          const activeTab = document.querySelector(".search-tab.active").getAttribute("data-tab");
 
           try {
             // Show loading state
@@ -2384,16 +2491,32 @@
             // Build query parameters
             const params = new URLSearchParams();
             params.append('type', activeTab);
-            if (destination) params.append('location', destination);
             
-            // For hotels: add date filters
-            if (activeTab === 'hotels' && checkIn) {
-              params.append('date', checkIn);
-            }
+            if (destination) params.append('search', destination);
+            if (priceRange && priceRange !== 'all') params.append('priceRange', priceRange);
+            if (minRating && minRating !== '0') params.append('minRating', minRating);
             
-            // For events: use check-in date
-            if (activeTab === 'events' && checkIn) {
-              params.append('date', checkIn);
+            // Add filters based on service type
+            switch (activeTab) {
+              case 'hotels':
+                if (checkIn) params.append('checkIn', checkIn);
+                if (checkOut) params.append('checkOut', checkOut);
+                if (guests) params.append('capacity', guests);
+                if (amenities.length) params.append('amenities', amenities.join(','));
+                break;
+              case 'restaurants':
+                if (guests) params.append('capacity', guests);
+                if (amenities.length) params.append('amenities', amenities.join(','));
+                break;
+              case 'cars':
+                if (checkIn) params.append('startDate', checkIn);
+                if (checkOut) params.append('endDate', checkOut);
+                break;
+              case 'events':
+                if (checkIn) params.append('date', checkIn);
+                if (guests) params.append('capacity', guests);
+                if (categories.length) params.append('categories', categories.join(','));
+                break;
             }
 
             // Make API call to backend
@@ -2418,7 +2541,7 @@
             document.getElementById("check-in-date").textContent = checkInDate;
             document.getElementById("check-out-date").textContent = checkOutDate;
 
-            // Display results
+            // Display results with sorting options
             displaySearchResults(data.data, activeTab);
             
           } catch (error) {
@@ -2426,14 +2549,14 @@
             document.getElementById("search-results").innerHTML = `
               <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to load search results. Please try again.</p>
+                <p>${error.message || 'Failed to load search results. Please try again.'}</p>
               </div>
             `;
           }
         });
 
         /**
-         * Displays search results in the results container
+         * Displays search results in the results container with sorting options
          * @param {Array} services - Array of service objects
          * @param {string} type - Type of service (hotels, restaurants, cars, events)
          */
@@ -2441,8 +2564,31 @@
           const resultsContainer = document.getElementById("results-container");
           resultsContainer.innerHTML = '';
 
+          // Add sorting controls
+          const sortControls = document.createElement('div');
+          sortControls.className = 'sort-controls';
+          sortControls.innerHTML = `
+            <div class="sort-options">
+              <label for="sort-by">Sort by:</label>
+              <select id="sort-by">
+                <option value="recommended">Recommended</option>
+                <option value="price-low">Price (Low to High)</option>
+                <option value="price-high">Price (High to Low)</option>
+                <option value="rating">Rating</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+            </div>
+            <div class="results-count">${services.length} results found</div>
+          `;
+          resultsContainer.appendChild(sortControls);
+
+          // Add event listener for sorting
+          sortControls.querySelector('#sort-by').addEventListener('change', function() {
+            sortResults(services, type, this.value);
+          });
+
           if (!services || services.length === 0) {
-            resultsContainer.innerHTML = `
+            resultsContainer.innerHTML += `
               <div class="no-results">
                 <i class="fas fa-search"></i>
                 <h4>No ${type} found matching your criteria</h4>
@@ -2452,7 +2598,52 @@
             return;
           }
 
-          services.forEach(service => {
+          // Display initial sorted results
+          sortResults(services, type, 'recommended');
+        }
+
+        /**
+         * Sorts and displays results based on selected option
+         * @param {Array} services - Array of service objects
+         * @param {string} type - Type of service
+         * @param {string} sortBy - Sorting criteria
+         */
+        function sortResults(services, type, sortBy) {
+          const resultsContainer = document.getElementById("results-container");
+          
+          // Remove existing results (keep sort controls)
+          const sortControls = resultsContainer.querySelector('.sort-controls');
+          while (resultsContainer.children.length > 1) {
+            resultsContainer.removeChild(resultsContainer.lastChild);
+          }
+
+          // Sort services
+          let sortedServices = [...services];
+          switch (sortBy) {
+            case 'price-low':
+              sortedServices.sort((a, b) => a.price - b.price);
+              break;
+            case 'price-high':
+              sortedServices.sort((a, b) => b.price - a.price);
+              break;
+            case 'rating':
+              sortedServices.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+              break;
+            case 'name':
+              sortedServices.sort((a, b) => a.title.localeCompare(b.title));
+              break;
+            default:
+              // Recommended sorting (default)
+              sortedServices.sort((a, b) => {
+                // Prioritize featured items first
+                if (a.featured !== b.featured) return b.featured - a.featured;
+                // Then by rating
+                return (b.rating || 0) - (a.rating || 0);
+              });
+          }
+
+          // Display sorted results
+          sortedServices.forEach(service => {
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
             
@@ -2473,18 +2664,25 @@
               .fill('<i class="fas fa-star"></i>')
               .join('');
 
+            // Build amenities list
+            const amenitiesList = service.amenities?.slice(0, 3).map(amenity => 
+              `<span class="amenity-tag">${amenity}</span>`
+            ).join('') || '';
+
             resultItem.innerHTML = `
               <div class="result-image">
                 <img src="${service.imageUrl || './images/default-service.jpg'}" 
                      alt="${service.title}" loading="lazy">
+                ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
               </div>
               <h4>${service.title}</h4>
               <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
               <div class="result-rating">
                 ${stars}
-                <span>${service.rating || 'No'} rating</span>
+                <span>${service.rating?.toFixed(1) || 'No'} rating</span>
               </div>
               <p class="result-price">${priceDisplay}</p>
+              ${amenitiesList ? `<div class="amenities">${amenitiesList}</div>` : ''}
               <p class="description">${service.description || 'No description available'}</p>
               <div class="result-actions">
                 <button class="result-button book-result-btn" data-id="${service._id}">
@@ -2629,15 +2827,14 @@
         };
 
         document.getElementById("check-in").value = formatDate(today);
+        document.getElementById("check-in").min = formatDate(today);
         document.getElementById("check-out").value = formatDate(tomorrow);
         document.getElementById("check-out").min = formatDate(tomorrow);
 
         // Update min date for check-out when check-in changes
-        document
-          .getElementById("check-in")
-          .addEventListener("change", function () {
-            document.getElementById("check-out").min = this.value;
-          });
+        document.getElementById("check-in").addEventListener("change", function() {
+          document.getElementById("check-out").min = this.value;
+        });
 
         // Initialize with empty results (don't show results before search)
         document.getElementById("search-results").classList.remove("active");
@@ -2671,123 +2868,123 @@
           localStorage.removeItem('token');
           window.location.href = 'index.html';
         });
-      });
 
-      // AI Assistant functionality
-      document.getElementById('ai-submit-btn')?.addEventListener('click', async function() {
-        const query = document.getElementById('ai-query').value.trim();
-        const aiResults = document.getElementById('ai-results');
+        // AI Assistant functionality
+        document.getElementById('ai-submit-btn').addEventListener('click', async function() {
+          const query = document.getElementById('ai-query').value.trim();
+          const aiResults = document.getElementById('ai-results');
 
-        if (!query) return;
+          if (!query) return;
 
-        try {
-          // Show loading state
-          aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
-          aiResults.classList.add('active');
+          try {
+            // Show loading state
+            aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
+            aiResults.classList.add('active');
 
-          // Make API call to backend AI endpoint
-          const response = await fetch('https://saudiguiderbackend.onrender.com/api/ai/ask', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ prompt: query })
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.message || 'AI request failed');
-          }
-
-          // Display AI response
-          displayAIResponse(data);
-        } catch (error) {
-          console.error('AI error:', error);
-          aiResults.innerHTML = `
-            <div class="error-message">
-              <i class="fas fa-exclamation-triangle"></i>
-              <p>Failed to get AI response. Please try again.</p>
-            </div>
-          `;
-        }
-      });
-
-      /**
-       * Displays the AI response in the results section
-       * @param {Object} data - Response data from the AI endpoint
-       */
-      function displayAIResponse(data) {
-        const aiResults = document.getElementById('ai-results');
-        
-        if (data.type === 'trip-plan') {
-          // Display trip plan with services
-          aiResults.innerHTML = `
-            <div class="ai-response">
-              <h3>${data.title || 'Your Trip Plan'}</h3>
-              <p>${data.description || 'Here are our recommendations for your trip:'}</p>
-            </div>
-          `;
-
-          // Create cards for each service in the plan
-          data.plan.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'trip-card';
-            
-            let priceDisplay;
-            if (item.service.type === 'hotels') {
-              priceDisplay = `From ${item.service.price} SAR/night`;
-            } else if (item.service.type === 'restaurants') {
-              priceDisplay = `Average meal: ${item.service.price} SAR`;
-            } else if (item.service.type === 'cars') {
-              priceDisplay = `From ${item.service.price} SAR/day`;
-            } else {
-              priceDisplay = `From ${item.service.price} SAR`;
-            }
-
-            card.innerHTML = `
-              <h3>${item.type}: ${item.service.title}</h3>
-              <p>${item.service.description || 'No description available'}</p>
-              <p>Location: ${item.service.location}</p>
-              <p>Price: ${priceDisplay}</p>
-              <button data-id="${item.service._id}">Reserve</button>
-            `;
-
-            // Add click handler to reserve button
-            card.querySelector('button').addEventListener('click', () => {
-              bookService(item.service._id, item.service.type);
+            // Make API call to backend AI endpoint
+            const response = await fetch('https://saudiguiderbackend.onrender.com/api/ai/ask', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ prompt: query })
             });
 
-            aiResults.appendChild(card);
-          });
-        } else {
-          // Display text response
-          aiResults.innerHTML = `
-            <div class="ai-response">
-              <h3>Travel Recommendations</h3>
-              <p>${data.reply || 'No response from AI assistant.'}</p>
-            </div>
-          `;
-        }
+            const data = await response.json();
 
-        // Scroll to results
-        aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+            if (!response.ok) {
+              throw new Error(data.message || 'AI request failed');
+            }
 
-      // Example prompts click handler
-      document.querySelectorAll('.example-prompt').forEach((prompt) => {
-        prompt.addEventListener('click', function() {
-          document.getElementById('ai-query').value = this.textContent;
-          document.getElementById('ai-query').focus();
+            // Display AI response
+            displayAIResponse(data);
+          } catch (error) {
+            console.error('AI error:', error);
+            aiResults.innerHTML = `
+              <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to get AI response. Please try again.</p>
+              </div>
+            `;
+          }
         });
 
-        // Add keyboard support for example prompts
-        prompt.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
+        /**
+         * Displays the AI response in the results section
+         * @param {Object} data - Response data from the AI endpoint
+         */
+        function displayAIResponse(data) {
+          const aiResults = document.getElementById('ai-results');
+          
+          if (data.type === 'trip-plan') {
+            // Display trip plan with services
+            aiResults.innerHTML = `
+              <div class="ai-response">
+                <h3>${data.title || 'Your Trip Plan'}</h3>
+                <p>${data.description || 'Here are our recommendations for your trip:'}</p>
+              </div>
+            `;
+
+            // Create cards for each service in the plan
+            data.plan.forEach(item => {
+              const card = document.createElement('div');
+              card.className = 'trip-card';
+              
+              let priceDisplay;
+              if (item.service.type === 'hotels') {
+                priceDisplay = `From ${item.service.price} SAR/night`;
+              } else if (item.service.type === 'restaurants') {
+                priceDisplay = `Average meal: ${item.service.price} SAR`;
+              } else if (item.service.type === 'cars') {
+                priceDisplay = `From ${item.service.price} SAR/day`;
+              } else {
+                priceDisplay = `From ${item.service.price} SAR`;
+              }
+
+              card.innerHTML = `
+                <h3>${item.type}: ${item.service.title}</h3>
+                <p>${item.service.description || 'No description available'}</p>
+                <p>Location: ${item.service.location}</p>
+                <p>Price: ${priceDisplay}</p>
+                <button data-id="${item.service._id}">Reserve</button>
+              `;
+
+              // Add click handler to reserve button
+              card.querySelector('button').addEventListener('click', () => {
+                bookService(item.service._id, item.service.type);
+              });
+
+              aiResults.appendChild(card);
+            });
+          } else {
+            // Display text response
+            aiResults.innerHTML = `
+              <div class="ai-response">
+                <h3>Travel Recommendations</h3>
+                <p>${data.reply || 'No response from AI assistant.'}</p>
+              </div>
+            `;
+          }
+
+          // Scroll to results
+          aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Example prompts click handler
+        document.querySelectorAll('.example-prompt').forEach((prompt) => {
+          prompt.addEventListener('click', function() {
             document.getElementById('ai-query').value = this.textContent;
             document.getElementById('ai-query').focus();
-          }
+          });
+
+          // Add keyboard support for example prompts
+          prompt.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              document.getElementById('ai-query').value = this.textContent;
+              document.getElementById('ai-query').focus();
+            }
+          });
         });
       });
     </script>
