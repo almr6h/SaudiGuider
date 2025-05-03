@@ -3137,67 +3137,67 @@
         }
 
         // AI Assistant functionality
-        const aiSubmitBtn = getElement('ai-submit-btn');
-        if (aiSubmitBtn) {
-            aiSubmitBtn.addEventListener('click', async function() {
-                const query = getElement('ai-query')?.value.trim();
-                const aiResults = getElement('ai-results');
+    const aiSubmitBtn = getElement('ai-submit-btn');
+    if (aiSubmitBtn) {
+        aiSubmitBtn.addEventListener('click', async function() {
+            const query = getElement('ai-query')?.value.trim();
+            const aiResults = getElement('ai-results');
 
-                if (!query || !aiResults) return;
+            if (!query || !aiResults) return;
 
-                try {
-                    // Show loading state
-                    aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
-                    aiResults.classList.add('active');
+            try {
+                // Show loading state
+                aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
+                aiResults.classList.add('active');
 
-                    // Make API call to backend AI endpoint
-                    const response = await fetch('https://saudiguiderbackend.onrender.com/api/bookings/ai', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token || ''}`
-                        },
-                        body: JSON.stringify({ prompt: query })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('AI endpoint not found');
-                    }
-
-                    const data = await response.json();
-
-                    // Display AI response
-                    displayAIResponse(data);
-                } catch (error) {
-                    console.error('AI error:', error);
-                    if (aiResults) {
-                        aiResults.innerHTML = `
-                            <div class="error-message">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>${error.message || 'Failed to get AI response. Please try again.'}</p>
-                            </div>
-                        `;
-                    }
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error("Please login to use the AI service.");
                 }
-            });
-        }
+
+                // Make API call to backend AI endpoint
+                const response = await fetch('https://saudiguiderbackend.onrender.com/api/bookings/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ prompt: query }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`AI service error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Display AI response
+                displayAIResponse(data);
+            } catch (error) {
+                console.error('AI error:', error);
+                aiResults.innerHTML = `<div class="error-message">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <p>${error.message || 'Failed to get AI response. Please try again.'}</p>
+                                        </div>`;
+            }
+        });
+    }
 
         /**
          * Displays the AI response in the results section
          * @param {Object} data - Response data from the AI endpoint
          */
-        function displayAIResponse(data) {
-            const aiResults = getElement('ai-results');
-            if (!aiResults) return;
-            
-            if (data.type === 'trip-plan') {
-                // Display trip plan with services
-                aiResults.innerHTML = `
-                    <div class="ai-response">
-                        <h3>${data.title || 'Your Trip Plan'}</h3>
-                        <p>${data.description || 'Here are our recommendations for your trip:'}</p>
-                    </div>
-                `;
+         function displayAIResponse(data) {
+        const aiResults = getElement('ai-results');
+        if (!aiResults) return;
+
+        aiResults.innerHTML = `
+            <div class="ai-response">
+                <h3>Travel Recommendations</h3>
+                <p>${data.reply || 'No response from AI assistant.'}</p>
+            </div>
+        `;
+
 
                 // Create cards for each service in the plan
                 data.plan?.forEach(item => {
@@ -3246,7 +3246,7 @@
             }
 
             // Scroll to results
-            aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // Example prompts click handler
