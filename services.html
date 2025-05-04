@@ -2216,150 +2216,293 @@
       </div>
     </footer>
 
-    <script>
+ <script>
         const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
         
         document.addEventListener("DOMContentLoaded", function() {
             console.log('DOM fully loaded and parsed');
             
-            // Search form submission
-            document.getElementById("hotel-search")?.addEventListener("submit", async function(e) {
-                e.preventDefault();
-                
-                try {
-                    console.log('Starting search for hotel');
-                    
-                    const searchParams = {
-                        destination: document.getElementById("destination")?.value || "Jeddah",
-                        checkIn: document.getElementById("check-in")?.value || "2025-05-04",
-                        checkOut: document.getElementById("check-out")?.value || "2025-05-05",
-                        guests: document.getElementById("guests")?.value || "2"
-                    };
-                    
-                    console.log('Search parameters:', searchParams);
-                    
-                    // Show loading state
-                    const searchResults = document.getElementById("search-results");
-                    if (searchResults) {
-                        searchResults.innerHTML = `
-                            <div class="loading-state">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <p>Searching for hotels...</p>
-                            </div>
-                        `;
-                        searchResults.style.display = 'block';
-                    }
-                    
-                    // Make API request
-                    const params = new URLSearchParams();
-                    params.append('type', 'hotel');
-                    params.append('location', searchParams.destination);
-                    params.append('startDate', searchParams.checkIn);
-                    params.append('endDate', searchParams.checkOut);
-                    params.append('capacity', searchParams.guests);
-                    
-                    const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
-                    console.log('Making API request to:', apiUrl);
-                    
-                    const response = await fetch(apiUrl);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Server responded with ${response.status}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Received search results:', data);
-                    
-                    displaySearchResults(data, 'hotels');
-                    
-                } catch (error) {
-                    console.error('Search error:', error);
-                    showError(error.message || 'Failed to load search results');
-                }
-            });
-            
-            // Display search results
-            function displaySearchResults(response, type) {
-                try {
-                    const services = response.data || [];
-                    console.log(`Displaying ${services.length} results for ${type}`);
-                    
-                    const resultsContainer = document.getElementById('results-container');
-                    const resultsCount = document.querySelector('.results-count');
-                    const searchResults = document.getElementById('search-results');
-                    
-                    if (!resultsContainer || !resultsCount || !searchResults) {
-                        throw new Error('Required elements not found. Check your HTML structure.');
-                    }
-                    
-                    // Update results count
-                    resultsCount.textContent = `${services.length} results found`;
-                    
-                    // Clear previous results
-                    resultsContainer.innerHTML = '';
-                    
-                    if (services.length === 0) {
-                        resultsContainer.innerHTML = `
-                            <div class="no-results">
-                                <i class="fas fa-search"></i>
-                                <h4>No ${type} found matching your criteria</h4>
-                                <p>Try adjusting your search filters</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    // Create result cards
-                    services.forEach((service) => {
-                        const resultItem = document.createElement('div');
-                        resultItem.className = 'result-item';
-                        resultItem.innerHTML = `
-                            <div class="result-image">
-                                ${service.image ? `<img src="${service.image}" alt="${service.title || 'Service'}">` : '<i class="fas fa-image"></i>'}
-                            </div>
-                            <div class="result-details">
-                                <h4>${service.title || 'Unnamed Service'}</h4>
-                                <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
-                                <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
-                                <button class="book-btn" data-id="${service.id}">Book Now</button>
-                            </div>
-                        `;
-                        resultsContainer.appendChild(resultItem);
-                    });
-                    
-                    // Make sure results are visible
-                    searchResults.style.display = 'block';
-                    
-                } catch (error) {
-                    console.error('Display error:', error);
-                    showError(error.message || 'Failed to display results');
-                }
-            }
-            
-            function showError(message) {
-                const searchResults = document.getElementById('search-results') || document.body;
-                searchResults.innerHTML = `
-                    <div class="error-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>${message}</p>
-                        <button onclick="window.location.reload()">Try Again</button>
-                    </div>
-                `;
-                searchResults.style.display = 'block';
-            }
+            // Initialize tab switching
+            initSearchTabs();
             
             // Initialize date inputs
-            const today = new Date().toISOString().split('T')[0];
-            const tomorrow = new Date();
-            tomorrow.setDate(new Date().getDate() + 1);
-            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            initDateInputs();
             
-            document.getElementById("check-in").value = today;
-            document.getElementById("check-out").value = tomorrowStr;
-            document.getElementById("check-out").min = today;
+            // Set up form submissions for all search types
+            setupSearchForms();
             
             console.log('Page initialization complete');
         });
+
+        function initSearchTabs() {
+            const tabs = document.querySelectorAll('.search-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    const tabType = this.dataset.tab;
+                    console.log(`Search tab changed to: ${tabType}`);
+                    
+                    // Hide all search forms
+                    document.querySelectorAll('.search-form').forEach(form => {
+                        form.style.display = 'none';
+                    });
+                    
+                    // Show the selected search form
+                    const formId = `${tabType}-search`;
+                    document.getElementById(formId).style.display = 'flex';
+                    
+                    // Clear previous results when switching tabs
+                    document.getElementById('search-results').style.display = 'none';
+                });
+            });
+        }
+
+        function initDateInputs() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            
+            // Hotel dates
+            const checkIn = document.getElementById("check-in");
+            const checkOut = document.getElementById("check-out");
+            if (checkIn && checkOut) {
+                checkIn.value = formatDate(today);
+                checkOut.value = formatDate(tomorrow);
+                checkOut.min = formatDate(today);
+                
+                checkIn.addEventListener('change', function() {
+                    checkOut.min = this.value;
+                    if (new Date(checkOut.value) < new Date(this.value)) {
+                        checkOut.value = this.value;
+                    }
+                });
+            }
+            
+            // Car rental dates
+            const carPickup = document.getElementById("car-pickup-date");
+            const carDropoff = document.getElementById("car-dropoff-date");
+            if (carPickup && carDropoff) {
+                carPickup.value = formatDate(today);
+                carDropoff.value = formatDate(tomorrow);
+                carDropoff.min = formatDate(today);
+                
+                carPickup.addEventListener('change', function() {
+                    carDropoff.min = this.value;
+                    if (new Date(carDropoff.value) < new Date(this.value)) {
+                        carDropoff.value = this.value;
+                    }
+                });
+            }
+            
+            // Restaurant and event dates
+            const restaurantDate = document.getElementById("restaurant-date");
+            const eventDate = document.getElementById("event-date");
+            if (restaurantDate) restaurantDate.value = formatDate(today);
+            if (eventDate) eventDate.value = formatDate(today);
+        }
+
+        function setupSearchForms() {
+            // Hotel search
+            document.getElementById("hotel-search")?.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const params = {
+                    type: 'hotel',
+                    location: document.getElementById("destination").value,
+                    startDate: document.getElementById("check-in").value,
+                    endDate: document.getElementById("check-out").value,
+                    capacity: document.getElementById("guests").value,
+                    priceRange: document.getElementById("price-range").value,
+                    minRating: document.getElementById("min-rating").value,
+                    amenities: Array.from(document.getElementById("amenities").selectedOptions)
+                                .map(option => option.value)
+                };
+                performSearch(params);
+            });
+            
+            // Restaurant search
+            document.getElementById("restaurant-search")?.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const params = {
+                    type: 'restaurant',
+                    location: document.getElementById("restaurant-destination").value,
+                    date: document.getElementById("restaurant-date").value,
+                    guests: document.getElementById("restaurant-guests").value,
+                    priceRange: document.getElementById("restaurant-price-range").value,
+                    minRating: document.getElementById("restaurant-min-rating").value,
+                    categories: Array.from(document.getElementById("restaurant-categories").selectedOptions)
+                                  .map(option => option.value)
+                };
+                performSearch(params);
+            });
+            
+            // Car rental search
+            document.getElementById("car-search")?.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const params = {
+                    type: 'car',
+                    location: document.getElementById("car-destination").value,
+                    startDate: document.getElementById("car-pickup-date").value,
+                    endDate: document.getElementById("car-dropoff-date").value,
+                    priceRange: document.getElementById("car-price-range").value,
+                    minRating: document.getElementById("car-min-rating").value
+                };
+                performSearch(params);
+            });
+            
+            // Event search
+            document.getElementById("event-search")?.addEventListener("submit", function(e) {
+                e.preventDefault();
+                const params = {
+                    type: 'event',
+                    location: document.getElementById("event-destination").value,
+                    date: document.getElementById("event-date").value,
+                    tickets: document.getElementById("event-tickets").value,
+                    priceRange: document.getElementById("event-price-range").value,
+                    categories: Array.from(document.getElementById("event-categories").selectedOptions)
+                                  .map(option => option.value)
+                };
+                performSearch(params);
+            });
+        }
+
+        async function performSearch(params) {
+            try {
+                console.log('Starting search for:', params.type);
+                console.log('Search parameters:', params);
+                
+                // Show loading state
+                const searchResults = document.getElementById("search-results");
+                if (searchResults) {
+                    searchResults.innerHTML = `
+                        <div class="loading-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Searching for ${params.type}...</p>
+                        </div>
+                    `;
+                    searchResults.style.display = 'block';
+                }
+                
+                // Prepare API request
+                const queryParams = new URLSearchParams();
+                for (const key in params) {
+                    if (Array.isArray(params[key])) {
+                        params[key].forEach(value => queryParams.append(key, value));
+                    } else if (params[key]) {
+                        queryParams.append(key, params[key]);
+                    }
+                }
+                
+                const apiUrl = `${API_BASE_URL}/services?${queryParams.toString()}`;
+                console.log('Making API request to:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received search results:', data);
+                
+                displaySearchResults(data, params.type);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                showError(error.message || 'Failed to load search results');
+            }
+        }
+        
+        function displaySearchResults(response, type) {
+            try {
+                const services = response.data || [];
+                console.log(`Displaying ${services.length} results for ${type}`);
+                
+                const resultsContainer = document.getElementById('results-container');
+                const resultsCount = document.querySelector('.results-count');
+                const searchResults = document.getElementById('search-results');
+                
+                if (!resultsContainer || !resultsCount || !searchResults) {
+                    throw new Error('Required elements not found. Check your HTML structure.');
+                }
+                
+                // Update results count
+                resultsCount.textContent = `${services.length} results found`;
+                
+                // Clear previous results
+                resultsContainer.innerHTML = '';
+                
+                if (services.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h4>No ${type} found matching your criteria</h4>
+                            <p>Try adjusting your search filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Create result cards
+                services.forEach((service) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    
+                    // Determine icon based on service type
+                    let iconClass = 'fa-image';
+                    if (type === 'hotel') iconClass = 'fa-hotel';
+                    if (type === 'restaurant') iconClass = 'fa-utensils';
+                    if (type === 'car') iconClass = 'fa-car';
+                    if (type === 'event') iconClass = 'fa-ticket-alt';
+                    
+                    resultItem.innerHTML = `
+                        <div class="result-image">
+                            ${service.image ? 
+                                `<img src="${service.image}" alt="${service.title || 'Service'}" loading="lazy">` : 
+                                `<i class="fas ${iconClass}"></i>`}
+                            ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
+                        </div>
+                        <div class="result-details">
+                            <h4>${service.title || 'Unnamed Service'}</h4>
+                            <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+                            ${service.rating ? `<p class="result-rating">${'★'.repeat(Math.round(service.rating))} (${service.rating})</p>` : ''}
+                            ${service.price ? `<p class="result-price">${service.price} SAR</p>` : ''}
+                            ${service.description ? `<p class="description">${service.description.substring(0, 100)}...</p>` : ''}
+                            <div class="result-actions">
+                                <button class="result-button view-result-btn">View Details</button>
+                                <button class="result-button book-result-btn" data-id="${service.id}">Book Now</button>
+                            </div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(resultItem);
+                });
+                
+                // Make sure results are visible
+                searchResults.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Display error:', error);
+                showError(error.message || 'Failed to display results');
+            }
+        }
+        
+        function showError(message) {
+            const searchResults = document.getElementById('search-results') || document.body;
+            searchResults.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Error loading results</h4>
+                    <p>${message}</p>
+                    <button onclick="window.location.reload()">Try Again</button>
+                </div>
+            `;
+            searchResults.style.display = 'block';
+        }
     </script>
   </body>
 </html>
