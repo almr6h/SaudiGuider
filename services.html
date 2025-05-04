@@ -470,7 +470,17 @@
         color: var(--secondary);
         margin: 0.5rem 0;
       }
+        .search-results-section {
+  display: block;
+  width: 100%;
+}
 
+.results-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
       .result-actions {
         display: flex;
         gap: 1rem;
@@ -2526,53 +2536,62 @@
   try {
     console.log(`Displaying ${services?.length || 0} results for ${type}`);
     
-    // Safely get elements with fallbacks
-    const resultsContainer = document.getElementById('results-container') || 
-                           document.createElement('div');
-    const resultsCount = document.querySelector('.results-count') || 
-                        document.createElement('p');
-
-    // Update results count
-    resultsCount.textContent = `${services?.count || 0} results found`;
-
-    // Clear previous results
-    resultsContainer.innerHTML = '';
-
-    if (!services?.data || services.data.length === 0) {
-      resultsContainer.innerHTML = `
-        <div class="no-results">
-          <i class="fas fa-search"></i>
-          <h4>No ${type} found matching your criteria</h4>
-          <p>Try adjusting your search filters</p>
-        </div>
-      `;
-      return;
-    }
-
-    // Create result cards
-    services.data.forEach((service) => {
-      const resultItem = document.createElement('div');
-      resultItem.className = 'result-item';
-      
-      resultItem.innerHTML = `
-        <div class="result-image">
-          ${service.image ? `<img src="${service.image}" alt="${service.title}">` : '<i class="fas fa-image"></i>'}
-        </div>
-        <div class="result-details">
-          <h4>${service.title || 'Unnamed Service'}</h4>
-          <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
-          <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
-          <button class="book-btn" data-id="${service.id}">Book Now</button>
-        </div>
-      `;
-
-      resultsContainer.appendChild(resultItem);
+    // Get the correct container
+    const resultsContainer = document.getElementById('results-container');
+    const resultsCountElements = document.querySelectorAll('.results-count');
+    
+    // Update all results counters
+    resultsCountElements.forEach(el => {
+      el.textContent = `${services?.length || 0} results found`;
     });
 
+    // Clear previous results
+    if (resultsContainer) {
+      resultsContainer.innerHTML = '';
+
+      if (!services || services.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h4>No ${type} found matching your criteria</h4>
+            <p>Try adjusting your search filters</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Create result cards
+      services.forEach((service) => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'result-item';
+        
+        resultItem.innerHTML = `
+          <div class="result-image">
+            ${service.image ? `<img src="${service.image}" alt="${service.name || 'Service'}">` : '<i class="fas fa-image"></i>'}
+          </div>
+          <div class="result-details">
+            <h4>${service.name || 'Unnamed Service'}</h4>
+            <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+            <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
+            <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">Book Now</button>
+          </div>
+        `;
+
+        resultsContainer.appendChild(resultItem);
+      });
+
+      // Add event delegation for booking buttons
+      resultsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('book-btn')) {
+          const serviceId = e.target.getAttribute('data-id');
+          const serviceType = e.target.getAttribute('data-type');
+          handleReservation(serviceId, serviceType);
+        }
+      });
+    }
   } catch (error) {
     logError("displaySearchResults", error);
     
-    // Fallback error display
     const fallbackContainer = document.getElementById('results-container') || document.body;
     fallbackContainer.innerHTML = `
       <div class="error-state">
