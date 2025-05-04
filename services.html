@@ -10,7 +10,6 @@
     <title>Our Services - Saudi Guider</title>
     <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
-    <!-- Removed common.css reference since it's causing 404 -->
     <script src="./js/shared.js" defer></script>
     <script src="./js/loadCommon.js" defer></script>
     <link
@@ -409,6 +408,18 @@
         position: relative;
       }
 
+      .result-image i {
+        font-size: 5rem;
+        color: var(--secondary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 180px;
+        background-color: var(--dark);
+        border-radius: 6px;
+        margin-bottom: 1rem;
+      }
+
       .result-image img {
         width: 100%;
         height: 100%;
@@ -496,19 +507,6 @@
         justify-content: center;
         gap: 50px;
       }
-      .Aibutton {
-        padding: 0.7rem 1rem;
-        background-color: var(--secondary);
-        color: white;
-        border-radius: 15px;
-        margin-bottom: 20px;
-        text-decoration: none;
-      }
-      .Aibutton:hover {
-        cursor: pointer;
-        background-color: var(--secondary-dark);
-        transition: background-color var(--transition-speed);
-      }
 
       /* Search form enhancements */
       .sort-controls {
@@ -586,227 +584,145 @@
         color: white;
       }
 
-      /* Trip cards for AI results */
-      .trip-card {
-        background-color: #3a3a3a;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 8px;
-        color: white;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      }
-
-      .trip-card h3 {
-        margin-bottom: 0.5rem;
-      }
-
-      .trip-card button {
-        margin-top: 1rem;
-        background: #8fb6c0;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        color: white;
-        cursor: pointer;
-      }
-      .trip-card button:hover {
-        background: #4c8ba9;
-      }
-
-      /* AI Assistant */
-      .ai-assistant {
-        background-color: var(--darker-gray);
-        padding: 3rem 2rem;
-      }
-
-      .ai-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        background-color: var(--medium-gray);
-        border-radius: 10px;
-        padding: 2rem;
-        box-shadow: var(--card-shadow);
-      }
-
-      .ai-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-
-      .ai-icon {
-        font-size: 2.5rem;
-        color: var(--secondary);
-        margin-right: 1rem;
-      }
-
-      .ai-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
-      .ai-input {
-        display: flex;
-        gap: 1rem;
-      }
-
-      .ai-input textarea {
-        flex: 1;
-        min-height: 100px;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-gray);
-        background-color: var(--dark);
-        color: var(--light);
-        resize: vertical;
-        font-family: inherit;
-        font-size: inherit;
-      }
-
-      .ai-submit {
-        background-color: var(--secondary);
-        color: white;
-        border: none;
-        padding: 0 1.5rem;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color var(--transition-speed);
-      }
-
-      .ai-submit:hover {
-        background-color: var(--secondary-dark);
-      }
-
-      .ai-example-prompts {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1rem;
-      }
-
-      .example-prompt {
-        background-color: var(--dark);
-        color: var(--light);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: background-color var(--transition-speed);
-      }
-
-      .example-prompt:hover {
-        background-color: var(--secondary);
-      }
-
-      /* AI Results */
-      .ai-results {
-        display: none;
-        background-color: var(--dark);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-      }
-
-      .ai-results.active {
-        display: block;
-      }
-
-      .ai-loading {
+      /* Loading and Reservation Modals */
+      .loading-modal, .reservation-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 3000;
+      }
+
+      .loading-content, .reservation-content {
+        background-color: var(--dark-gray);
         padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
       }
 
-      .ai-loading i {
+      .loading-content i {
         font-size: 2rem;
-        color: var(--secondary);
-        animation: spin 1s linear infinite;
-      }
-
-      .ai-response {
-        line-height: 1.6;
-      }
-
-      .ai-response h3 {
         color: var(--secondary);
         margin-bottom: 1rem;
       }
 
-      .ai-response ul {
-        margin-left: 1.5rem;
-        margin-bottom: 1.5rem;
+      .reservation-content i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
       }
 
-      .ai-response li {
-        margin-bottom: 0.5rem;
+      .reservation-content i.fa-check-circle {
+        color: #4CAF50;
       }
 
-      .ai-actions {
+      .reservation-content i.fa-exclamation-circle {
+        color: #ff5252;
+      }
+
+      .reservation-actions {
         display: flex;
         gap: 1rem;
         margin-top: 1.5rem;
+        justify-content: center;
       }
 
-      .ai-action-btn {
-        padding: 0.7rem 1.5rem;
+      .reservation-actions button {
+        padding: 0.8rem 1.5rem;
         border-radius: 5px;
         border: none;
         cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: all var(--transition-speed);
-        text-align: center;
+        font-size: 1rem;
+        transition: all 0.3s;
       }
 
-      .ai-action-btn.primary {
+      .reservation-actions button:first-child {
         background-color: var(--secondary);
         color: white;
       }
 
-      .ai-action-btn.primary:hover {
+      .reservation-actions button:first-child:hover {
         background-color: var(--secondary-dark);
       }
 
-      .ai-action-btn.secondary {
+      .reservation-actions button:last-child {
         background-color: var(--dark);
         color: var(--light);
         border: 1px solid var(--secondary);
       }
 
-      .ai-action-btn.secondary:hover {
+      .reservation-actions button:last-child:hover {
         background-color: var(--border-gray);
       }
 
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Map Container */
-      .map-container {
-        width: 100%;
-        height: 300px;
-        background-color: var(--dark);
-        border-radius: 8px;
-        margin-top: 1.5rem;
-        overflow: hidden;
-      }
-
-      .map-placeholder {
+      /* Login Message */
+      .login-message {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 3000;
+      }
+
+      .login-message-content {
+        background-color: var(--dark-gray);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .login-message p {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+      }
+
+      .login-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .login-redirect-btn {
+        background-color: var(--secondary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .login-redirect-btn:hover {
+        background-color: var(--secondary-dark);
+      }
+
+      .login-cancel-btn {
         background-color: var(--dark);
         color: var(--light);
+        border: 1px solid var(--secondary);
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .login-cancel-btn:hover {
+        background-color: var(--border-gray);
       }
 
       /* Service Categories */
@@ -1136,176 +1052,6 @@
         margin: 0 auto;
       }
 
-      /* Login Message Styling */
-      .login-message {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 3000;
-      }
-
-      .login-message-content {
-        background-color: var(--dark-gray);
-        padding: 2rem;
-        border-radius: 8px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-      }
-
-      .login-message p {
-        margin-bottom: 1.5rem;
-        font-size: 1.1rem;
-      }
-
-      .login-redirect-btn {
-        background-color: var(--secondary);
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color var(--transition-speed);
-      }
-
-      .login-redirect-btn:hover {
-        background-color: var(--secondary-dark);
-      }
-
-      /* Coming Soon Message */
-      .coming-soon-message {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--secondary);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 5px;
-        z-index: 3000;
-        animation: fadeInOut 3s ease-in-out;
-      }
-
-      @keyframes fadeInOut {
-        0% {
-          opacity: 0;
-        }
-        20% {
-          opacity: 1;
-        }
-        80% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-        }
-      }
-
-      /* Booking Success Modal */
-      .booking-success-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 3000;
-      }
-
-      .booking-success-modal .modal-content {
-        background-color: var(--dark-gray);
-        border-radius: 10px;
-        padding: 2rem;
-        text-align: center;
-        max-width: 500px;
-        width: 90%;
-      }
-
-      .booking-success-modal i {
-        font-size: 4rem;
-        color: #4CAF50;
-        margin-bottom: 1rem;
-      }
-
-      .booking-success-modal h3 {
-        margin-bottom: 1rem;
-      }
-
-      .booking-success-modal p {
-        margin-bottom: 2rem;
-      }
-
-      .modal-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-      }
-
-      .modal-actions button {
-        padding: 0.8rem 1.5rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: all 0.3s;
-      }
-
-      .modal-actions button:first-child {
-        background-color: var(--secondary);
-        color: white;
-      }
-
-      .modal-actions button:first-child:hover {
-        background-color: var(--secondary-dark);
-      }
-
-      .modal-actions button:last-child {
-        background-color: var(--dark);
-        color: var(--light);
-        border: 1px solid var(--secondary);
-      }
-
-      .modal-actions button:last-child:hover {
-        background-color: var(--border-gray);
-      }
-
-      /* Loading Spinner */
-      .loading-spinner {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 2rem;
-      }
-
-      .loading-spinner i {
-        font-size: 2rem;
-        color: var(--secondary);
-        animation: spin 1s linear infinite;
-      }
-
-      /* Error Message */
-      .error-message {
-        text-align: center;
-        padding: 2rem;
-        color: var(--light);
-      }
-
-      .error-message i {
-        font-size: 3rem;
-        color: #ff5252;
-        margin-bottom: 1rem;
-      }
-
       /* Responsive Design */
       @media (max-width: 992px) {
         .service-cards {
@@ -1379,20 +1125,20 @@
           height: 80px;
         }
 
-        .ai-input {
+        .reservation-actions {
           flex-direction: column;
         }
 
-        .ai-submit {
-          padding: 0.8rem;
+        .reservation-actions button {
           width: 100%;
         }
 
-        .modal-actions {
+        .login-actions {
           flex-direction: column;
         }
 
-        .modal-actions button {
+        .login-redirect-btn,
+        .login-cancel-btn {
           width: 100%;
         }
       }
@@ -1423,22 +1169,8 @@
           padding: 1rem;
         }
 
-        .ai-header {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .ai-icon {
-          margin-right: 0;
-          margin-bottom: 1rem;
-        }
-
         .service-card {
           width: 100%;
-        }
-
-        .ai-actions {
-          flex-direction: column;
         }
 
         .result-actions {
@@ -1731,15 +1463,11 @@
         class="search-section section"
         aria-labelledby="search-section-title"
       >
-        <div class="section-flex">
-          <h2 id="search-section-title" class="section-title">
-            Find What You Need
-          </h2>
-          <a href="#ai" class="Aibutton">Use Our AI</a>
-        </div>
+        <h2 id="search-section-title" class="section-title">
+          Find What You Need
+        </h2>
         <p class="section-text">
-          Use our traditional search tools to find exactly what you're looking
-          for based on your preferences.
+          Use our search tools to find exactly what you're looking for based on your preferences.
         </p>
 
         <div class="search-container">
@@ -2024,106 +1752,22 @@
             </button>
           </form>
 
-            <div id="search-results" class="search-results">
-        <h3>Search Results for <span id="search-location">Riyadh</span></h3>
-        <p id="search-dates">
-          Showing results for <span id="check-in-date">today</span> to
-          <span id="check-out-date">tomorrow</span>
-        </p>
-        <div
-          class="results-grid"
-          id="results-container"
-          role="region"
-          aria-live="polite"
-        >
-          <!-- Results will be dynamically inserted here -->
-        </div>
-    </div>
-        </div>
-      </section>
-
-      <section
-        id="ai"
-        class="ai-assistant section"
-        aria-labelledby="ai-assistant-title"
-      >
-        <h2 id="ai-assistant-title" class="section-title">
-          AI Travel Assistant
-        </h2>
-        <p class="section-text">
-          Don't know where to start? Our AI assistant can help plan your perfect
-          trip based on your preferences and budget.
-        </p>
-
-        <div class="ai-container">
-          <div class="ai-header">
-            <div class="ai-icon">
-              <img
-                src="./images/DALL·E 2025-03-23 06.35.39 - A cartoon-style robot wearing a traditional Saudi gutra (headscarf), sitting and working on a laptop. The robot has a friendly appearance and is focus.webp"
-                style="
-                  width: 70px;
-                  height: 70px;
-                  border-radius: 50px;
-                  margin-bottom: 15px;
-                "
-              />
+          <div id="search-results" class="search-results">
+            <div class="sort-controls">
+                <div class="sort-options">
+                    <label for="sort-by">Sort by:</label>
+                    <select id="sort-by">
+                        <option value="recommended">Recommended</option>
+                        <option value="price-low">Price (Low to High)</option>
+                        <option value="price-high">Price (High to Low)</option>
+                        <option value="rating">Rating</option>
+                        <option value="name">Name (A-Z)</option>
+                    </select>
+                </div>
+                <div class="results-count">0 results found</div>
             </div>
-            <div>
-              <h3>Saudi Guider AI Assistant</h3>
-              <p>
-                Ask me anything about traveling in Saudi Arabia or tell me what
-                you're looking for.
-              </p>
-            </div>
-          </div>
-
-          <div class="ai-content">
-            <div class="ai-input">
-              <textarea
-                id="ai-query"
-                placeholder="Example: I want to plan a 5-day trip to Riyadh and Jeddah for a family of 4 with a budget of $3000."
-                aria-label="Enter your travel question or request"
-              ></textarea>
-              <button
-                class="ai-submit"
-                id="ai-submit-btn"
-                aria-label="Submit your question"
-              >
-                <i class="fas fa-paper-plane"></i>
-              </button>
-            </div>
-
-            <div>
-              <p><strong>Try these example prompts:</strong></p>
-              <div class="ai-example-prompts">
-                <span class="example-prompt" tabindex="0" role="button">
-                  Best restaurants in Al-Ula for dinner
-                </span>
-                <span class="example-prompt" tabindex="0" role="button">
-                  Family-friendly activities in Riyadh
-                </span>
-                <span class="example-prompt" tabindex="0" role="button">
-                  Luxury hotels with pool in Jeddah
-                </span>
-                <span class="example-prompt" tabindex="0" role="button">
-                  Weekend getaway with cultural experiences
-                </span>
-              </div>
-            </div>
-
-            <div
-              id="ai-results"
-              class="ai-results"
-              role="region"
-              aria-live="polite"
-            >
-              <!-- AI results will be displayed here -->
-            </div>
-
-            <div class="map-container">
-              <div class="map-placeholder">
-                <p>AI suggestions will appear on the map here</p>
-              </div>
+            <div class="results-grid" id="results-container" role="region" aria-live="polite">
+                <!-- Results will be dynamically inserted here -->
             </div>
           </div>
         </div>
@@ -2484,7 +2128,7 @@
           <h3>Saudi Guider</h3>
           <p>
             Your ultimate companion for exploring Saudi Arabia with personalized
-            AI assistance.
+            recommendations.
           </p>
           <div class="social-icons">
             <a href="#" aria-label="Follow us on Twitter"
@@ -2541,766 +2185,577 @@
       </div>
     </footer>
 
-<script>
-    // Helper function to safely get elements
-    function getElement(id) {
-        const el = document.getElementById(id);
-        if (!el) {
-            console.warn(`Element with ID ${id} not found`);
-            return null;
-        }
-        return el;
-    }
+    <script>
+      // Helper function to safely get elements
+      function getElement(id) {
+          const el = document.getElementById(id);
+          if (!el) {
+              console.warn(`Element with ID ${id} not found`);
+              return null;
+          }
+          return el;
+      }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        // Set current year in footer
-        const currentYearEl = getElement("current-year");
-        if (currentYearEl) {
-            currentYearEl.textContent = new Date().getFullYear();
-        }
+      document.addEventListener("DOMContentLoaded", function () {
+          // Set current year in footer
+          const currentYearEl = getElement("current-year");
+          if (currentYearEl) {
+              currentYearEl.textContent = new Date().getFullYear();
+          }
 
-        // Check if user is logged in
-        const token = localStorage.getItem('token');
-        const authButtons = document.querySelector('.auth-buttons');
-        const userDropdown = getElement('userDropdown');
-        const usernameDisplay = getElement('usernameDisplay');
+          // Check if user is logged in
+          const token = localStorage.getItem('token');
+          const authButtons = document.querySelector('.auth-buttons');
+          const userDropdown = getElement('userDropdown');
+          const usernameDisplay = getElement('usernameDisplay');
 
-        if (token) {
-            if (authButtons) authButtons.style.display = 'none';
-            if (userDropdown) userDropdown.style.display = 'block';
-            if (usernameDisplay) usernameDisplay.textContent = 'User';
-        }
+          if (token) {
+              if (authButtons) authButtons.style.display = 'none';
+              if (userDropdown) userDropdown.style.display = 'block';
+              if (usernameDisplay) usernameDisplay.textContent = 'User';
+          }
 
-        // Mobile navigation toggle
-        const mobileToggle = document.querySelector(".mobile-nav-toggle");
-        const nav = getElement("main-nav");
+          // Mobile navigation toggle
+          const mobileToggle = document.querySelector(".mobile-nav-toggle");
+          const nav = getElement("main-nav");
 
-        if (mobileToggle && nav) {
-            mobileToggle.addEventListener("click", function () {
-                const isExpanded = nav.classList.toggle("active");
-                mobileToggle.setAttribute("aria-expanded", isExpanded);
-            });
-        }
+          if (mobileToggle && nav) {
+              mobileToggle.addEventListener("click", function () {
+                  const isExpanded = nav.classList.toggle("active");
+                  mobileToggle.setAttribute("aria-expanded", isExpanded);
+              });
+          }
 
-        // Close mobile nav when clicking on a link
-        document.querySelectorAll("nav a").forEach((link) => {
-            link.addEventListener("click", () => {
-                if (nav) nav.classList.remove("active");
-                if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "false");
-            });
-        });
+          // Close mobile nav when clicking on a link
+          document.querySelectorAll("nav a").forEach((link) => {
+              link.addEventListener("click", () => {
+                  if (nav) nav.classList.remove("active");
+                  if (mobileToggle) mobileToggle.setAttribute("aria-expanded", "false");
+              });
+          });
 
-        // Search tabs functionality
-        const tabs = document.querySelectorAll(".search-tab");
-        const searchForms = {
-            hotels: getElement("hotel-search"),
-            restaurants: getElement("restaurant-search"),
-            cars: getElement("car-search"),
-            events: getElement("event-search")
-        };
-        const resultsContainer = getElement("results-container");
+          // Search tabs functionality
+          const tabs = document.querySelectorAll(".search-tab");
+          const searchForms = {
+              hotels: getElement("hotel-search"),
+              restaurants: getElement("restaurant-search"),
+              cars: getElement("car-search"),
+              events: getElement("event-search")
+          };
 
-        if (tabs.length > 0) {
-            tabs.forEach((tab) => {
-                tab.addEventListener("click", function () {
-                    // Update tab states
-                    tabs.forEach((t) => {
-                        t.classList.remove("active");
-                        t.setAttribute("aria-selected", "false");
-                    });
-                    this.classList.add("active");
-                    this.setAttribute("aria-selected", "true");
+          if (tabs.length > 0) {
+              tabs.forEach((tab) => {
+                  tab.addEventListener("click", function () {
+                      // Update tab states
+                      tabs.forEach((t) => {
+                          t.classList.remove("active");
+                          t.setAttribute("aria-selected", "false");
+                      });
+                      this.classList.add("active");
+                      this.setAttribute("aria-selected", "true");
 
-                    // Hide all search forms first
-                    Object.values(searchForms).forEach(form => {
-                        if (form) form.style.display = "none";
-                    });
+                      // Hide all search forms first
+                      Object.values(searchForms).forEach(form => {
+                          if (form) form.style.display = "none";
+                      });
 
-                    // Show the selected search form
-                    const tabType = this.getAttribute("data-tab");
-                    if (searchForms[tabType]) {
-                        searchForms[tabType].style.display = "flex";
-                    }
-                });
-            });
-        }
+                      // Show the selected search form
+                      const tabType = this.getAttribute("data-tab");
+                      if (searchForms[tabType]) {
+                          searchForms[tabType].style.display = "flex";
+                      }
+                  });
+              });
+          }
 
-        // Service type mapping (frontend to backend)
-        const typeMap = {
-            'hotels': 'hotel',
-            'restaurants': 'restaurant',
-            'cars': 'car',
-            'events': 'event'
-        };
+          // Service type mapping (frontend to backend)
+          const typeMap = {
+              'hotels': 'hotel',
+              'restaurants': 'restaurant',
+              'cars': 'car',
+              'events': 'event'
+          };
 
-        // Search form submission handler for all forms
-        Object.values(searchForms).forEach(form => {
-            if (form) {
-                form.addEventListener("submit", async function (e) {
-                    e.preventDefault();
-                    
-                    // Get active tab
-                    const activeTab = document.querySelector(".search-tab.active")?.getAttribute("data-tab");
-                    if (!activeTab) return;
-                    
-                    const serviceType = typeMap[activeTab];
-                    
-                    // Get form values based on active tab
-                    let destination, checkIn, checkOut, guests, priceRange, minRating, filters;
-                    
-                    switch(activeTab) {
-                        case 'hotels':
-                            destination = getElement("destination")?.value;
-                            checkIn = getElement("check-in")?.value;
-                            checkOut = getElement("check-out")?.value;
-                            guests = getElement("guests")?.value;
-                            priceRange = getElement("price-range")?.value;
-                            minRating = getElement("min-rating")?.value;
-                            filters = Array.from(getElement("amenities")?.selectedOptions || []).map(o => o.value);
-                            break;
-                        case 'restaurants':
-                            destination = getElement("restaurant-destination")?.value;
-                            checkIn = getElement("restaurant-date")?.value;
-                            guests = getElement("restaurant-guests")?.value;
-                            priceRange = getElement("restaurant-price-range")?.value;
-                            minRating = getElement("restaurant-min-rating")?.value;
-                            filters = Array.from(getElement("restaurant-categories")?.selectedOptions || []).map(o => o.value);
-                            break;
-                        case 'cars':
-                            destination = getElement("car-destination")?.value;
-                            checkIn = getElement("car-pickup-date")?.value;
-                            checkOut = getElement("car-dropoff-date")?.value;
-                            priceRange = getElement("car-price-range")?.value;
-                            minRating = getElement("car-min-rating")?.value;
-                            break;
-                        case 'events':
-                            destination = getElement("event-destination")?.value;
-                            checkIn = getElement("event-date")?.value;
-                            guests = getElement("event-tickets")?.value;
-                            priceRange = getElement("event-price-range")?.value;
-                            filters = Array.from(getElement("event-categories")?.selectedOptions || []).map(o => o.value);
-                            break;
-                    }
+          // Search form submission handler for all forms
+          Object.values(searchForms).forEach(form => {
+              if (form) {
+                  form.addEventListener("submit", async function (e) {
+                      e.preventDefault();
+                      
+                      // Get active tab
+                      const activeTab = document.querySelector(".search-tab.active")?.getAttribute("data-tab");
+                      if (!activeTab) return;
+                      
+                      const serviceType = typeMap[activeTab];
+                      
+                      // Get form values based on active tab
+                      let destination, checkIn, checkOut, guests, priceRange, minRating, filters;
+                      
+                      switch(activeTab) {
+                          case 'hotels':
+                              destination = getElement("destination")?.value;
+                              checkIn = getElement("check-in")?.value;
+                              checkOut = getElement("check-out")?.value;
+                              guests = getElement("guests")?.value;
+                              priceRange = getElement("price-range")?.value;
+                              minRating = getElement("min-rating")?.value;
+                              filters = Array.from(getElement("amenities")?.selectedOptions || []).map(o => o.value);
+                              break;
+                          case 'restaurants':
+                              destination = getElement("restaurant-destination")?.value;
+                              checkIn = getElement("restaurant-date")?.value;
+                              guests = getElement("restaurant-guests")?.value;
+                              priceRange = getElement("restaurant-price-range")?.value;
+                              minRating = getElement("restaurant-min-rating")?.value;
+                              filters = Array.from(getElement("restaurant-categories")?.selectedOptions || []).map(o => o.value);
+                              break;
+                          case 'cars':
+                              destination = getElement("car-destination")?.value;
+                              checkIn = getElement("car-pickup-date")?.value;
+                              checkOut = getElement("car-dropoff-date")?.value;
+                              priceRange = getElement("car-price-range")?.value;
+                              minRating = getElement("car-min-rating")?.value;
+                              break;
+                          case 'events':
+                              destination = getElement("event-destination")?.value;
+                              checkIn = getElement("event-date")?.value;
+                              guests = getElement("event-tickets")?.value;
+                              priceRange = getElement("event-price-range")?.value;
+                              filters = Array.from(getElement("event-categories")?.selectedOptions || []).map(o => o.value);
+                              break;
+                      }
 
-                    try {
-                        // Show loading state
-                        const searchResults = getElement("search-results");
-                        if (searchResults) {
-                            searchResults.innerHTML = 
-                                '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-                            searchResults.classList.add("active");
-                        }
+                      try {
+                          // Show loading state
+                          const searchResults = getElement("search-results");
+                          if (searchResults) {
+                              searchResults.innerHTML = 
+                                  '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                              searchResults.classList.add("active");
+                          }
 
-                        // Build query parameters
-                        const params = new URLSearchParams();
-                        params.append('type', serviceType);
-                        
-                        if (destination) params.append('search', destination);
-                        if (priceRange && priceRange !== 'all') params.append('priceRange', priceRange);
-                        if (minRating && minRating !== '0') params.append('minRating', minRating);
-                        
-                        // Add filters based on service type
-                        switch (activeTab) {
-                            case 'hotels':
-                                if (checkIn) params.append('checkIn', checkIn);
-                                if (checkOut) params.append('checkOut', checkOut);
-                                if (guests) params.append('capacity', guests);
-                                if (filters.length) params.append('amenities', filters.join(','));
-                                break;
-                            case 'restaurants':
-                                if (checkIn) params.append('date', checkIn);
-                                if (guests) params.append('capacity', guests);
-                                if (filters.length) params.append('categories', filters.join(','));
-                                break;
-                            case 'cars':
-                                if (checkIn) params.append('startDate', checkIn);
-                                if (checkOut) params.append('endDate', checkOut);
-                                break;
-                            case 'events':
-                                if (checkIn) params.append('date', checkIn);
-                                if (guests) params.append('capacity', guests);
-                                if (filters.length) params.append('categories', filters.join(','));
-                                break;
-                        }
+                          // Build query parameters
+                          const params = new URLSearchParams();
+                          params.append('type', serviceType);
+                          
+                          if (destination) params.append('location', destination);
+                          if (priceRange && priceRange !== 'all') {
+                              const [min, max] = priceRange.split('-');
+                              if (min) params.append('minPrice', min);
+                              if (max) params.append('maxPrice', max);
+                          }
+                          if (minRating && minRating !== '0') params.append('rating', minRating);
+                          
+                          // Add filters based on service type
+                          if (filters && filters.length) {
+                              params.append('amenities', filters.join(','));
+                          }
+                          
+                          if (checkIn) params.append('startDate', checkIn);
+                          if (checkOut) params.append('endDate', checkOut);
+                          if (guests) params.append('capacity', guests);
 
-                        // Make API call to backend
-                        const response = await fetch(`https://saudiguiderbackend.onrender.com/api/services/search?${params}`);
-                        const data = await response.json();
+                          // Make API call to backend
+                          const response = await fetch(`/api/services?${params}`);
+                          const data = await response.json();
 
-                        if (!response.ok) {
-                            throw new Error(data.message || 'Failed to fetch results');
-                        }
+                          if (!response.ok) {
+                              throw new Error(data.message || 'Failed to fetch results');
+                          }
 
-                        // Update search results location and dates
-                        const searchLocation = getElement("search-location");
-                        if (searchLocation) searchLocation.textContent = destination || "Riyadh";
+                          // Display results
+                          displaySearchResults(data, activeTab, destination, checkIn, checkOut);
+                          
+                      } catch (error) {
+                          console.error('Search error:', error);
+                          const searchResults = getElement("search-results");
+                          if (searchResults) {
+                              searchResults.innerHTML = `
+                                  <div class="error-message">
+                                      <i class="fas fa-exclamation-triangle"></i>
+                                      <p>${error.message || 'Failed to load search results. Please try again.'}</p>
+                                  </div>
+                              `;
+                          }
+                      }
+                  });
+              }
+          });
 
-                        const checkInDate = checkIn
-                            ? new Date(checkIn).toLocaleDateString()
-                            : "today";
-                        const checkOutDate = checkOut
-                            ? new Date(checkOut).toLocaleDateString()
-                            : "tomorrow";
+          /**
+           * Displays search results in the results container
+           * @param {Array} services - Array of service objects
+           * @param {string} type - Type of service (hotels, restaurants, cars, events)
+           * @param {string} location - Search location
+           * @param {string} startDate - Start date (if applicable)
+           * @param {string} endDate - End date (if applicable)
+           */
+          function displaySearchResults(services, type, location, startDate, endDate) {
+              const resultsContainer = getElement("results-container");
+              const resultsCount = document.querySelector('.results-count');
+              if (!resultsContainer || !resultsCount) return;
 
-                        const checkInDateEl = getElement("check-in-date");
-                        const checkOutDateEl = getElement("check-out-date");
-                        if (checkInDateEl) checkInDateEl.textContent = checkInDate;
-                        if (checkOutDateEl) checkOutDateEl.textContent = checkOutDate;
+              resultsContainer.innerHTML = '';
+              
+              // Update results count
+              resultsCount.textContent = `${services?.length || 0} results found`;
 
-                        // Display results with sorting options
-                        displaySearchResults(data.data, activeTab);
-                        
-                    } catch (error) {
-                        console.error('Search error:', error);
-                        const searchResults = getElement("search-results");
-                        if (searchResults) {
-                            searchResults.innerHTML = `
-                                <div class="error-message">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <p>${error.message || 'Failed to load search results. Please try again.'}</p>
-                                </div>
-                            `;
-                        }
-                    }
-                });
-            }
-        });
+              if (!services || services.length === 0) {
+                  resultsContainer.innerHTML = `
+                      <div class="no-results-message">
+                          <i class="fas fa-search"></i>
+                          <h4>No ${type} found matching your criteria</h4>
+                          <p>Try adjusting your search filters</p>
+                      </div>
+                  `;
+                  return;
+              }
 
-        /**
-         * Displays search results in the results container with sorting options
-         * @param {Array} services - Array of service objects
-         * @param {string} type - Type of service (hotels, restaurants, cars, events)
-         */
-        function displaySearchResults(services, type) {
-            const resultsContainer = getElement("results-container");
-            if (!resultsContainer) return;
+              // Display each service as a card
+              services.forEach(service => {
+                  const resultItem = document.createElement('div');
+                  resultItem.className = 'result-item';
+                  
+                  // Determine price display based on service type
+                  let priceDisplay;
+                  if (type === 'hotels') {
+                      priceDisplay = `From ${service.price || 0} SAR/night`;
+                  } else if (type === 'restaurants') {
+                      priceDisplay = `Average meal: ${service.price || 0} SAR`;
+                  } else if (type === 'cars') {
+                      priceDisplay = `From ${service.price || 0} SAR/day`;
+                  } else {
+                      priceDisplay = `From ${service.price || 0} SAR`;
+                  }
 
-            resultsContainer.innerHTML = '';
+                  // Build stars for rating
+                  const rating = service.rating || 0;
+                  const fullStars = Math.floor(rating);
+                  const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+                  const emptyStars = 5 - fullStars - halfStar;
+                  
+                  let stars = '';
+                  stars += '<i class="fas fa-star"></i>'.repeat(fullStars);
+                  stars += '<i class="fas fa-star-half-alt"></i>'.repeat(halfStar);
+                  stars += '<i class="far fa-star"></i>'.repeat(emptyStars);
 
-            // Add sorting controls
-            const sortControls = document.createElement('div');
-            sortControls.className = 'sort-controls';
-            sortControls.innerHTML = `
-                <div class="sort-options">
-                    <label for="sort-by">Sort by:</label>
-                    <select id="sort-by">
-                        <option value="recommended">Recommended</option>
-                        <option value="price-low">Price (Low to High)</option>
-                        <option value="price-high">Price (High to Low)</option>
-                        <option value="rating">Rating</option>
-                        <option value="name">Name (A-Z)</option>
-                    </select>
-                </div>
-                <div class="results-count">${services?.length || 0} results found</div>
-            `;
-            resultsContainer.appendChild(sortControls);
+                  // Build amenities list
+                  const amenitiesList = service.amenities?.slice(0, 3).map(amenity => 
+                      `<span class="amenity-tag">${amenity}</span>`
+                  ).join('') || '';
 
-            // Create results grid container
-            const resultsGrid = document.createElement('div');
-            resultsGrid.className = 'results-grid';
-            resultsContainer.appendChild(resultsGrid);
-
-            if (!services || services.length === 0) {
-                resultsGrid.innerHTML = `
-                    <div class="no-results-message">
-                        <i class="fas fa-search"></i>
-                        <h4>No ${type} found matching your criteria</h4>
-                        <p>Try adjusting your search filters</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Add event listener for sorting
-            const sortBy = sortControls.querySelector('#sort-by');
-            if (sortBy) {
-                sortBy.addEventListener('change', function() {
-                    sortResults(services, type, this.value);
-                });
-            }
-
-            // Display initial sorted results
-            sortResults(services, type, 'recommended');
-        }
-
-        /**
-         * Sorts and displays results based on selected option
-         * @param {Array} services - Array of service objects
-         * @param {string} type - Type of service
-         * @param {string} sortBy - Sorting criteria
-         */
-        function sortResults(services, type, sortBy) {
-            const resultsContainer = getElement("results-container");
-            if (!resultsContainer) return;
-            
-            const resultsGrid = resultsContainer.querySelector('.results-grid');
-            if (!resultsGrid) return;
-            
-            // Clear existing results (keep sort controls)
-            resultsGrid.innerHTML = '';
-
-            // Sort services
-            let sortedServices = [...services];
-            switch (sortBy) {
-                case 'price-low':
-                    sortedServices.sort((a, b) => (a.price || 0) - (b.price || 0));
-                    break;
-                case 'price-high':
-                    sortedServices.sort((a, b) => (b.price || 0) - (a.price || 0));
-                    break;
-                case 'rating':
-                    sortedServices.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                    break;
-                case 'name':
-                    sortedServices.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-                    break;
-                default:
-                    // Recommended sorting (default)
-                    sortedServices.sort((a, b) => {
-                        // Prioritize featured items first
-                        if (a.featured !== b.featured) return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-                        // Then by rating
-                        return (b.rating || 0) - (a.rating || 0);
-                    });
-            }
-
-            // Display sorted results
-            sortedServices.forEach(service => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
-                
-                // Determine price display based on service type
-                let priceDisplay;
-                if (type === 'hotels') {
-                    priceDisplay = `From ${service.price || 0} SAR/night`;
-                } else if (type === 'restaurants') {
-                    priceDisplay = `Average meal: ${service.price || 0} SAR`;
-                } else if (type === 'cars') {
-                    priceDisplay = `From ${service.price || 0} SAR/day`;
-                } else {
-                    priceDisplay = `From ${service.price || 0} SAR`;
-                }
-
-                // Build stars for rating
-                const rating = service.rating || 0;
-                const fullStars = Math.floor(rating);
-                const halfStar = rating % 1 >= 0.5 ? 1 : 0;
-                const emptyStars = 5 - fullStars - halfStar;
-                
-                let stars = '';
-                stars += '<i class="fas fa-star"></i>'.repeat(fullStars);
-                stars += '<i class="fas fa-star-half-alt"></i>'.repeat(halfStar);
-                stars += '<i class="far fa-star"></i>'.repeat(emptyStars);
-
-                // Build amenities list
-                const amenitiesList = service.amenities?.slice(0, 3).map(amenity => 
-                    `<span class="amenity-tag">${amenity}</span>`
-                ).join('') || '';
-
-                resultItem.innerHTML = `
-                    <div class="result-image">
-                        <img src="${service.imageUrl || './images/default-service.jpg'}" 
-                            alt="${service.title || 'Service'}" loading="lazy">
-                        ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
-                    </div>
-                    <h4>${service.title || 'Untitled Service'}</h4>
-                    <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
-                    <div class="result-rating">
-                        ${stars}
-                        <span>${rating.toFixed(1)} (${service.reviewCount || 0} reviews)</span>
-                    </div>
-                    <p class="result-price">${priceDisplay}</p>
-                    ${amenitiesList ? `<div class="amenities">${amenitiesList}</div>` : ''}
-                    <p class="description">${service.description?.substring(0, 100) || 'No description available'}...</p>
-                    <div class="result-actions">
-                        <button class="result-button book-result-btn" data-id="${service._id}" data-type="${typeMap[type]}">
-                            ${type === 'restaurants' ? 'Reserve' : 
+                  resultItem.innerHTML = `
+                      <div class="result-image">
+                          <i class="fas ${service.icon || 'fa-image'}"></i>
+                          ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
+                      </div>
+                      <h4>${service.title || 'Untitled Service'}</h4>
+                      <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+                      <div class="result-rating">
+                          ${stars}
+                          <span>${rating.toFixed(1)}</span>
+                      </div>
+                      <p class="result-price">${priceDisplay}</p>
+                      ${amenitiesList ? `<div class="amenities">${amenitiesList}</div>` : ''}
+                      <p class="description">${service.description?.substring(0, 100) || 'No description available'}...</p>
+                      <div class="result-actions">
+                          <button class="result-button book-result-btn" data-id="${service._id}" data-type="${typeMap[type]}">
+                              ${type === 'restaurants' ? 'Reserve' : 
                                 type === 'cars' ? 'Rent Now' : 
                                 type === 'events' ? 'Get Tickets' : 'Book Now'}
-                        </button>
-                    </div>
-                `;
+                          </button>
+                      </div>
+                  `;
 
-                // Add event listener to the book button
-                const bookBtn = resultItem.querySelector('.book-result-btn');
-                if (bookBtn) {
-                    bookBtn.addEventListener('click', function() {
-                        bookService(service._id, this.getAttribute('data-type'));
-                    });
-                }
+                  // Add event listener to the book button
+                  const bookBtn = resultItem.querySelector('.book-result-btn');
+                  if (bookBtn) {
+                      bookBtn.addEventListener('click', function() {
+                          handleReservation(service._id, this.getAttribute('data-type'));
+                      });
+                  }
 
-                resultsGrid.appendChild(resultItem);
-            });
-        }
+                  resultsContainer.appendChild(resultItem);
+              });
+          }
 
-        /**
-         * Books a service by making an API call to the backend
-         * @param {string} serviceId - ID of the service to book
-         * @param {string} serviceType - Type of service (hotel, restaurant, car, event)
-         */
-        async function bookService(serviceId, serviceType) {
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                const action = serviceType === 'restaurant' ? 'make a reservation' :
-                            serviceType === 'car' ? 'rent a car' :
-                            serviceType === 'event' ? 'purchase tickets' : 'book accommodation';
-                showLoginMessage(action);
-                return;
-            }
+          /**
+           * Handles the reservation process
+           * @param {string} serviceId - ID of the service to reserve
+           * @param {string} serviceType - Type of service (hotel, restaurant, car, event)
+           */
+          async function handleReservation(serviceId, serviceType) {
+              const token = localStorage.getItem('token');
+              
+              if (!token) {
+                  showLoginMessage('make a reservation');
+                  return;
+              }
 
-            try {
-                // Get dates based on service type
-                let startDate, endDate;
-                if (serviceType === 'hotel') {
-                    startDate = getElement("check-in")?.value;
-                    endDate = getElement("check-out")?.value;
-                } else if (serviceType === 'car') {
-                    startDate = getElement("car-pickup-date")?.value;
-                    endDate = getElement("car-dropoff-date")?.value;
-                }
+              try {
+                  // Get reservation details based on service type
+                  let reservationData = { serviceId, serviceType };
+                  
+                  if (serviceType === 'hotel') {
+                      const checkIn = getElement("check-in")?.value;
+                      const checkOut = getElement("check-out")?.value;
+                      const guests = getElement("guests")?.value;
+                      if (checkIn && checkOut) {
+                          reservationData.startDate = checkIn;
+                          reservationData.endDate = checkOut;
+                      }
+                      if (guests) reservationData.guests = guests;
+                  } else if (serviceType === 'car') {
+                      const pickupDate = getElement("car-pickup-date")?.value;
+                      const dropoffDate = getElement("car-dropoff-date")?.value;
+                      if (pickupDate && dropoffDate) {
+                          reservationData.startDate = pickupDate;
+                          reservationData.endDate = dropoffDate;
+                      }
+                  } else if (serviceType === 'restaurant') {
+                      const date = getElement("restaurant-date")?.value;
+                      const guests = getElement("restaurant-guests")?.value;
+                      if (date) reservationData.startDate = date;
+                      if (guests) reservationData.guests = guests;
+                  } else if (serviceType === 'event') {
+                      const date = getElement("event-date")?.value;
+                      const tickets = getElement("event-tickets")?.value;
+                      if (date) reservationData.startDate = date;
+                      if (tickets) reservationData.guests = tickets;
+                  }
 
-                const response = await fetch('https://saudiguiderbackend.onrender.com/api/bookings', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ 
-                        serviceId,
-                        serviceType,
-                        ...(startDate && { startDate }),
-                        ...(endDate && { endDate })
-                    })
-                });
-                
-                const data = await response.json();
+                  // Show loading state
+                  const loadingModal = showLoadingModal('Processing your reservation...');
 
-                if (!response.ok) {
-                    throw new Error(data.message || 'Booking failed');
-                }
+                  // Make API call
+                  const response = await fetch('/api/reservations', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify(reservationData)
+                  });
 
-                showBookingSuccess(serviceId);
-            } catch (error) {
-                console.error('Booking error:', error);
-                showBookingError(error.message || 'Failed to complete booking');
-            }
-        }
+                  const data = await response.json();
 
-        /**
-         * Shows a success message after booking
-         * @param {string} serviceId - ID of the booked service
-         */
-        function showBookingSuccess(serviceId) {
-            const modal = document.createElement('div');
-            modal.className = 'booking-success-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>Booking Confirmed!</h3>
-                    <p>Your reservation has been successfully created.</p>
-                    <div class="modal-actions">
-                        <button onclick="window.location.href='reservations.html'">
-                            View My Reservations
-                        </button>
-                        <button onclick="this.closest('.booking-success-modal').remove()">
-                            Continue Browsing
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
+                  if (!response.ok) {
+                      throw new Error(data.message || 'Failed to create reservation');
+                  }
 
-        /**
-         * Shows an error message when booking fails
-         * @param {string} message - Error message to display
-         */
-        function showBookingError(message) {
-            const modal = document.createElement('div');
-            modal.className = 'booking-success-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <i class="fas fa-exclamation-circle" style="color: #ff5252;"></i>
-                    <h3>Booking Failed</h3>
-                    <p>${message}</p>
-                    <div class="modal-actions">
-                        <button onclick="this.closest('.booking-success-modal').remove()">
-                            OK
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
+                  // Close loading modal
+                  loadingModal.remove();
 
-        /**
-         * Shows login message when user tries to book without being logged in
-         * @param {string} action - The action requiring login (e.g., "book accommodation")
-         */
-        function showLoginMessage(action) {
-            const loginMessage = document.createElement("div");
-            loginMessage.className = "login-message";
-            loginMessage.innerHTML = `
-                <div class="login-message-content">
-                    <p>Please login to ${action}.</p>
-                    <button onclick="window.location.href='login.html'" class="login-redirect-btn">
-                        Go to Login Page
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(loginMessage);
+                  // Show success message
+                  showReservationSuccess(data);
+                  
+              } catch (error) {
+                  console.error('Reservation error:', error);
+                  showReservationError(error.message || 'Failed to complete reservation');
+              }
+          }
 
-            // Close when clicking outside
-            loginMessage.addEventListener("click", function (e) {
-                if (e.target === loginMessage) {
-                    loginMessage.remove();
-                }
-            });
-        }
+          /**
+           * Shows a loading modal with a message
+           * @param {string} message - The message to display
+           * @returns {HTMLElement} The modal element
+           */
+          function showLoadingModal(message) {
+              const modal = document.createElement('div');
+              modal.className = 'loading-modal';
+              modal.innerHTML = `
+                  <div class="loading-content">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      <p>${message}</p>
+                  </div>
+              `;
+              document.body.appendChild(modal);
+              return modal;
+          }
 
-        // Set default dates for hotel search
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
+          /**
+           * Shows a success message after reservation
+           * @param {Object} reservation - The reservation data
+           */
+          function showReservationSuccess(reservation) {
+              const modal = document.createElement('div');
+              modal.className = 'reservation-modal';
+              modal.innerHTML = `
+                  <div class="reservation-content">
+                      <i class="fas fa-check-circle"></i>
+                      <h3>Reservation Confirmed!</h3>
+                      <p>Your reservation has been successfully created.</p>
+                      <div class="reservation-actions">
+                          <button onclick="window.location.href='reservations.html'">
+                              View My Reservations
+                          </button>
+                          <button onclick="this.closest('.reservation-modal').remove()">
+                              Continue Browsing
+                          </button>
+                      </div>
+                  </div>
+              `;
+              document.body.appendChild(modal);
+          }
 
-        // Format dates for input fields (YYYY-MM-DD)
-        const formatDate = (date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, "0");
-            const day = String(date.getDate()).padStart(2, "0");
-            return `${year}-${month}-${day}`;
-        };
+          /**
+           * Shows an error message when reservation fails
+           * @param {string} message - The error message to display
+           */
+          function showReservationError(message) {
+              const modal = document.createElement('div');
+              modal.className = 'reservation-modal';
+              modal.innerHTML = `
+                  <div class="reservation-content">
+                      <i class="fas fa-exclamation-circle"></i>
+                      <h3>Reservation Failed</h3>
+                      <p>${message}</p>
+                      <div class="reservation-actions">
+                          <button onclick="this.closest('.reservation-modal').remove()">
+                              OK
+                          </button>
+                      </div>
+                  </div>
+              `;
+              document.body.appendChild(modal);
+          }
 
-        const checkIn = getElement("check-in");
-        const checkOut = getElement("check-out");
-        const restaurantDate = getElement("restaurant-date");
-        const carPickupDate = getElement("car-pickup-date");
-        const carDropoffDate = getElement("car-dropoff-date");
-        const eventDate = getElement("event-date");
+          /**
+           * Shows a login message when user tries to book without being logged in
+           * @param {string} action - The action requiring login (e.g., "book accommodation")
+           */
+          function showLoginMessage(action) {
+              const loginMessage = document.createElement("div");
+              loginMessage.className = "login-message";
+              loginMessage.innerHTML = `
+                  <div class="login-message-content">
+                      <p>Please login to ${action}.</p>
+                      <div class="login-actions">
+                          <button onclick="window.location.href='login.html'" class="login-redirect-btn">
+                              Go to Login Page
+                          </button>
+                          <button onclick="this.closest('.login-message').remove()" class="login-cancel-btn">
+                              Cancel
+                          </button>
+                      </div>
+                  </div>
+              `;
+              document.body.appendChild(loginMessage);
 
-        if (checkIn) {
-            checkIn.value = formatDate(today);
-            checkIn.min = formatDate(today);
-        }
-        if (checkOut) {
-            checkOut.value = formatDate(tomorrow);
-            checkOut.min = formatDate(tomorrow);
-        }
-        if (restaurantDate) restaurantDate.value = formatDate(today);
-        if (carPickupDate) carPickupDate.value = formatDate(today);
-        if (carDropoffDate) carDropoffDate.value = formatDate(tomorrow);
-        if (eventDate) eventDate.value = formatDate(today);
+              // Close when clicking outside
+              loginMessage.addEventListener("click", function (e) {
+                  if (e.target === loginMessage) {
+                      loginMessage.remove();
+                  }
+              });
+          }
 
-        // Update min date for check-out when check-in changes
-        if (checkIn) {
-            checkIn.addEventListener("change", function() {
-                if (checkOut) checkOut.min = this.value;
-            });
-        }
+          // Set default dates for hotel search
+          const today = new Date();
+          const tomorrow = new Date();
+          tomorrow.setDate(today.getDate() + 1);
 
-        // Add login requirement for all booking buttons in modals
-        document.querySelectorAll(".modal-footer button").forEach((button) => {
-            button.addEventListener("click", function () {
-                const modal = this.closest(".modal");
-                if (!modal) return;
-                
-                const action = modal.id.includes("hotel")
-                    ? "book accommodation"
-                    : modal.id.includes("car")
-                    ? "rent a car"
-                    : modal.id.includes("restaurant")
-                    ? "make a reservation"
-                    : "purchase tickets";
-                showLoginMessage(action);
-            });
-        });
+          // Format dates for input fields (YYYY-MM-DD)
+          const formatDate = (date) => {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, "0");
+              const day = String(date.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+          };
 
-        // Add login requirement for featured service booking buttons
-        document.querySelectorAll(".book-now-btn").forEach((button) => {
-            button.addEventListener("click", function () {
-                const card = this.closest(".service-card");
-                if (!card) return;
-                
-                const service = card.querySelector("h3")?.textContent || 'this service';
-                showLoginMessage(`book ${service}`);
-            });
-        });
+          const checkIn = getElement("check-in");
+          const checkOut = getElement("check-out");
+          const restaurantDate = getElement("restaurant-date");
+          const carPickupDate = getElement("car-pickup-date");
+          const carDropoffDate = getElement("car-dropoff-date");
+          const eventDate = getElement("event-date");
 
-        // Logout functionality
-        const logoutBtn = getElement('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function() {
-                localStorage.removeItem('token');
-                window.location.href = 'index.html';
-            });
-        }
+          if (checkIn) {
+              checkIn.value = formatDate(today);
+              checkIn.min = formatDate(today);
+          }
+          if (checkOut) {
+              checkOut.value = formatDate(tomorrow);
+              checkOut.min = formatDate(tomorrow);
+          }
+          if (restaurantDate) restaurantDate.value = formatDate(today);
+          if (carPickupDate) carPickupDate.value = formatDate(today);
+          if (carDropoffDate) carDropoffDate.value = formatDate(tomorrow);
+          if (eventDate) eventDate.value = formatDate(today);
 
-        // AI Assistant functionality
-        const aiSubmitBtn = getElement('ai-submit-btn');
-        if (aiSubmitBtn) {
-            aiSubmitBtn.addEventListener('click', async function() {
-                const query = getElement('ai-query')?.value.trim();
-                const aiResults = getElement('ai-results');
+          // Update min date for check-out when check-in changes
+          if (checkIn) {
+              checkIn.addEventListener("change", function() {
+                  if (checkOut) checkOut.min = this.value;
+              });
+          }
 
-                if (!query || !aiResults) return;
+          // Add login requirement for all booking buttons in modals
+          document.querySelectorAll(".modal-footer button").forEach((button) => {
+              button.addEventListener("click", function () {
+                  const modal = this.closest(".modal");
+                  if (!modal) return;
+                  
+                  const action = modal.id.includes("hotel")
+                      ? "book accommodation"
+                      : modal.id.includes("car")
+                      ? "rent a car"
+                      : modal.id.includes("restaurant")
+                      ? "make a reservation"
+                      : "purchase tickets";
+                  showLoginMessage(action);
+              });
+          });
 
-                try {
-                    // Show loading state
-                    aiResults.innerHTML = '<div class="ai-loading"><i class="fas fa-spinner"></i></div>';
-                    aiResults.classList.add('active');
+          // Add login requirement for featured service booking buttons
+          document.querySelectorAll(".book-now-btn").forEach((button) => {
+              button.addEventListener("click", function () {
+                  const card = this.closest(".service-card");
+                  if (!card) return;
+                  
+                  const service = card.querySelector("h3")?.textContent || 'this service';
+                  showLoginMessage(`book ${service}`);
+              });
+          });
 
-                    // Make API call to backend AI endpoint
-                    const response = await fetch('https://saudiguiderbackend.onrender.com/api/bookings/ai', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token || ''}`
-                        },
-                        body: JSON.stringify({ prompt: query })
-                    });
+          // Logout functionality
+          const logoutBtn = getElement('logoutBtn');
+          if (logoutBtn) {
+              logoutBtn.addEventListener('click', function() {
+                  localStorage.removeItem('token');
+                  window.location.href = 'index.html';
+              });
+          }
 
-                    if (!response.ok) {
-                        throw new Error('AI endpoint not found');
-                    }
+          // View details button handlers for service cards
+          document.querySelectorAll('.view-details-btn').forEach(button => {
+              button.addEventListener('click', function() {
+                  const serviceType = this.getAttribute('data-service');
+                  if (!serviceType) return;
+                  
+                  const modalId = `${serviceType}Modal`;
+                  const modal = getElement(modalId);
+                  if (modal) modal.style.display = 'flex';
+              });
+          });
 
-                    const data = await response.json();
+          // Close modal buttons
+          document.querySelectorAll('.close-modal').forEach(button => {
+              button.addEventListener('click', function() {
+                  const modal = this.closest('.modal');
+                  if (modal) modal.style.display = 'none';
+              });
+          });
 
-                    // Display AI response
-                    displayAIResponse(data);
-                } catch (error) {
-                    console.error('AI error:', error);
-                    if (aiResults) {
-                        aiResults.innerHTML = `
-                            <div class="error-message">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>${error.message || 'Failed to get AI response. Please try again.'}</p>
-                            </div>
-                        `;
-                    }
-                }
-            });
-        }
-
-        /**
-         * Displays the AI response in the results section
-         * @param {Object} data - Response data from the AI endpoint
-         */
-        function displayAIResponse(data) {
-            const aiResults = getElement('ai-results');
-            if (!aiResults) return;
-            
-            if (data.type === 'trip-plan') {
-                // Display trip plan with services
-                aiResults.innerHTML = `
-                    <div class="ai-response">
-                        <h3>${data.title || 'Your Trip Plan'}</h3>
-                        <p>${data.description || 'Here are our recommendations for your trip:'}</p>
-                    </div>
-                `;
-
-                // Create cards for each service in the plan
-                data.plan?.forEach(item => {
-                    if (!item?.service) return;
-                    
-                    const card = document.createElement('div');
-                    card.className = 'trip-card';
-                    
-                    let priceDisplay;
-                    if (item.service.type === 'hotel') {
-                        priceDisplay = `From ${item.service.price || 0} SAR/night`;
-                    } else if (item.service.type === 'restaurant') {
-                        priceDisplay = `Average meal: ${item.service.price || 0} SAR`;
-                    } else if (item.service.type === 'car') {
-                        priceDisplay = `From ${item.service.price || 0} SAR/day`;
-                    } else {
-                        priceDisplay = `From ${item.service.price || 0} SAR`;
-                    }
-
-                    card.innerHTML = `
-                        <h3>${item.type}: ${item.service.title || 'Untitled Service'}</h3>
-                        <p>${item.service.description || 'No description available'}</p>
-                        <p>Location: ${item.service.location || 'Location not specified'}</p>
-                        <p>Price: ${priceDisplay}</p>
-                        <button data-id="${item.service._id}" data-type="${item.service.type}">Reserve</button>
-                    `;
-
-                    // Add click handler to reserve button
-                    const reserveBtn = card.querySelector('button');
-                    if (reserveBtn) {
-                        reserveBtn.addEventListener('click', function() {
-                            bookService(item.service._id, this.getAttribute('data-type'));
-                        });
-                    }
-
-                    aiResults.appendChild(card);
-                });
-            } else {
-                // Display text response
-                aiResults.innerHTML = `
-                    <div class="ai-response">
-                        <h3>Travel Recommendations</h3>
-                        <p>${data.reply || 'No response from AI assistant.'}</p>
-                    </div>
-                `;
-            }
-
-            // Scroll to results
-            aiResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        // Example prompts click handler
-        document.querySelectorAll('.example-prompt').forEach((prompt) => {
-            prompt.addEventListener('click', function() {
-                const aiQuery = getElement('ai-query');
-                if (aiQuery) {
-                    aiQuery.value = this.textContent;
-                    aiQuery.focus();
-                }
-            });
-
-            // Add keyboard support for example prompts
-            prompt.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const aiQuery = getElement('ai-query');
-                    if (aiQuery) {
-                        aiQuery.value = this.textContent;
-                        aiQuery.focus();
-                    }
-                }
-            });
-        });
-
-        // View details button handlers for service cards
-        document.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const serviceType = this.getAttribute('data-service');
-                if (!serviceType) return;
-                
-                const modalId = `${serviceType}Modal`;
-                const modal = getElement(modalId);
-                if (modal) modal.style.display = 'flex';
-            });
-        });
-
-        // Close modal buttons
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', function() {
-                const modal = this.closest('.modal');
-                if (modal) modal.style.display = 'none';
-            });
-        });
-
-        // Close modals when clicking outside
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.style.display = 'none';
-                }
-            });
-        });
-    });
+          // Close modals when clicking outside
+          document.querySelectorAll('.modal').forEach(modal => {
+              modal.addEventListener('click', function(e) {
+                  if (e.target === this) {
+                      this.style.display = 'none';
+                  }
+              });
+          });
+      });
     </script>
   </body>
 </html>
