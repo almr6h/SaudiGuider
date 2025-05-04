@@ -2255,88 +2255,87 @@
  // In your displaySearchResults function:
 function displaySearchResults(data, type) {
   try {
-    console.log('Displaying results with data:', data); // Debug log
-    
-    // Ensure we're working with the correct data structure
     const services = Array.isArray(data) ? data : (data.data || []);
-    console.log(`Processing ${services.length} services`);
-    
     const resultsContainer = document.getElementById('results-container');
-    const resultsCountElements = document.querySelectorAll('.results-count');
     
-    // Update all results counters
-    resultsCountElements.forEach(el => {
-      el.textContent = `${services.length} results found`;
-    });
-
-    // Clear previous results and loading state
-    if (resultsContainer) {
-      resultsContainer.innerHTML = '';
-    document.querySelectorAll('.results-count').forEach(el => {
-    el.textContent = `${services.length} results found`;
-    });
-      if (services.length === 0) {
-        resultsContainer.innerHTML = `
-          <div class="no-results">
-            <i class="fas fa-search"></i>
-            <h4>No ${type} found matching your criteria</h4>
-            <p>Try adjusting your search filters</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Create result cards
-      services.forEach((service) => {
-        const resultItem = document.createElement('div');
-        resultItem.className = 'result-item';
-        
-        // Generate star rating
-        const ratingStars = service.rating 
-          ? '⭐'.repeat(Math.round(service.rating)) + ` (${service.rating.toFixed(1)})`
-          : 'No ratings';
-        
-        // Generate amenities badges
-        const amenitiesHTML = service.amenities && service.amenities.length > 0 
-          ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
-              `<span class="amenity-tag">${a}</span>`).join('')}</div>`
-          : '';
-
-        resultItem.innerHTML = `
-          <div class="result-image">
-            <i class="fas ${service.image || 'fa-hotel'}"></i>
-          </div>
-          <div class="result-details">
-            <h3>${service.title}</h3>
-            <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
-            <p class="price">${service.price} SAR</p>
-            <p class="rating">${ratingStars}</p>
-            ${amenitiesHTML}
-            <button class="book-btn" data-id="${service.id}" data-type="${service.type}">
-              Book Now
-            </button>
-          </div>
-        `;
-
-        resultsContainer.appendChild(resultItem);
-      });
-      
-      // Remove loading state
-      const searchResults = document.getElementById('search-results');
-      if (searchResults) {
-        searchResults.classList.remove('loading');
-      }
+    if (!resultsContainer) {
+      throw new Error('Results container not found');
     }
+
+    // Clear previous results
+    resultsContainer.innerHTML = '';
+
+    if (services.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <h4>No ${type} found matching your criteria</h4>
+          <p>Try adjusting your search filters</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Create result cards
+    services.forEach((service) => {
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item';
+      
+      // Default values if properties are missing
+      const title = service.title || service.name || 'Untitled Service';
+      const location = service.location || service.city || 'Location not specified';
+      const price = service.price ? `${service.price} SAR` : 'Price not available';
+      const rating = service.rating ? `${'⭐'.repeat(Math.round(service.rating))} (${service.rating.toFixed(1)})` : 'No ratings';
+      
+      // Generate amenities badges
+      const amenitiesHTML = service.amenities && service.amenities.length > 0 
+        ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
+            `<span class="amenity-tag">${a}</span>`).join('')}</div>`
+        : '';
+
+      resultItem.innerHTML = `
+        <div class="result-image">
+          ${service.image ? 
+            `<img src="${service.image}" alt="${title}" loading="lazy">` : 
+            `<i class="fas ${getIconForType(type)}"></i>`}
+        </div>
+        <div class="result-details">
+          <h3>${title}</h3>
+          <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
+          <p class="price">${price}</p>
+          <p class="rating">${rating}</p>
+          ${amenitiesHTML}
+          <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">
+            Book Now
+          </button>
+        </div>
+      `;
+
+      resultsContainer.appendChild(resultItem);
+    });
+
   } catch (error) {
     console.error('Error displaying results:', error);
     const resultsContainer = document.getElementById('results-container') || document.body;
     resultsContainer.innerHTML = `
       <div class="error-state">
         <i class="fas fa-exclamation-triangle"></i>
-        <p>Failed to display results: ${error.message}</p>
+        <h4>Error Displaying Results</h4>
+        <p>${error.message}</p>
       </div>
     `;
   }
+}
+
+// Helper function to get appropriate icon
+function getIconForType(type) {
+  const icons = {
+    hotel: 'fa-hotel',
+    restaurant: 'fa-utensils',
+    car: 'fa-car',
+    event: 'fa-ticket-alt'
+  };
+  return icons[type] || 'fa-star';
 }
 
   // Handle search form submission
@@ -2441,21 +2440,31 @@ function displaySearchResults(data, type) {
       }
 
       // Handle no results
-      if (!data.data || data.data.length === 0) {
-        if (searchResults) {
-          searchResults.innerHTML = `
-            <div class="no-results">
-              <i class="fas fa-search"></i>
-              <h4>No ${activeTab} found matching your criteria</h4>
-              <p>Try adjusting your search filters</p>
-            </div>
-          `;
-        }
-        return;
-      }
-      
-      // Display results
-      displaySearchResults(data, activeTab);
+      if (data.data && data.data.length > 0) {
+  // Ensure search results container is visible
+  if (searchResults) {
+    searchResults.classList.add('active');
+    searchResults.innerHTML = `
+      <div class="sort-controls">
+        <div class="sort-options">
+          <label for="sort-by">Sort by:</label>
+          <select id="sort-by">
+            <option value="recommended">Recommended</option>
+            <option value="price-low">Price (Low to High)</option>
+            <option value="price-high">Price (High to Low)</option>
+            <option value="rating">Rating</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+        <div class="results-count">${data.data.length} results found</div>
+      </div>
+      <div id="results-container" class="results-grid"></div>
+    `;
+  }
+  
+  // Now display the results
+  displaySearchResults(data, activeTab);
+}
       
     } catch (error) {
       console.error('Search failed:', error);
