@@ -2216,222 +2216,150 @@
       </div>
     </footer>
 
-   <script>
-      const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
-      
-      document.addEventListener("DOMContentLoaded", function() {
-        console.log('DOM fully loaded and parsed');
+    <script>
+        const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
         
-        // Search tabs functionality
-        const tabs = document.querySelectorAll(".search-tab");
-        const searchForms = {
-          hotels: document.getElementById("hotel-search"),
-          restaurants: document.getElementById("restaurant-search"),
-          cars: document.getElementById("car-search"),
-          events: document.getElementById("event-search")
-        };
-
-        tabs.forEach((tab) => {
-          tab.addEventListener("click", function() {
-            tabs.forEach((t) => t.classList.remove("active"));
-            this.classList.add("active");
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('DOM fully loaded and parsed');
             
-            Object.values(searchForms).forEach(form => {
-              if (form) form.style.display = "none";
+            // Search form submission
+            document.getElementById("hotel-search")?.addEventListener("submit", async function(e) {
+                e.preventDefault();
+                
+                try {
+                    console.log('Starting search for hotel');
+                    
+                    const searchParams = {
+                        destination: document.getElementById("destination")?.value || "Jeddah",
+                        checkIn: document.getElementById("check-in")?.value || "2025-05-04",
+                        checkOut: document.getElementById("check-out")?.value || "2025-05-05",
+                        guests: document.getElementById("guests")?.value || "2"
+                    };
+                    
+                    console.log('Search parameters:', searchParams);
+                    
+                    // Show loading state
+                    const searchResults = document.getElementById("search-results");
+                    if (searchResults) {
+                        searchResults.innerHTML = `
+                            <div class="loading-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Searching for hotels...</p>
+                            </div>
+                        `;
+                        searchResults.style.display = 'block';
+                    }
+                    
+                    // Make API request
+                    const params = new URLSearchParams();
+                    params.append('type', 'hotel');
+                    params.append('location', searchParams.destination);
+                    params.append('startDate', searchParams.checkIn);
+                    params.append('endDate', searchParams.checkOut);
+                    params.append('capacity', searchParams.guests);
+                    
+                    const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
+                    console.log('Making API request to:', apiUrl);
+                    
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Received search results:', data);
+                    
+                    displaySearchResults(data, 'hotels');
+                    
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showError(error.message || 'Failed to load search results');
+                }
             });
-
-            const tabType = this.getAttribute("data-tab");
-            console.log(`Search tab changed to: ${tabType}`);
-            if (searchForms[tabType]) {
-              searchForms[tabType].style.display = "flex";
+            
+            // Display search results
+            function displaySearchResults(response, type) {
+                try {
+                    const services = response.data || [];
+                    console.log(`Displaying ${services.length} results for ${type}`);
+                    
+                    const resultsContainer = document.getElementById('results-container');
+                    const resultsCount = document.querySelector('.results-count');
+                    const searchResults = document.getElementById('search-results');
+                    
+                    if (!resultsContainer || !resultsCount || !searchResults) {
+                        throw new Error('Required elements not found. Check your HTML structure.');
+                    }
+                    
+                    // Update results count
+                    resultsCount.textContent = `${services.length} results found`;
+                    
+                    // Clear previous results
+                    resultsContainer.innerHTML = '';
+                    
+                    if (services.length === 0) {
+                        resultsContainer.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-search"></i>
+                                <h4>No ${type} found matching your criteria</h4>
+                                <p>Try adjusting your search filters</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Create result cards
+                    services.forEach((service) => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'result-item';
+                        resultItem.innerHTML = `
+                            <div class="result-image">
+                                ${service.image ? `<img src="${service.image}" alt="${service.title || 'Service'}">` : '<i class="fas fa-image"></i>'}
+                            </div>
+                            <div class="result-details">
+                                <h4>${service.title || 'Unnamed Service'}</h4>
+                                <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+                                <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
+                                <button class="book-btn" data-id="${service.id}">Book Now</button>
+                            </div>
+                        `;
+                        resultsContainer.appendChild(resultItem);
+                    });
+                    
+                    // Make sure results are visible
+                    searchResults.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Display error:', error);
+                    showError(error.message || 'Failed to display results');
+                }
             }
-          });
+            
+            function showError(message) {
+                const searchResults = document.getElementById('search-results') || document.body;
+                searchResults.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>${message}</p>
+                        <button onclick="window.location.reload()">Try Again</button>
+                    </div>
+                `;
+                searchResults.style.display = 'block';
+            }
+            
+            // Initialize date inputs
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date();
+            tomorrow.setDate(new Date().getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            
+            document.getElementById("check-in").value = today;
+            document.getElementById("check-out").value = tomorrowStr;
+            document.getElementById("check-out").min = today;
+            
+            console.log('Page initialization complete');
         });
-
-        tabs[0]?.click();
-
-        // Service type mapping
-        const typeMap = {
-          'hotels': 'hotel',
-          'restaurants': 'restaurant',
-          'cars': 'car',
-          'events': 'event'
-        };
-
-        // Search form submission handler
-        const hotelForm = document.getElementById("hotel-search");
-        if (hotelForm) {
-          hotelForm.addEventListener("submit", async function(e) {
-            e.preventDefault();
-            
-            try {
-              const activeTab = document.querySelector(".search-tab.active")?.getAttribute("data-tab");
-              if (!activeTab) throw new Error('No active search tab selected');
-              
-              const serviceType = typeMap[activeTab];
-              console.log(`Starting search for ${serviceType}`);
-
-              const searchParams = {
-                destination: document.getElementById("destination")?.value,
-                checkIn: document.getElementById("check-in")?.value,
-                checkOut: document.getElementById("check-out")?.value,
-                guests: document.getElementById("guests")?.value
-              };
-
-              console.log('Search parameters:', searchParams);
-
-              const searchResults = document.getElementById("search-results");
-              if (searchResults) {
-                searchResults.innerHTML = `
-                  <div class="loading-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Searching for ${activeTab}...</p>
-                  </div>
-                `;
-                searchResults.classList.add("active");
-                searchResults.style.display = 'block';
-              }
-
-              const params = new URLSearchParams();
-              params.append('type', serviceType);
-              if (searchParams.destination) params.append('location', searchParams.destination);
-              if (searchParams.checkIn) params.append('startDate', searchParams.checkIn);
-              if (searchParams.checkOut) params.append('endDate', searchParams.checkOut);
-              if (searchParams.guests) params.append('capacity', searchParams.guests);
-
-              const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
-              console.log('Making API request to:', apiUrl);
-
-              const response = await fetch(apiUrl);
-              
-              if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}`);
-              }
-
-              const data = await response.json();
-              console.log('Received search results:', data);
-
-              displaySearchResults(data, activeTab);
-              
-            } catch (error) {
-              console.error("Search error:", error);
-              
-              const searchResults = document.getElementById("search-results");
-              if (searchResults) {
-                searchResults.innerHTML = `
-                  <div class="error-state">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>${error.message || 'Failed to load search results'}</p>
-                    <button onclick="retrySearch()">Try Again</button>
-                  </div>
-                `;
-                searchResults.style.display = 'block';
-              }
-            }
-          });
-        }
-
-        // Display search results
-        function displaySearchResults(response, type) {
-          try {
-            const services = response.data || [];
-            console.log(`Displaying ${services.length} results for ${type}`);
-            
-            const searchResults = document.getElementById('search-results');
-            const resultsContainer = document.getElementById('results-container');
-            const resultsCountElements = document.querySelectorAll('.results-count');
-            
-            if (!searchResults || !resultsContainer) {
-              throw new Error('Required elements not found');
-            }
-
-            // Make sure results are visible
-            searchResults.style.display = 'block';
-
-            // Update results count
-            resultsCountElements.forEach(el => {
-              if (el) el.textContent = `${services.length} results found`;
-            });
-
-            // Clear previous results
-            resultsContainer.innerHTML = '';
-
-            if (services.length === 0) {
-              resultsContainer.innerHTML = `
-                <div class="no-results">
-                  <i class="fas fa-search"></i>
-                  <h4>No ${type} found matching your criteria</h4>
-                  <p>Try adjusting your search filters</p>
-                </div>
-              `;
-              return;
-            }
-
-            // Create result cards
-            services.forEach((service) => {
-              const resultItem = document.createElement('div');
-              resultItem.className = 'result-item';
-              
-              resultItem.innerHTML = `
-                <div class="result-image">
-                  ${service.image ? `<img src="${service.image}" alt="${service.title || 'Service'}">` : '<i class="fas fa-image"></i>'}
-                </div>
-                <div class="result-details">
-                  <h4>${service.title || 'Unnamed Service'}</h4>
-                  <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
-                  <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
-                  <button class="book-btn" data-id="${service.id}" data-type="${typeMap[type]}">Book Now</button>
-                </div>
-              `;
-
-              resultsContainer.appendChild(resultItem);
-            });
-
-            // Add event delegation for booking buttons
-            resultsContainer.addEventListener('click', function(e) {
-              if (e.target.classList.contains('book-btn')) {
-                const serviceId = e.target.getAttribute('data-id');
-                const serviceType = e.target.getAttribute('data-type');
-                alert(`Booking ${serviceType} with ID: ${serviceId}`);
-              }
-            });
-
-          } catch (error) {
-            console.error('Display error:', error);
-            const fallbackContainer = document.getElementById('results-container') || document.body;
-            if (fallbackContainer) {
-              fallbackContainer.innerHTML = `
-                <div class="error-state">
-                  <i class="fas fa-exclamation-triangle"></i>
-                  <p>Failed to display results: ${error.message}</p>
-                </div>
-              `;
-            }
-          }
-        }
-
-        // Initialize date inputs
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
-
-        const formatDate = (date) => date.toISOString().split('T')[0];
-
-        document.getElementById("check-in").value = formatDate(today);
-        document.getElementById("check-out").value = formatDate(tomorrow);
-
-        // Global retry function
-        window.retrySearch = function() {
-          console.log('Retrying search...');
-          const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
-                            document.querySelector('.search-form');
-          if (activeForm) {
-            activeForm.dispatchEvent(new Event('submit'));
-          }
-        };
-
-        console.log('Page initialization complete');
-      });
     </script>
   </body>
 </html>
