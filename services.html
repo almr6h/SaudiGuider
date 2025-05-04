@@ -407,8 +407,10 @@
       }
 
       .search-results.active {
-        display: block;
-      }
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
 
       /* Results Grid Layout */
       .results-grid {
@@ -2253,8 +2255,11 @@
  // In your displaySearchResults function:
 function displaySearchResults(data, type) {
   try {
-    const services = data.data || [];
-    console.log(`Displaying ${services.length} results for ${type}`);
+    console.log('Displaying results with data:', data); // Debug log
+    
+    // Ensure we're working with the correct data structure
+    const services = Array.isArray(data) ? data : (data.data || []);
+    console.log(`Processing ${services.length} services`);
     
     const resultsContainer = document.getElementById('results-container');
     const resultsCountElements = document.querySelectorAll('.results-count');
@@ -2267,7 +2272,9 @@ function displaySearchResults(data, type) {
     // Clear previous results and loading state
     if (resultsContainer) {
       resultsContainer.innerHTML = '';
-
+    document.querySelectorAll('.results-count').forEach(el => {
+    el.textContent = `${services.length} results found`;
+    });
       if (services.length === 0) {
         resultsContainer.innerHTML = `
           <div class="no-results">
@@ -2417,9 +2424,11 @@ function displaySearchResults(data, type) {
       console.log('API Request:', apiUrl);
       
       const response = await fetch(apiUrl);
-      
+      console.log('Raw API response:', response); // Add this
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.log('Error response:', errorData); // Add this
         throw new Error(errorData.message || `Server error: ${response.status}`);
       }
       
