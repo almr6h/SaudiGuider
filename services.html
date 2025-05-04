@@ -2537,12 +2537,17 @@ function displaySearchResults(response, type) {
     const services = response.data || [];
     console.log(`Displaying ${services.length} results for ${type}`);
     
+    // Safely get the results container
     const resultsContainer = document.getElementById('results-container');
     const resultsCountElements = document.querySelectorAll('.results-count');
     
-    // Update results count
+    if (!resultsContainer) {
+      throw new Error('Results container element not found');
+    }
+
+    // Update all results counters
     resultsCountElements.forEach(el => {
-      el.textContent = `${services.length} results found`;
+      if (el) el.textContent = `${services.length} results found`;
     });
 
     // Clear previous results
@@ -2572,7 +2577,7 @@ function displaySearchResults(response, type) {
           <h4>${service.title || 'Unnamed Service'}</h4>
           <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
           <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
-          <button class="book-btn" data-id="${service._id || service.id}" data-type="${typeMap[type]}">Book Now</button>
+          <button class="book-btn" data-id="${service.id}" data-type="${typeMap[type]}">Book Now</button>
         </div>
       `;
 
@@ -2591,12 +2596,14 @@ function displaySearchResults(response, type) {
   } catch (error) {
     console.error('Display error:', error);
     const fallbackContainer = document.getElementById('results-container') || document.body;
-    fallbackContainer.innerHTML = `
-      <div class="error-state">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>Failed to display results: ${error.message}</p>
-      </div>
-    `;
+    if (fallbackContainer) {
+      fallbackContainer.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Failed to display results: ${error.message}</p>
+        </div>
+      `;
+    }
   }
 }
 
