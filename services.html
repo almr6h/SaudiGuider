@@ -2231,6 +2231,7 @@
   let currentResults = [];
   let currentServiceType = '';
   let currentFilters = {};
+  let activeSearchAbortController = null;
 
   // Enhanced error logging function
   function logError(context, error, extra = {}) {
@@ -2257,6 +2258,32 @@
     } catch (error) {
       logError(`getElement${context ? ` (${context})` : ''}`, error, { elementId: id });
       return null;
+    }
+  }
+
+  // Clear loading state
+  function clearLoadingState() {
+    const searchResults = document.getElementById('search-results');
+    if (searchResults) {
+      searchResults.classList.remove('loading');
+      const loadingElements = searchResults.querySelectorAll('.loading-state');
+      loadingElements.forEach(el => el.remove());
+    }
+  }
+
+  // Show error state
+  function showErrorState(message) {
+    clearLoadingState();
+    const searchResults = document.getElementById('search-results');
+    if (searchResults) {
+      searchResults.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h4>Search Failed</h4>
+          <p>${message || 'Please try again later'}</p>
+          <button onclick="retrySearch()" class="retry-btn">Try Again</button>
+        </div>
+      `;
     }
   }
 
@@ -2332,6 +2359,8 @@
   // Display search results
   function displaySearchResults(data, type) {
     try {
+      clearLoadingState();
+      
       currentServiceType = type;
       currentResults = Array.isArray(data) ? data : (data.data || []);
       
@@ -2372,14 +2401,7 @@
       
     } catch (error) {
       console.error('Error displaying results:', error);
-      const resultsContainer = document.getElementById('results-container') || document.body;
-      resultsContainer.innerHTML = `
-        <div class="error-state">
-          <i class="fas fa-exclamation-triangle"></i>
-          <h4>Error Displaying Results</h4>
-          <p>${error.message}</p>
-        </div>
-      `;
+      showErrorState(error.message);
     }
   }
 
@@ -2507,6 +2529,13 @@
   // Handle search form submission
   async function handleSearchFormSubmit(e) {
     e.preventDefault();
+    
+    // Abort any previous search request
+    if (activeSearchAbortController) {
+      activeSearchAbortController.abort();
+    }
+    activeSearchAbortController = new AbortController();
+    
     const form = e.target;
     const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
     const serviceType = typeMap[activeTab];
@@ -2605,20 +2634,33 @@
         }
       }
 
-      // Make API request
+      // Make API request with timeout
       const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
       console.log('API Request:', apiUrl);
       
-      const response = await fetch(apiUrl);
-      console.log('Raw API response:', response);
+      // Set timeout for the request
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Request timed out after 10 seconds'));
+          if (activeSearchAbortController) {
+            activeSearchAbortController.abort();
+          }
+        }, 10000); // 10 seconds timeout
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.log('Error response:', errorData);
-        throw new Error(errorData.message || `Server error: ${response.status}`);
-      }
+      const fetchPromise = fetch(apiUrl, {
+        signal: activeSearchAbortController.signal
+      }).then(response => {
+        if (!response.ok) {
+          return response.json().then(errData => {
+            throw new Error(errData.message || `Server error: ${response.status}`);
+          });
+        }
+        return response.json();
+      });
+
+      const data = await Promise.race([fetchPromise, timeoutPromise]);
       
-      const data = await response.json();
       console.log('API Response:', data);
       
       // Verify response structure
@@ -2637,17 +2679,15 @@
     } catch (error) {
       console.error('Search failed:', error);
       
-      // Show error state
-      if (searchResults) {
-        searchResults.innerHTML = `
-          <div class="error-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h4>Search Failed</h4>
-            <p>${error.message || 'Please try again later'}</p>
-            <button onclick="retrySearch()" class="retry-btn">Try Again</button>
-          </div>
-        `;
+      // Don't show error if the request was aborted
+      if (error.name === 'AbortError') {
+        console.log('Request was aborted');
+        return;
       }
+      
+      showErrorState(error.message);
+    } finally {
+      activeSearchAbortController = null;
     }
   }
 
