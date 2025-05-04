@@ -349,7 +349,16 @@
       .search-tab:hover {
         background: var(--secondary-dark);
       }
+        .service-type-group {
+  margin-bottom: 2rem;
+}
 
+.service-type-title {
+  color: var(--secondary);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-gray);
+  margin-bottom: 1rem;
+}
       .search-form {
         display: flex;
         flex-wrap: wrap;
@@ -506,6 +515,19 @@
         text-align: center;
         padding: 40px;
       }
+        .fetch-all-container {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+#fetchAllBtn {
+  background-color: var(--secondary-dark);
+  margin: 0 auto;
+}
+
+#fetchAllBtn:hover {
+  background-color: var(--secondary);
+}
 
       /* No Results State */
       .no-results {
@@ -1534,7 +1556,11 @@
               <i class="fas fa-ticket-alt"></i> Events
             </button>
           </div>
-
+            <div class="fetch-all-container" style="text-align: center; margin: 1rem 0;">
+  <button id="fetchAllBtn" class="search-button">
+    <i class="fas fa-list"></i> Show All Services
+  </button>
+</div>
           <form
             class="search-form"
             id="hotel-search"
@@ -2250,27 +2276,139 @@
       return null;
     }
   }
+async function fetchAllServices() {
+  try {
+    const searchResults = document.getElementById('search-results');
+    const resultsContainer = document.getElementById('results-container');
+    
+    // Show loading state
+    if (searchResults) {
+      searchResults.innerHTML = `
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading all services...</p>
+        </div>
+      `;
+      searchResults.classList.add('active');
+    }
 
+    // Clear previous results
+    if (resultsContainer) {
+      resultsContainer.innerHTML = '';
+    }
+
+    // Make API request to get all services
+    const response = await fetch(`${API_BASE_URL}/services/all`);
+    
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Verify response structure
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid API response format');
+    }
+
+    // Display all results grouped by type
+    if (data.data && data.data.length > 0) {
+      // Group services by type
+      const groupedServices = data.data.reduce((acc, service) => {
+        if (!acc[service.type]) {
+          acc[service.type] = [];
+        }
+        acc[service.type].push(service);
+        return acc;
+      }, {});
+
+      // Create HTML for each service type
+      let resultsHTML = '';
+      for (const [type, services] of Object.entries(groupedServices)) {
+        resultsHTML += `
+          <div class="service-type-group">
+            <h3 class="service-type-title">${type.charAt(0).toUpperCase() + type.slice(1)}s</h3>
+            <div class="results-grid" id="results-${type}"></div>
+          </div>
+        `;
+      }
+
+      // Update results container
+      if (searchResults) {
+        searchResults.innerHTML = `
+          <div class="sort-controls">
+            <div class="sort-options">
+              <label for="sort-by">Sort by:</label>
+              <select id="sort-by">
+                <option value="recommended">Recommended</option>
+                <option value="price-low">Price (Low to High)</option>
+                <option value="price-high">Price (High to Low)</option>
+                <option value="rating">Rating</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+            </div>
+            <div class="results-count">${data.data.length} total services found</div>
+          </div>
+          ${resultsHTML}
+        `;
+      }
+
+      // Display services for each type
+      for (const [type, services] of Object.entries(groupedServices)) {
+        displaySearchResults({ data: services }, type);
+      }
+    } else {
+      searchResults.innerHTML = `
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <h4>No services found</h4>
+          <p>Try again later</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Fetch all failed:', error);
+    
+    // Show error state
+    const searchResults = document.getElementById('search-results');
+    if (searchResults) {
+      searchResults.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h4>Failed to load services</h4>
+          <p>${error.message || 'Please try again later'}</p>
+          <button onclick="fetchAllServices()" class="retry-btn">Try Again</button>
+        </div>
+      `;
+    }
+  }
+}
   // Display search results
  // In your displaySearchResults function:
 function displaySearchResults(data, type) {
   try {
     const services = Array.isArray(data) ? data : (data.data || []);
-    const resultsContainer = document.getElementById('results-container');
+    let resultsContainer;
+    
+    // Check if we're showing all services (grouped by type)
+    if (document.getElementById(`results-${type}`)) {
+      resultsContainer = document.getElementById(`results-${type}`);
+    } else {
+      resultsContainer = document.getElementById('results-container');
+    }
     
     if (!resultsContainer) {
       throw new Error('Results container not found');
     }
 
-    // Clear previous results
+    // Clear previous results for this type
     resultsContainer.innerHTML = '';
 
     if (services.length === 0) {
       resultsContainer.innerHTML = `
         <div class="no-results">
           <i class="fas fa-search"></i>
-          <h4>No ${type} found matching your criteria</h4>
-          <p>Try adjusting your search filters</p>
+          <h4>No ${type} found</h4>
         </div>
       `;
       return;
@@ -2764,6 +2902,10 @@ function getIconForType(type) {
       // Setup featured cards
       setupFeaturedCards();
 
+         const fetchAllBtn = document.getElementById('fetchAllBtn');
+  if (fetchAllBtn) {
+    fetchAllBtn.addEventListener('click', fetchAllServices);
+  }
       // Attach search form handlers
       document.querySelectorAll('.search-form').forEach(form => {
         form.addEventListener('submit', handleSearchFormSubmit);
