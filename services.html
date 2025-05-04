@@ -2513,42 +2513,38 @@ function getIconForType(type) {
       const params = new URLSearchParams();
       params.append('type', serviceType);
 
-      // Location filter
+      // Add location filter
       const location = form.querySelector('[id*="destination"]')?.value?.trim();
       if (location && location.length >= 2) {
         params.append('location', location);
       }
 
-      // Unified date handling
-      const startDateInput = form.querySelector('[id*="check-in"], [id*="pickup-date"], [id*="date"]');
-      if (startDateInput?.value) {
-        params.append('startDate', startDateInput.value);
+      // Handle date filters
+      if (serviceType === 'hotel') {
+        const checkIn = form.querySelector('#check-in')?.value;
+        const checkOut = form.querySelector('#check-out')?.value;
+        if (checkIn) params.append('startDate', checkIn);
+        if (checkOut) params.append('endDate', checkOut);
+      } else if (serviceType === 'car') {
+        const pickupDate = form.querySelector('#car-pickup-date')?.value;
+        const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
+        if (pickupDate) params.append('startDate', pickupDate);
+        if (dropoffDate) params.append('endDate', dropoffDate);
+      } else {
+        const date = form.querySelector('[id*="date"]')?.value;
+        if (date) params.append('startDate', date);
       }
 
-      const endDateInput = form.querySelector('[id*="check-out"], [id*="dropoff-date"]');
-      if (endDateInput?.value) {
-        params.append('endDate', endDateInput.value);
-      }
-
-      // Capacity/guests
+      // Handle capacity/guests
       const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
       if (capacityInput?.value) {
-        params.append('capacity', capacityInput.value);
+        const capacity = parseInt(capacityInput.value);
+        if (!isNaN(capacity)) {
+          params.append('capacity', capacity);
+        }
       }
 
-      // Price range filter
-      const priceRange = form.querySelector('[id*="price-range"]')?.value;
-      if (priceRange && priceRange !== 'all') {
-        params.append('priceRange', priceRange);
-      }
-
-      // Rating filter
-      const minRating = form.querySelector('[id*="min-rating"]')?.value;
-      if (minRating) {
-        params.append('minRating', minRating);
-      }
-
-      // Amenities/categories
+      // Handle amenities/categories
       const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
       if (amenitiesSelect) {
         const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
@@ -2565,52 +2561,48 @@ function getIconForType(type) {
       console.log('API Request:', apiUrl);
       
       const response = await fetch(apiUrl);
+      console.log('Raw API response:', response); // Add this
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.log('Error response:', errorData); // Add this
         throw new Error(errorData.message || `Server error: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('API Response:', data);
       
       // Verify response structure
       if (!data || typeof data !== 'object') {
         throw new Error('Invalid API response format');
       }
 
-      // Handle results display
-      if (searchResults) {
-        searchResults.classList.add('active');
-        
-        if (data.data?.length > 0) {
-          searchResults.innerHTML = `
-            <div class="sort-controls">
-              <div class="sort-options">
-                <label for="sort-by">Sort by:</label>
-                <select id="sort-by">
-                  <option value="recommended">Recommended</option>
-                  <option value="price-low">Price (Low to High)</option>
-                  <option value="price-high">Price (High to Low)</option>
-                  <option value="rating">Rating</option>
-                  <option value="name">Name (A-Z)</option>
-                </select>
-              </div>
-              <div class="results-count">${data.data.length} results found</div>
-            </div>
-            <div id="results-container" class="results-grid"></div>
-          `;
-          
-          displaySearchResults(data, activeTab);
-        } else {
-          searchResults.innerHTML = `
-            <div class="no-results">
-              <i class="fas fa-search"></i>
-              <h4>No results found</h4>
-              <p>Try adjusting your search criteria</p>
-            </div>
-          `;
-        }
-      }
+      // Handle no results
+      if (data.data && data.data.length > 0) {
+  // Ensure search results container is visible
+  if (searchResults) {
+    searchResults.classList.add('active');
+    searchResults.innerHTML = `
+      <div class="sort-controls">
+        <div class="sort-options">
+          <label for="sort-by">Sort by:</label>
+          <select id="sort-by">
+            <option value="recommended">Recommended</option>
+            <option value="price-low">Price (Low to High)</option>
+            <option value="price-high">Price (High to Low)</option>
+            <option value="rating">Rating</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+        <div class="results-count">${data.data.length} results found</div>
+      </div>
+      <div id="results-container" class="results-grid"></div>
+    `;
+  }
+  
+  // Now display the results
+  displaySearchResults(data, activeTab);
+}
       
     } catch (error) {
       console.error('Search failed:', error);
@@ -2627,7 +2619,7 @@ function getIconForType(type) {
         `;
       }
     }
-}
+  }
 
   // Global retry function
   window.retrySearch = function() {
