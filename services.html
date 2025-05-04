@@ -436,13 +436,21 @@
 
       .result-image {
         height: 180px;
-        background: var(--medium-gray);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
+  background: var(--medium-gray);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  color: var(--secondary); /* Icon color */
+  font-size: 3rem; /* Icon size */
       }
+        .result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
 
       .result-image i {
         font-size: 3rem;
@@ -2213,6 +2221,8 @@
 
  <script>
   // API Configuration
+    let currentResults = [];
+    let currentServiceType = '';
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
   
   // Service type mapping
@@ -2294,21 +2304,21 @@ function displaySearchResults(data, type) {
         : '';
 
       resultItem.innerHTML = `
-        <div class="result-image">
-          ${service.image ? 
-            `<img src="${service.image}" alt="${title}" loading="lazy">` : 
-            `<i class="fas ${getIconForType(type)}"></i>`}
-        </div>
-        <div class="result-details">
-          <h3>${title}</h3>
-          <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
-          <p class="price">${price}</p>
-          <p class="rating">${rating}</p>
-          ${amenitiesHTML}
-          <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">
-            Book Now
-          </button>
-        </div>
+  <div class="result-image">
+    ${service.image ? 
+      `<img src="${service.image}" alt="${title}" loading="lazy">` : 
+      `<i class="fas ${getIconForType(service.type || type)}"></i>`}
+  </div>
+  <div class="result-details">
+    <h3>${title}</h3>
+    <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
+    <p class="price">${price}</p>
+    <p class="rating">${rating}</p>
+    ${amenitiesHTML}
+    <button class="book-btn" data-id="${service._id || service.id}" data-type="${service.type || type}">
+      Book Now
+    </button>
+  </div>
       `;
 
       resultsContainer.appendChild(resultItem);
@@ -2329,13 +2339,64 @@ function displaySearchResults(data, type) {
 
 // Helper function to get appropriate icon
 function getIconForType(type) {
-  const icons = {
+  const iconMap = {
     hotel: 'fa-hotel',
+    restaurants: 'fa-utensils',
     restaurant: 'fa-utensils',
+    cars: 'fa-car',
     car: 'fa-car',
-    event: 'fa-ticket-alt'
+    events: 'fa-calendar-alt',
+    event: 'fa-calendar-alt',
+    default: 'fa-star'
   };
-  return icons[type] || 'fa-star';
+  
+  return iconMap[type] || iconMap.default;
+}
+     // Add this function to handle sorting
+function setupSorting() {
+  const sortSelect = document.getElementById('sort-by');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      const sortValue = this.value;
+      const resultsContainer = document.getElementById('results-container');
+      const resultItems = Array.from(resultsContainer.querySelectorAll('.result-item'));
+      
+      if (resultItems.length === 0) return;
+
+      // Get the current active tab to determine service type
+      const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
+      const serviceType = typeMap[activeTab] || 'hotel';
+
+      // Sort the items
+      resultItems.sort((a, b) => {
+        const aPrice = parseFloat(a.querySelector('.price')?.textContent?.replace(/[^0-9.]/g, '') || 0);
+        const bPrice = parseFloat(b.querySelector('.price')?.textContent?.replace(/[^0-9.]/g, '') || 0);
+        
+        const aRating = parseFloat(a.querySelector('.rating')?.textContent?.match(/\d+\.?\d*/)?.[0] || 0);
+        const bRating = parseFloat(b.querySelector('.rating')?.textContent?.match(/\d+\.?\d*/)?.[0] || 0);
+        
+        const aName = a.querySelector('h3')?.textContent?.toLowerCase() || '';
+        const bName = b.querySelector('h3')?.textContent?.toLowerCase() || '';
+
+        switch(sortValue) {
+          case 'price-low':
+            return aPrice - bPrice;
+          case 'price-high':
+            return bPrice - aPrice;
+          case 'rating':
+            return bRating - aRating; // Higher ratings first
+          case 'name':
+            return aName.localeCompare(bName);
+          default: // 'recommended'
+            // Default sorting - you might want to implement your own logic here
+            return 0;
+        }
+      });
+
+      // Re-append sorted items
+      resultItems.forEach(item => resultsContainer.appendChild(item));
+    });
+  }
 }
 
   // Handle search form submission
@@ -2763,6 +2824,8 @@ function getIconForType(type) {
 
       // Setup featured cards
       setupFeaturedCards();
+
+        setupSorting();
 
       // Attach search form handlers
       document.querySelectorAll('.search-form').forEach(form => {
