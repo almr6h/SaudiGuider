@@ -410,128 +410,111 @@
         display: block;
       }
 
-      .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-      }
-
-      .result-item {
-        background-color: var(--dark);
-        border-radius: 8px;
-        padding: 1rem;
-        transition: transform var(--transition-speed);
-        position: relative;
-      }
-
-      .result-item:hover {
-        transform: translateY(-5px);
-      }
-
-      .result-image {
-        height: 180px;
-        overflow: hidden;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-        position: relative;
-      }
-
-      .result-image i {
-        font-size: 5rem;
-        color: var(--secondary);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 180px;
-        background-color: var(--dark);
-        border-radius: 6px;
-        margin-bottom: 1rem;
-      }
-
-      .result-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform var(--transition-speed);
-      }
-
-      .result-item:hover .result-image img {
-        transform: scale(1.05);
-      }
-
-      .result-rating {
-        color: #ffd700;
-        margin: 0.5rem 0;
-      }
-
-      .result-price {
-        font-weight: bold;
-        color: var(--secondary);
-        margin: 0.5rem 0;
-      }
-        .search-results-section {
-  display: block;
-  width: 100%;
-}
-
-.results-container {
+      /* Results Grid Layout */
+.results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
-  padding: 20px 0;
+  width: 100%;
 }
-      .result-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
 
-      .result-button {
-        padding: 0.7rem 1rem;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all var(--transition-speed);
-        flex: 1;
-        text-align: center;
-        font-weight: 600;
-      }
+/* Result Card Styling */
+.result-item {
+  background: var(--dark-gray);
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s ease;
+}
 
-      .result-button.view-result-btn {
-        background-color: var(--dark);
-        color: var(--light);
-        border: 1px solid var(--secondary);
-      }
+.result-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
 
-      .result-button.view-result-btn:hover {
-        background-color: var(--border-gray);
-      }
+.result-image {
+  height: 180px;
+  background: var(--medium-gray);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
 
-      .result-button.book-result-btn {
-        background-color: var(--secondary);
-        color: white;
-      }
+.result-image i {
+  font-size: 3rem;
+  color: var(--secondary);
+}
 
-      .result-button.book-result-btn:hover {
-        background-color: var(--secondary-dark);
-      }
+.result-details h3 {
+  margin: 0 0 10px 0;
+  color: white;
+  font-size: 1.2rem;
+}
 
-      .no-results-message {
-        text-align: center;
-        padding: 2rem;
-        color: var(--light);
-        background: var(--medium-gray);
-        border-radius: 8px;
-        margin: 1rem 0;
-      }
+.location, .price, .rating {
+  margin: 8px 0;
+  color: var(--light);
+}
 
-      .no-results-message i {
-        font-size: 3rem;
-        color: var(--secondary);
-        margin-bottom: 1rem;
-      }
+.price {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--secondary);
+}
+
+.rating {
+  color: gold;
+}
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.amenity-tag {
+  background: var(--secondary-dark);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.book-btn {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.book-btn:hover {
+  background: var(--secondary-dark);
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 40px;
+}
+
+/* No Results State */
+.no-results {
+  text-align: center;
+  padding: 40px;
+}
+
+.no-results i {
+  font-size: 3rem;
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
 
       .no-results-message h4 {
         margin-bottom: 0.5rem;
@@ -2358,15 +2341,23 @@ function displaySearchResults(data, type) {
 }
 
   // Handle search form submission
-  async function handleSearchFormSubmit(e) {
+  asyasync function handleSearchFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
     const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
     const serviceType = typeMap[activeTab];
     
+    // Get DOM elements
+    const searchResults = document.getElementById('search-results');
+    const resultsContainer = document.getElementById('results-container');
+    
     try {
+      // Validate basic requirements
+      if (!serviceType) {
+        throw new Error('No service type selected');
+      }
+
       // Show loading state
-      const searchResults = document.getElementById('search-results');
       if (searchResults) {
         searchResults.innerHTML = `
           <div class="loading-state">
@@ -2377,73 +2368,125 @@ function displaySearchResults(data, type) {
         searchResults.classList.add('active');
       }
 
+      // Clear previous results
+      if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+      }
+
       // Build query params
       const params = new URLSearchParams();
       params.append('type', serviceType);
 
-      // Add common parameters
-      const location = form.querySelector('[id*="destination"]')?.value;
-      if (location) params.append('location', location);
-
-      // Handle dates based on service type
-      if (serviceType === 'hotel') {
-        const checkIn = form.querySelector('#check-in')?.value;
-        const checkOut = form.querySelector('#check-out')?.value;
-        if (checkIn) params.append('startDate', checkIn);
-        if (checkOut) params.append('endDate', checkOut);
-      } else if (serviceType === 'car') {
-        const pickupDate = form.querySelector('#car-pickup-date')?.value;
-        const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
-        if (pickupDate) params.append('startDate', pickupDate);
-        if (dropoffDate) params.append('endDate', dropoffDate);
-      } else {
-        const date = form.querySelector('[id*="date"]')?.value;
-        if (date) params.append('startDate', date);
+      // Add location filter
+      const location = form.querySelector('[id*="destination"]')?.value?.trim();
+      if (location && location.length >= 2) {
+        params.append('location', location);
       }
+
+      // Handle date filters
+      const handleDateParams = () => {
+        if (serviceType === 'hotel') {
+          const checkIn = form.querySelector('#check-in')?.value;
+          const checkOut = form.querySelector('#check-out')?.value;
+          if (checkIn) params.append('startDate', checkIn);
+          if (checkOut) params.append('endDate', checkOut);
+        } else if (serviceType === 'car') {
+          const pickupDate = form.querySelector('#car-pickup-date')?.value;
+          const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
+          if (pickupDate) params.append('startDate', pickupDate);
+          if (dropoffDate) params.append('endDate', dropoffDate);
+        } else {
+          const date = form.querySelector('[id*="date"]')?.value;
+          if (date) params.append('startDate', date);
+        }
+      };
+      handleDateParams();
 
       // Handle capacity/guests
       const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
-      if (capacityInput) params.append('capacity', capacityInput.value);
-
-      // Handle amenities
-      const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
-      if (amenitiesSelect) {
-        const selectedAmenities = Array.from(amenitiesSelect.selectedOptions)
-          .map(option => option.value);
-        if (selectedAmenities.length) {
-          params.append('amenities', selectedAmenities.join(','));
+      if (capacityInput?.value) {
+        const capacity = parseInt(capacityInput.value);
+        if (!isNaN(capacity) {
+          params.append('capacity', capacity);
         }
       }
+
+      // Handle amenities/categories
+      const handleAmenities = () => {
+        const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
+        if (amenitiesSelect) {
+          const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
+            .map(option => option.value)
+            .filter(val => val);
+          
+          if (selectedOptions.length) {
+            params.append('amenities', selectedOptions.join(','));
+          }
+        }
+      };
+      handleAmenities();
 
       // Make API request
       const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
       console.log('API Request:', apiUrl);
       
       const response = await fetch(apiUrl);
+      
       if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
       
       const data = await response.json();
       console.log('API Response:', data);
       
+      // Verify response structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid API response format');
+      }
+
+      // Handle no results
+      if (!data.data || data.data.length === 0) {
+        if (searchResults) {
+          searchResults.innerHTML = `
+            <div class="no-results">
+              <i class="fas fa-search"></i>
+              <h4>No ${activeTab} found matching your criteria</h4>
+              <p>Try adjusting your search filters</p>
+            </div>
+          `;
+        }
+        return;
+      }
+      
+      // Display results
       displaySearchResults(data, activeTab);
       
     } catch (error) {
       console.error('Search failed:', error);
-      const searchResults = document.getElementById('search-results');
+      
+      // Show error state
       if (searchResults) {
         searchResults.innerHTML = `
           <div class="error-state">
             <i class="fas fa-exclamation-triangle"></i>
             <h4>Search Failed</h4>
-            <p>${error.message}</p>
-            <button onclick="window.location.reload()">Try Again</button>
+            <p>${error.message || 'Please try again later'}</p>
+            <button onclick="retrySearch()" class="retry-btn">Try Again</button>
           </div>
         `;
       }
     }
-  }
+}
+
+// Global retry function
+window.retrySearch = function() {
+    const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
+                      document.querySelector('.search-form');
+    if (activeForm) {
+        activeForm.dispatchEvent(new Event('submit'));
+    }
+};
 
   // Handle reservations
   async function handleReservation(serviceId, serviceType) {
