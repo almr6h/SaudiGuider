@@ -1795,9 +1795,15 @@
                 </div>
                 <div class="results-count">0 results found</div>
             </div>
-            <div class="results-grid" id="results-container" role="region" aria-live="polite">
-                <!-- Results will be dynamically inserted here -->
-            </div>
+           <div class="search-results-section">
+  <div class="results-header">
+    <h3>Search Results</h3>
+    <p class="results-count">0 results found</p>
+  </div>
+  <div id="results-container" class="results-container">
+    <!-- Results will be inserted here by JavaScript -->
+  </div>
+</div>
           </div>
         </div>
       </section>
@@ -2516,77 +2522,66 @@
       setupSearchForms();
 
       // Display search results
-      function displaySearchResults(services, type) {
-        try {
-          console.log(`Displaying ${services?.length || 0} results for ${type}`);
-          
-          const resultsContainer = getElement("results-container");
-          const resultsCount = document.querySelector('.results-count');
-          
-          if (!resultsContainer || !resultsCount) return;
+    function displaySearchResults(services, type) {
+  try {
+    console.log(`Displaying ${services?.length || 0} results for ${type}`);
+    
+    // Safely get elements with fallbacks
+    const resultsContainer = document.getElementById('results-container') || 
+                           document.createElement('div');
+    const resultsCount = document.querySelector('.results-count') || 
+                        document.createElement('p');
 
-          resultsContainer.innerHTML = '';
-          resultsCount.textContent = `${services?.length || 0} results found`;
+    // Update results count
+    resultsCount.textContent = `${services?.count || 0} results found`;
 
-          if (!services || services.length === 0) {
-            resultsContainer.innerHTML = `
-              <div class="no-results">
-                <i class="fas fa-search"></i>
-                <h4>No ${type} found matching your criteria</h4>
-              </div>
-            `;
-            return;
-          }
+    // Clear previous results
+    resultsContainer.innerHTML = '';
 
-          services.forEach((service) => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            
-            let priceDisplay;
-            switch(type) {
-              case 'hotels': priceDisplay = `From ${service.price || 0} SAR/night`; break;
-              case 'restaurants': priceDisplay = `Average meal: ${service.price || 0} SAR`; break;
-              case 'cars': priceDisplay = `From ${service.price || 0} SAR/day`; break;
-              default: priceDisplay = `From ${service.price || 0} SAR`;
-            }
+    if (!services?.data || services.data.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <h4>No ${type} found matching your criteria</h4>
+          <p>Try adjusting your search filters</p>
+        </div>
+      `;
+      return;
+    }
 
-            const rating = parseFloat(service.rating) || 0;
-            const stars = `
-              ${'<i class="fas fa-star"></i>'.repeat(Math.floor(rating))}
-              ${rating % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
-              <span>${rating.toFixed(1)}</span>
-            `;
+    // Create result cards
+    services.data.forEach((service) => {
+      const resultItem = document.createElement('div');
+      resultItem.className = 'result-item';
+      
+      resultItem.innerHTML = `
+        <div class="result-image">
+          ${service.image ? `<img src="${service.image}" alt="${service.title}">` : '<i class="fas fa-image"></i>'}
+        </div>
+        <div class="result-details">
+          <h4>${service.title || 'Unnamed Service'}</h4>
+          <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+          <p class="price">${service.price ? `${service.price} SAR` : 'Price not available'}</p>
+          <button class="book-btn" data-id="${service.id}">Book Now</button>
+        </div>
+      `;
 
-            resultItem.innerHTML = `
-              <div class="result-image">
-                ${service.image ? `<img src="${service.image}" alt="${service.title}">` : '<i class="fas fa-image"></i>'}
-              </div>
-              <h4>${service.title}</h4>
-              <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
-              <div class="result-rating">${stars}</div>
-              <p class="result-price">${priceDisplay}</p>
-              <div class="result-actions">
-                <button class="result-button book-result-btn" 
-                        data-id="${service.id}" 
-                        data-type="${typeMap[type]}">
-                  ${type === 'restaurants' ? 'Reserve' : 
-                   type === 'cars' ? 'Rent Now' : 
-                   type === 'events' ? 'Get Tickets' : 'Book Now'}
-                </button>
-              </div>
-            `;
+      resultsContainer.appendChild(resultItem);
+    });
 
-            resultItem.querySelector('.book-result-btn')?.addEventListener('click', function() {
-              handleReservation(service.id, typeMap[type]);
-            });
-
-            resultsContainer.appendChild(resultItem);
-          });
-
-        } catch (error) {
-          logError("displaySearchResults", error);
-        }
-      }
+  } catch (error) {
+    logError("displaySearchResults", error);
+    
+    // Fallback error display
+    const fallbackContainer = document.getElementById('results-container') || document.body;
+    fallbackContainer.innerHTML = `
+      <div class="error-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Failed to display results: ${error.message}</p>
+      </div>
+    `;
+  }
+}
 
       // Handle reservations
       async function handleReservation(serviceId, serviceType) {
