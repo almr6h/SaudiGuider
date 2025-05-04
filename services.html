@@ -1801,7 +1801,8 @@
                 <!-- Results will be inserted here by JavaScript -->
               </div>
             </div>
-</div>
+          </div>
+        </div>
       </section>
 
       <!-- Service Detail Modals -->
@@ -2216,8 +2217,9 @@
       </div>
     </footer>
 
- <script>
+    <script>
         const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+        let currentTab = 'hotels'; // Track current active tab
         
         document.addEventListener("DOMContentLoaded", function() {
             console.log('DOM fully loaded and parsed');
@@ -2231,6 +2233,15 @@
             // Set up form submissions for all search types
             setupSearchForms();
             
+            // Set up service card buttons
+            setupServiceCards();
+            
+            // Set up modal close buttons
+            setupModalCloseButtons();
+            
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
             console.log('Page initialization complete');
         });
 
@@ -2243,8 +2254,8 @@
                     // Add active class to clicked tab
                     this.classList.add('active');
                     
-                    const tabType = this.dataset.tab;
-                    console.log(`Search tab changed to: ${tabType}`);
+                    currentTab = this.dataset.tab;
+                    console.log(`Search tab changed to: ${currentTab}`);
                     
                     // Hide all search forms
                     document.querySelectorAll('.search-form').forEach(form => {
@@ -2252,7 +2263,7 @@
                     });
                     
                     // Show the selected search form
-                    const formId = `${tabType}-search`;
+                    const formId = `${currentTab}-search`;
                     document.getElementById(formId).style.display = 'flex';
                     
                     // Clear previous results when switching tabs
@@ -2371,6 +2382,70 @@
             });
         }
 
+        function setupServiceCards() {
+            // View details buttons for service cards
+            document.querySelectorAll('.view-details-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const serviceType = this.dataset.service;
+                    const modalId = `${serviceType}Modal`;
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Book now buttons for service cards
+            document.querySelectorAll('.book-now-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Check if user is logged in (you would implement this)
+                    const isLoggedIn = false; // Change based on your auth system
+                    
+                    if (isLoggedIn) {
+                        // Proceed with booking
+                        alert('Booking functionality will be implemented here');
+                    } else {
+                        // Show login message
+                        showLoginMessage();
+                    }
+                });
+            });
+        }
+
+        function setupModalCloseButtons() {
+            // Close buttons for modals
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside content
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function showLoginMessage() {
+            const loginMessage = document.createElement('div');
+            loginMessage.className = 'login-message';
+            loginMessage.innerHTML = `
+                <div class="login-message-content">
+                    <h3>Login Required</h3>
+                    <p>You need to be logged in to make a booking. Please log in or sign up to continue.</p>
+                    <div class="login-actions">
+                        <button class="login-redirect-btn" onclick="window.location.href='login.html'">Log In</button>
+                        <button class="login-cancel-btn" onclick="this.closest('.login-message').remove()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loginMessage);
+        }
+
         async function performSearch(params) {
             try {
                 console.log('Starting search for:', params.type);
@@ -2482,6 +2557,9 @@
                     resultsContainer.appendChild(resultItem);
                 });
                 
+                // Set up event listeners for the new result buttons
+                setupResultButtons();
+                
                 // Make sure results are visible
                 searchResults.style.display = 'block';
                 
@@ -2489,6 +2567,32 @@
                 console.error('Display error:', error);
                 showError(error.message || 'Failed to display results');
             }
+        }
+        
+        function setupResultButtons() {
+            // View details buttons in search results
+            document.querySelectorAll('.view-result-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // This would show details for the specific result
+                    alert('View details functionality will be implemented here');
+                });
+            });
+            
+            // Book now buttons in search results
+            document.querySelectorAll('.book-result-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Check if user is logged in (you would implement this)
+                    const isLoggedIn = false; // Change based on your auth system
+                    
+                    if (isLoggedIn) {
+                        // Proceed with booking
+                        alert(`Booking item with ID: ${this.dataset.id}`);
+                    } else {
+                        // Show login message
+                        showLoginMessage();
+                    }
+                });
+            });
         }
         
         function showError(message) {
