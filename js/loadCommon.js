@@ -34,18 +34,7 @@ function updateCopyrightYear() {
 /**
  * Loads common CSS stylesheet
  */
-function loadCommonStyles() {
-  try {
-    if (!document.querySelector('link[href="css/common.css"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'css/common.css';
-      document.head.appendChild(link);
-    }
-  } catch (error) {
-    console.error('Error loading common styles:', error);
-  }
-}
+
 
 /**
  * Initializes all common functionality across pages
