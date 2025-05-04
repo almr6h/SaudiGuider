@@ -411,110 +411,111 @@
       }
 
       /* Results Grid Layout */
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  width: 100%;
-}
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+      }
 
-/* Result Card Styling */
-.result-item {
-  background: var(--dark-gray);
-  border-radius: 8px;
-  padding: 20px;
-  transition: transform 0.3s ease;
-}
+      /* Result Card Styling */
+      .result-item {
+        background: var(--dark-gray);
+        border-radius: 8px;
+        padding: 20px;
+        transition: transform 0.3s ease;
+        box-shadow: var(--card-shadow);
+      }
 
-.result-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
+      .result-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      }
 
-.result-image {
-  height: 180px;
-  background: var(--medium-gray);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
-}
+      .result-image {
+        height: 180px;
+        background: var(--medium-gray);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
 
-.result-image i {
-  font-size: 3rem;
-  color: var(--secondary);
-}
+      .result-image i {
+        font-size: 3rem;
+        color: var(--secondary);
+      }
 
-.result-details h3 {
-  margin: 0 0 10px 0;
-  color: white;
-  font-size: 1.2rem;
-}
+      .result-details h3 {
+        margin: 0 0 10px 0;
+        color: white;
+        font-size: 1.2rem;
+      }
 
-.location, .price, .rating {
-  margin: 8px 0;
-  color: var(--light);
-}
+      .location, .price, .rating {
+        margin: 8px 0;
+        color: var(--light);
+      }
 
-.price {
-  font-weight: bold;
-  font-size: 1.1rem;
-  color: var(--secondary);
-}
+      .price {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: var(--secondary);
+      }
 
-.rating {
-  color: gold;
-}
+      .rating {
+        color: gold;
+      }
 
-.amenities {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 15px 0;
-}
+      .amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 15px 0;
+      }
 
-.amenity-tag {
-  background: var(--secondary-dark);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-}
+      .amenity-tag {
+        background: var(--secondary-dark);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+      }
 
-.book-btn {
-  background: var(--secondary);
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
+      .book-btn {
+        background: var(--secondary);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: bold;
+        transition: background 0.3s ease;
+      }
 
-.book-btn:hover {
-  background: var(--secondary-dark);
-}
+      .book-btn:hover {
+        background: var(--secondary-dark);
+      }
 
-/* Loading State */
-.loading-state {
-  text-align: center;
-  padding: 40px;
-}
+      /* Loading State */
+      .loading-state {
+        text-align: center;
+        padding: 40px;
+      }
 
-/* No Results State */
-.no-results {
-  text-align: center;
-  padding: 40px;
-}
+      /* No Results State */
+      .no-results {
+        text-align: center;
+        padding: 40px;
+      }
 
-.no-results i {
-  font-size: 3rem;
-  color: var(--secondary);
-  margin-bottom: 20px;
-}
+      .no-results i {
+        font-size: 3rem;
+        color: var(--secondary);
+        margin-bottom: 20px;
+      }
 
       .no-results-message h4 {
         margin-bottom: 0.5rem;
@@ -1788,15 +1789,10 @@
                 </div>
                 <div class="results-count">0 results found</div>
             </div>
-           <div class="search-results-section">
-  <div class="results-header">
-    <h3>Search Results</h3>
-    <p class="results-count">0 results found</p>
-  </div>
-  <div id="results-container" class="results-container">
-    <!-- Results will be inserted here by JavaScript -->
-  </div>
-</div>
+            
+            <div id="results-container" class="results-grid">
+              <!-- Results will be inserted here by JavaScript -->
+            </div>
           </div>
         </div>
       </section>
@@ -2282,10 +2278,7 @@
           return;
         }
 
-        // Create result cards grid
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'results-grid';
-
+        // Create result cards - no need for additional grid container
         services.forEach((service) => {
           const resultItem = document.createElement('div');
           resultItem.className = 'result-item';
@@ -2317,10 +2310,8 @@
             </div>
           `;
 
-          gridContainer.appendChild(resultItem);
+          resultsContainer.appendChild(resultItem);
         });
-
-        resultsContainer.appendChild(gridContainer);
         
         // Remove loading state
         const searchResults = document.getElementById('search-results');
