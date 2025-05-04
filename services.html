@@ -2213,7 +2213,7 @@
       </div>
     </footer>
 
-  <script>
+ <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
   
@@ -2254,94 +2254,94 @@
   }
 
   // Display search results
-function displaySearchResults(data, type) {
-  try {
-    const services = data.data || [];
-    console.log(`Displaying ${services.length} results for ${type}`);
-    
-    const resultsContainer = document.getElementById('results-container');
-    const resultsCountElements = document.querySelectorAll('.results-count');
-    
-    // Update all results counters
-    resultsCountElements.forEach(el => {
-      el.textContent = `${services.length} results found`;
-    });
-
-    // Clear previous results and loading state
-    if (resultsContainer) {
-      resultsContainer.innerHTML = '';
-
-      if (services.length === 0) {
-        resultsContainer.innerHTML = `
-          <div class="no-results">
-            <i class="fas fa-search"></i>
-            <h4>No ${type} found matching your criteria</h4>
-            <p>Try adjusting your search filters</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Create result cards grid
-      const gridContainer = document.createElement('div');
-      gridContainer.className = 'results-grid'; // Add this class to your CSS
-
-      services.forEach((service) => {
-        const resultItem = document.createElement('div');
-        resultItem.className = 'result-item';
-        
-        // Generate star rating
-        const ratingStars = service.rating 
-          ? '⭐'.repeat(Math.round(service.rating)) + ` (${service.rating})`
-          : 'No ratings';
-        
-        // Generate amenities badges
-        const amenitiesHTML = service.amenities && service.amenities.length > 0 
-          ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
-              `<span class="amenity-tag">${a}</span>`).join('')}</div>`
-          : '';
-
-        resultItem.innerHTML = `
-          <div class="result-image">
-            <i class="fas ${service.image || 'fa-hotel'}"></i>
-          </div>
-          <div class="result-details">
-            <h3>${service.title}</h3>
-            <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
-            <p class="price">${service.price} SAR</p>
-            <p class="rating">${ratingStars}</p>
-            ${amenitiesHTML}
-            <button class="book-btn" data-id="${service.id}" data-type="${type}">
-              Book Now
-            </button>
-          </div>
-        `;
-
-        gridContainer.appendChild(resultItem);
+  function displaySearchResults(data, type) {
+    try {
+      const services = data.data || [];
+      console.log(`Displaying ${services.length} results for ${type}`);
+      
+      const resultsContainer = document.getElementById('results-container');
+      const resultsCountElements = document.querySelectorAll('.results-count');
+      
+      // Update all results counters
+      resultsCountElements.forEach(el => {
+        el.textContent = `${services.length} results found`;
       });
 
-      resultsContainer.appendChild(gridContainer);
-      
-      // Remove loading state
-      const searchResults = document.getElementById('search-results');
-      if (searchResults) {
-        searchResults.classList.remove('loading');
+      // Clear previous results and loading state
+      if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+
+        if (services.length === 0) {
+          resultsContainer.innerHTML = `
+            <div class="no-results">
+              <i class="fas fa-search"></i>
+              <h4>No ${type} found matching your criteria</h4>
+              <p>Try adjusting your search filters</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Create result cards grid
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'results-grid';
+
+        services.forEach((service) => {
+          const resultItem = document.createElement('div');
+          resultItem.className = 'result-item';
+          
+          // Generate star rating
+          const ratingStars = service.rating 
+            ? '⭐'.repeat(Math.round(service.rating)) + ` (${service.rating})`
+            : 'No ratings';
+          
+          // Generate amenities badges
+          const amenitiesHTML = service.amenities && service.amenities.length > 0 
+            ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
+                `<span class="amenity-tag">${a}</span>`).join('')}</div>`
+            : '';
+
+          resultItem.innerHTML = `
+            <div class="result-image">
+              <i class="fas ${service.image || 'fa-hotel'}"></i>
+            </div>
+            <div class="result-details">
+              <h3>${service.title}</h3>
+              <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
+              <p class="price">${service.price} SAR</p>
+              <p class="rating">${ratingStars}</p>
+              ${amenitiesHTML}
+              <button class="book-btn" data-id="${service.id}" data-type="${type}">
+                Book Now
+              </button>
+            </div>
+          `;
+
+          gridContainer.appendChild(resultItem);
+        });
+
+        resultsContainer.appendChild(gridContainer);
+        
+        // Remove loading state
+        const searchResults = document.getElementById('search-results');
+        if (searchResults) {
+          searchResults.classList.remove('loading');
+        }
       }
+    } catch (error) {
+      console.error('Error displaying results:', error);
+      const resultsContainer = document.getElementById('results-container') || document.body;
+      resultsContainer.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Failed to display results: ${error.message}</p>
+        </div>
+      `;
     }
-  } catch (error) {
-    console.error('Error displaying results:', error);
-    const resultsContainer = document.getElementById('results-container') || document.body;
-    resultsContainer.innerHTML = `
-      <div class="error-state">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>Failed to display results: ${error.message}</p>
-      </div>
-    `;
   }
-}
 
   // Handle search form submission
-  asyasync function handleSearchFormSubmit(e) {
+  async function handleSearchFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
     const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
@@ -2384,47 +2384,41 @@ function displaySearchResults(data, type) {
       }
 
       // Handle date filters
-      const handleDateParams = () => {
-        if (serviceType === 'hotel') {
-          const checkIn = form.querySelector('#check-in')?.value;
-          const checkOut = form.querySelector('#check-out')?.value;
-          if (checkIn) params.append('startDate', checkIn);
-          if (checkOut) params.append('endDate', checkOut);
-        } else if (serviceType === 'car') {
-          const pickupDate = form.querySelector('#car-pickup-date')?.value;
-          const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
-          if (pickupDate) params.append('startDate', pickupDate);
-          if (dropoffDate) params.append('endDate', dropoffDate);
-        } else {
-          const date = form.querySelector('[id*="date"]')?.value;
-          if (date) params.append('startDate', date);
-        }
-      };
-      handleDateParams();
+      if (serviceType === 'hotel') {
+        const checkIn = form.querySelector('#check-in')?.value;
+        const checkOut = form.querySelector('#check-out')?.value;
+        if (checkIn) params.append('startDate', checkIn);
+        if (checkOut) params.append('endDate', checkOut);
+      } else if (serviceType === 'car') {
+        const pickupDate = form.querySelector('#car-pickup-date')?.value;
+        const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
+        if (pickupDate) params.append('startDate', pickupDate);
+        if (dropoffDate) params.append('endDate', dropoffDate);
+      } else {
+        const date = form.querySelector('[id*="date"]')?.value;
+        if (date) params.append('startDate', date);
+      }
 
       // Handle capacity/guests
       const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
       if (capacityInput?.value) {
         const capacity = parseInt(capacityInput.value);
-        if (!isNaN(capacity) {
+        if (!isNaN(capacity)) {
           params.append('capacity', capacity);
         }
       }
 
       // Handle amenities/categories
-      const handleAmenities = () => {
-        const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
-        if (amenitiesSelect) {
-          const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
-            .map(option => option.value)
-            .filter(val => val);
-          
-          if (selectedOptions.length) {
-            params.append('amenities', selectedOptions.join(','));
-          }
+      const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
+      if (amenitiesSelect) {
+        const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
+          .map(option => option.value)
+          .filter(val => val);
+        
+        if (selectedOptions.length) {
+          params.append('amenities', selectedOptions.join(','));
         }
-      };
-      handleAmenities();
+      }
 
       // Make API request
       const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
@@ -2477,16 +2471,16 @@ function displaySearchResults(data, type) {
         `;
       }
     }
-}
+  }
 
-// Global retry function
-window.retrySearch = function() {
+  // Global retry function
+  window.retrySearch = function() {
     const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
                       document.querySelector('.search-form');
     if (activeForm) {
-        activeForm.dispatchEvent(new Event('submit'));
+      activeForm.dispatchEvent(new Event('submit'));
     }
-};
+  };
 
   // Handle reservations
   async function handleReservation(serviceId, serviceType) {
@@ -2779,16 +2773,6 @@ window.retrySearch = function() {
       logError("DOMContentLoaded", error);
     }
   });
-
-  // Global retry function
-  window.retrySearch = function() {
-    console.log('Retrying search...');
-    const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
-                      document.querySelector('.search-form');
-    if (activeForm) {
-      activeForm.dispatchEvent(new Event('submit'));
-    }
-  };
 </script>
   </body>
 </html>
