@@ -2219,27 +2219,17 @@
 
 <script>
     const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
-    let currentTab = 'hotels'; // Track current active tab
+    let currentTab = 'hotels';
     
     document.addEventListener("DOMContentLoaded", function() {
         console.log('DOM fully loaded and parsed');
         
-        // Initialize tab switching
+        // Initialize all components
         initSearchTabs();
-        
-        // Initialize date inputs
         initDateInputs();
-        
-        // Set up form submissions for all search types
         setupSearchForms();
-        
-        // Set up service card buttons
         setupServiceCards();
-        
-        // Set up modal close buttons
         setupModalCloseButtons();
-        
-        // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
         
         console.log('Page initialization complete');
@@ -2249,35 +2239,36 @@
         const tabs = document.querySelectorAll('.search-tab');
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
-                // Remove active class from all tabs
+                // Update active tab
                 tabs.forEach(t => t.classList.remove('active'));
-                // Add active class to clicked tab
                 this.classList.add('active');
-                
                 currentTab = this.dataset.tab;
                 console.log(`Search tab changed to: ${currentTab}`);
                 
-                // Hide all search forms
+                // Hide all forms and show the active one
                 document.querySelectorAll('.search-form').forEach(form => {
                     form.style.display = 'none';
+                    form.classList.remove('active');
                 });
                 
-                // Show the selected search form
-                const formId = `${currentTab}-search`;
-                const formElement = document.getElementById(formId);
-                if (formElement) {
-                    formElement.style.display = 'flex';
+                const activeForm = document.getElementById(`${currentTab}-search`);
+                if (activeForm) {
+                    activeForm.style.display = 'flex';
+                    activeForm.classList.add('active');
                 } else {
-                    console.error(`Form with ID ${formId} not found`);
+                    console.error(`Form for ${currentTab} not found`);
                 }
                 
-                // Clear previous results when switching tabs
+                // Hide previous results
                 const searchResults = document.getElementById('search-results');
                 if (searchResults) {
                     searchResults.style.display = 'none';
                 }
             });
         });
+        
+        // Activate the first tab by default
+        document.querySelector('.search-tab.active')?.click();
     }
 
     function initDateInputs() {
@@ -2287,116 +2278,104 @@
         
         const formatDate = (date) => date.toISOString().split('T')[0];
         
-        // Hotel dates
-        const checkIn = document.getElementById("check-in");
-        const checkOut = document.getElementById("check-out");
-        if (checkIn && checkOut) {
-            checkIn.value = formatDate(today);
-            checkOut.value = formatDate(tomorrow);
-            checkOut.min = formatDate(today);
-            
-            checkIn.addEventListener('change', function() {
-                checkOut.min = this.value;
-                if (new Date(checkOut.value) < new Date(this.value)) {
-                    checkOut.value = this.value;
-                }
-            });
-        }
+        // Set default dates for all forms
+        const dateInputs = [
+            {id: "check-in", value: formatDate(today)},
+            {id: "check-out", value: formatDate(tomorrow), min: formatDate(today)},
+            {id: "restaurant-date", value: formatDate(today)},
+            {id: "car-pickup-date", value: formatDate(today)},
+            {id: "car-dropoff-date", value: formatDate(tomorrow), min: formatDate(today)},
+            {id: "event-date", value: formatDate(today)}
+        ];
         
-        // Car rental dates
-        const carPickup = document.getElementById("car-pickup-date");
-        const carDropoff = document.getElementById("car-dropoff-date");
-        if (carPickup && carDropoff) {
-            carPickup.value = formatDate(today);
-            carDropoff.value = formatDate(tomorrow);
-            carDropoff.min = formatDate(today);
-            
-            carPickup.addEventListener('change', function() {
-                carDropoff.min = this.value;
-                if (new Date(carDropoff.value) < new Date(this.value)) {
-                    carDropoff.value = this.value;
+        dateInputs.forEach(input => {
+            const element = document.getElementById(input.id);
+            if (element) {
+                element.value = input.value;
+                if (input.min) element.min = input.min;
+                
+                // Add change handlers for date ranges
+                if (input.id === 'check-in' || input.id === 'car-pickup-date') {
+                    const endDateId = input.id === 'check-in' ? 'check-out' : 'car-dropoff-date';
+                    element.addEventListener('change', function() {
+                        const endDate = document.getElementById(endDateId);
+                        if (endDate) {
+                            endDate.min = this.value;
+                            if (new Date(endDate.value) < new Date(this.value)) {
+                                endDate.value = this.value;
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        
-        // Restaurant and event dates
-        const restaurantDate = document.getElementById("restaurant-date");
-        const eventDate = document.getElementById("event-date");
-        if (restaurantDate) restaurantDate.value = formatDate(today);
-        if (eventDate) eventDate.value = formatDate(today);
+            }
+        });
     }
 
     function setupSearchForms() {
+        // Generic form handler
+        const handleFormSubmit = (formId, paramsBuilder) => {
+            const form = document.getElementById(formId);
+            if (!form) return;
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const params = paramsBuilder(this);
+                console.log('Search params:', params);
+                await performSearch(params);
+            });
+        };
+        
         // Hotel search
-        document.getElementById("hotel-search")?.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const params = {
-                type: 'hotel',
-                location: document.getElementById("destination").value || "Jeddah",
-                startDate: document.getElementById("check-in").value || new Date().toISOString().split('T')[0],
-                endDate: document.getElementById("check-out").value || new Date(Date.now() + 86400000).toISOString().split('T')[0],
-                capacity: document.getElementById("guests").value || "2",
-                priceRange: document.getElementById("price-range").value || "all",
-                minRating: document.getElementById("min-rating").value || "0",
-                amenities: Array.from(document.getElementById("amenities").selectedOptions)
-                            .map(option => option.value)
-            };
-            performSearch(params);
-        });
+        handleFormSubmit('hotel-search', (form) => ({
+            type: 'hotel',
+            location: form.querySelector('#destination').value || 'Jeddah',
+            startDate: form.querySelector('#check-in').value,
+            endDate: form.querySelector('#check-out').value,
+            capacity: form.querySelector('#guests').value || '2',
+            priceRange: form.querySelector('#price-range').value || 'all',
+            minRating: form.querySelector('#min-rating').value || '0',
+            amenities: Array.from(form.querySelector('#amenities').selectedOptions)
+                        .map(option => option.value)
+        }));
         
         // Restaurant search
-        document.getElementById("restaurant-search")?.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const params = {
-                type: 'restaurant',
-                location: document.getElementById("restaurant-destination").value || "Jeddah",
-                date: document.getElementById("restaurant-date").value || new Date().toISOString().split('T')[0],
-                guests: document.getElementById("restaurant-guests").value || "2",
-                priceRange: document.getElementById("restaurant-price-range").value || "all",
-                minRating: document.getElementById("restaurant-min-rating").value || "0",
-                categories: Array.from(document.getElementById("restaurant-categories").selectedOptions)
-                              .map(option => option.value)
-            };
-            performSearch(params);
-        });
+        handleFormSubmit('restaurant-search', (form) => ({
+            type: 'restaurant',
+            location: form.querySelector('#restaurant-destination').value || 'Jeddah',
+            date: form.querySelector('#restaurant-date').value,
+            guests: form.querySelector('#restaurant-guests').value || '2',
+            priceRange: form.querySelector('#restaurant-price-range').value || 'all',
+            minRating: form.querySelector('#restaurant-min-rating').value || '0',
+            categories: Array.from(form.querySelector('#restaurant-categories').selectedOptions)
+                          .map(option => option.value)
+        }));
         
         // Car rental search
-        document.getElementById("car-search")?.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const params = {
-                type: 'car',
-                location: document.getElementById("car-destination").value || "Jeddah",
-                startDate: document.getElementById("car-pickup-date").value || new Date().toISOString().split('T')[0],
-                endDate: document.getElementById("car-dropoff-date").value || new Date(Date.now() + 86400000).toISOString().split('T')[0],
-                priceRange: document.getElementById("car-price-range").value || "all",
-                minRating: document.getElementById("car-min-rating").value || "0"
-            };
-            performSearch(params);
-        });
+        handleFormSubmit('car-search', (form) => ({
+            type: 'car',
+            location: form.querySelector('#car-destination').value || 'Jeddah',
+            startDate: form.querySelector('#car-pickup-date').value,
+            endDate: form.querySelector('#car-dropoff-date').value,
+            priceRange: form.querySelector('#car-price-range').value || 'all',
+            minRating: form.querySelector('#car-min-rating').value || '0'
+        }));
         
         // Event search
-        document.getElementById("event-search")?.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const params = {
-                type: 'event',
-                location: document.getElementById("event-destination").value || "Jeddah",
-                date: document.getElementById("event-date").value || new Date().toISOString().split('T')[0],
-                tickets: document.getElementById("event-tickets").value || "2",
-                priceRange: document.getElementById("event-price-range").value || "all",
-                categories: Array.from(document.getElementById("event-categories").selectedOptions)
-                              .map(option => option.value)
-            };
-            performSearch(params);
-        });
+        handleFormSubmit('event-search', (form) => ({
+            type: 'event',
+            location: form.querySelector('#event-destination').value || 'Jeddah',
+            date: form.querySelector('#event-date').value,
+            tickets: form.querySelector('#event-tickets').value || '2',
+            priceRange: form.querySelector('#event-price-range').value || 'all',
+            categories: Array.from(form.querySelector('#event-categories').selectedOptions)
+                          .map(option => option.value)
+        }));
     }
 
     async function performSearch(params) {
         try {
-            console.log('Starting search for:', params.type);
-            console.log('Search parameters:', params);
-            
             // Show loading state
-            const searchResults = document.getElementById("search-results");
+            const searchResults = document.getElementById('search-results');
             if (searchResults) {
                 searchResults.innerHTML = `
                     <div class="loading-state">
@@ -2407,7 +2386,7 @@
                 searchResults.style.display = 'block';
             }
             
-            // Prepare API request
+            // Build API URL
             const queryParams = new URLSearchParams();
             for (const key in params) {
                 if (Array.isArray(params[key])) {
@@ -2418,122 +2397,98 @@
             }
             
             const apiUrl = `${API_BASE_URL}/services?${queryParams.toString()}`;
-            console.log('Making API request to:', apiUrl);
+            console.log('API request:', apiUrl);
             
             const response = await fetch(apiUrl);
-            
-            if (!response.ok) {
-                throw new Error(`Server responded with ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             const data = await response.json();
-            console.log('Received search results:', data);
+            console.log('API response:', data);
             
             displaySearchResults(data, params.type);
-            
         } catch (error) {
-            console.error('Search error:', error);
-            showError(error.message || 'Failed to load search results');
+            console.error('Search failed:', error);
+            showError(error.message || 'Failed to complete search');
         }
     }
     
-    function displaySearchResults(response, type) {
-        try {
-            const services = response.data || [];
-            console.log(`Displaying ${services.length} results for ${type}`);
-            
-            const resultsContainer = document.getElementById('results-container');
-            const resultsHeader = document.querySelector('.results-header .results-count');
-            const searchResults = document.getElementById('search-results');
-            
-            if (!resultsContainer || !resultsHeader || !searchResults) {
-                throw new Error('Required elements not found. Check your HTML structure.');
-            }
-            
-            // Update results count
-            resultsHeader.textContent = `${services.length} results found`;
-            
-            // Clear previous results
-            resultsContainer.innerHTML = '';
-            
-            if (services.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h4>No ${type} found matching your criteria</h4>
-                        <p>Try adjusting your search filters</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Create result cards
-            services.forEach((service) => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
-                
-                // Determine icon based on service type
-                let iconClass = 'fa-image';
-                if (type === 'hotel') iconClass = 'fa-hotel';
-                if (type === 'restaurant') iconClass = 'fa-utensils';
-                if (type === 'car') iconClass = 'fa-car';
-                if (type === 'event') iconClass = 'fa-ticket-alt';
-                
-                resultItem.innerHTML = `
-                    <div class="result-image">
-                        ${service.image ? 
-                            `<img src="${service.image}" alt="${service.title || 'Service'}" loading="lazy">` : 
-                            `<i class="fas ${iconClass}"></i>`}
-                        ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
-                    </div>
-                    <div class="result-details">
-                        <h4>${service.title || 'Unnamed Service'}</h4>
-                        <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
-                        ${service.rating ? `<p class="result-rating">${'★'.repeat(Math.round(service.rating))} (${service.rating})</p>` : ''}
-                        ${service.price ? `<p class="result-price">${service.price} SAR</p>` : ''}
-                        ${service.description ? `<p class="description">${service.description.substring(0, 100)}...</p>` : ''}
-                        <div class="result-actions">
-                            <button class="result-button view-result-btn">View Details</button>
-                            <button class="result-button book-result-btn" data-id="${service.id}">Book Now</button>
-                        </div>
-                    </div>
-                `;
-                resultsContainer.appendChild(resultItem);
-            });
-            
-            // Set up event listeners for the new result buttons
-            setupResultButtons();
-            
-            // Make sure results are visible
-            searchResults.style.display = 'block';
-            
-        } catch (error) {
-            console.error('Display error:', error);
-            showError(error.message || 'Failed to display results');
+    function displaySearchResults(data, type) {
+        const resultsContainer = document.getElementById('results-container');
+        const resultsCount = document.querySelector('.results-count');
+        const searchResults = document.getElementById('search-results');
+        
+        if (!resultsContainer || !resultsCount || !searchResults) {
+            console.error('Missing required elements for results display');
+            return showError('Page configuration error');
         }
+        
+        const services = data.data || [];
+        resultsCount.textContent = `${services.length} results found`;
+        resultsContainer.innerHTML = '';
+        
+        if (services.length === 0) {
+            resultsContainer.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h4>No ${type} found</h4>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create result cards
+        services.forEach(service => {
+            const iconMap = {
+                hotel: 'fa-hotel',
+                restaurant: 'fa-utensils',
+                car: 'fa-car',
+                event: 'fa-ticket-alt'
+            };
+            
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <div class="result-image">
+                    ${service.image ? 
+                        `<img src="${service.image}" alt="${service.title || type}" loading="lazy">` : 
+                        `<i class="fas ${iconMap[type] || 'fa-image'}"></i>`}
+                    ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
+                </div>
+                <div class="result-details">
+                    <h4>${service.title || 'Unnamed Service'}</h4>
+                    <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location || 'Location not specified'}</p>
+                    ${service.rating ? `<p class="result-rating">${'★'.repeat(Math.round(service.rating))} (${service.rating})</p>` : ''}
+                    ${service.price ? `<p class="result-price">${service.price} SAR</p>` : ''}
+                    <div class="result-actions">
+                        <button class="result-button view-result-btn">View Details</button>
+                        <button class="result-button book-result-btn" data-id="${service.id}">Book Now</button>
+                    </div>
+                </div>
+            `;
+            resultsContainer.appendChild(resultItem);
+        });
+        
+        // Setup button handlers
+        setupResultButtons();
+        searchResults.style.display = 'block';
     }
     
     function setupResultButtons() {
-        // View details buttons in search results
-        document.querySelectorAll('.view-result-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // This would show details for the specific result
-                alert('View details functionality will be implemented here');
+        // View details buttons
+        document.querySelectorAll('.view-result-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Implement view details functionality
+                alert('View details would open here');
             });
         });
         
-        // Book now buttons in search results
-        document.querySelectorAll('.book-result-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // Check if user is logged in (you would implement this)
-                const isLoggedIn = false; // Change based on your auth system
-                
-                if (isLoggedIn) {
-                    // Proceed with booking
-                    alert(`Booking item with ID: ${this.dataset.id}`);
-                } else {
-                    // Show login message
-                    showLoginMessage();
+        // Book now buttons
+        document.querySelectorAll('.book-result-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Would you like to proceed to booking?')) {
+                    // Implement booking functionality
+                    alert(`Booking service ID: ${this.dataset.id}`);
                 }
             });
         });
@@ -2544,7 +2499,7 @@
         searchResults.innerHTML = `
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
-                <h4>Error loading results</h4>
+                <h4>Error</h4>
                 <p>${message}</p>
                 <button onclick="window.location.reload()">Try Again</button>
             </div>
@@ -2552,20 +2507,37 @@
         searchResults.style.display = 'block';
     }
 
-    function showLoginMessage() {
-        const loginMessage = document.createElement('div');
-        loginMessage.className = 'login-message';
-        loginMessage.innerHTML = `
-            <div class="login-message-content">
-                <h3>Login Required</h3>
-                <p>You need to be logged in to make a booking. Please log in or sign up to continue.</p>
-                <div class="login-actions">
-                    <button class="login-redirect-btn" onclick="window.location.href='login.html'">Log In</button>
-                    <button class="login-cancel-btn" onclick="this.closest('.login-message').remove()">Cancel</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(loginMessage);
+    function setupServiceCards() {
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modalId = `${this.dataset.service}Modal`;
+                const modal = document.getElementById(modalId);
+                if (modal) modal.style.display = 'flex';
+            });
+        });
+        
+        document.querySelectorAll('.book-now-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Would you like to proceed to booking?')) {
+                    // Implement booking functionality
+                    alert('Booking service');
+                }
+            });
+        });
+    }
+
+    function setupModalCloseButtons() {
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) this.style.display = 'none';
+            });
+        });
     }
 </script>
   </body>
