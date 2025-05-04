@@ -53,7 +53,6 @@ function initCommon() {
     updateCopyrightYear();
 
     // Load common styles
-    loadCommonStyles();
 
     // Close mobile menu when clicking on nav links
     document.querySelectorAll('nav a').forEach(link => {
