@@ -2215,6 +2215,9 @@
     </footer>
 
     <script>
+  // API Configuration
+  const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+  
   // Enhanced error logging function
   function logError(context, error, extra = {}) {
     console.groupCollapsed(`🚨 Error in ${context}`);
@@ -2225,15 +2228,6 @@
       ...extra
     });
     console.groupEnd();
-    
-    // Optional: Send to error tracking service
-    if (window.trackError) {
-      window.trackError(context, {
-        error: error.message,
-        stack: error.stack,
-        ...extra
-      });
-    }
   }
 
   // Helper function to safely get elements with validation
@@ -2275,7 +2269,6 @@
             if (authButtons) authButtons.style.display = 'none';
             if (userDropdown) userDropdown.style.display = 'block';
             if (usernameDisplay) {
-              // Try to get username from token if available
               try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 usernameDisplay.textContent = payload.name || 'User';
@@ -2293,7 +2286,7 @@
 
       checkAuthState();
 
-      // Mobile navigation toggle with enhanced error handling
+      // Mobile navigation toggle
       function setupMobileNav() {
         try {
           const mobileToggle = document.querySelector(".mobile-nav-toggle");
@@ -2304,21 +2297,17 @@
               try {
                 const isExpanded = nav.classList.toggle("active");
                 mobileToggle.setAttribute("aria-expanded", isExpanded);
-                console.log(`Mobile nav ${isExpanded ? 'expanded' : 'collapsed'}`);
               } catch (error) {
                 logError("mobileToggle click handler", error);
               }
             });
 
-            // Close mobile nav when clicking on links
             document.querySelectorAll("nav a").forEach((link) => {
               link.addEventListener("click", () => {
                 nav.classList.remove("active");
                 mobileToggle.setAttribute("aria-expanded", "false");
               });
             });
-          } else {
-            console.warn('Mobile navigation elements not found');
           }
         } catch (error) {
           logError("setupMobileNav", error);
@@ -2327,7 +2316,7 @@
 
       setupMobileNav();
 
-      // Search tabs functionality with error boundaries
+      // Search tabs functionality
       function setupSearchTabs() {
         try {
           const tabs = document.querySelectorAll(".search-tab");
@@ -2342,7 +2331,6 @@
             tabs.forEach((tab) => {
               tab.addEventListener("click", function () {
                 try {
-                  // Update tab states
                   tabs.forEach((t) => {
                     t.classList.remove("active");
                     t.setAttribute("aria-selected", "false");
@@ -2350,29 +2338,22 @@
                   this.classList.add("active");
                   this.setAttribute("aria-selected", "true");
 
-                  // Hide all search forms first
                   Object.values(searchForms).forEach(form => {
                     if (form) form.style.display = "none";
                   });
 
-                  // Show the selected search form
                   const tabType = this.getAttribute("data-tab");
                   console.log(`Search tab changed to: ${tabType}`);
                   if (searchForms[tabType]) {
                     searchForms[tabType].style.display = "flex";
-                  } else {
-                    console.warn(`No search form found for tab type: ${tabType}`);
                   }
                 } catch (error) {
-                  logError("search tab click handler", error, { tabType: this.getAttribute("data-tab") });
+                  logError("search tab click handler", error);
                 }
               });
             });
 
-            // Initialize first tab as active
             tabs[0]?.click();
-          } else {
-            console.warn('No search tabs found on page');
           }
         } catch (error) {
           logError("setupSearchTabs", error);
@@ -2381,7 +2362,7 @@
 
       setupSearchTabs();
 
-      // Service type mapping (frontend to backend)
+      // Service type mapping
       const typeMap = {
         'hotels': 'hotel',
         'restaurants': 'restaurant',
@@ -2389,7 +2370,7 @@
         'events': 'event'
       };
 
-      // Enhanced search form submission handler
+      // Search form submission handler
       function setupSearchForms() {
         try {
           const searchForms = {
@@ -2405,7 +2386,6 @@
                 e.preventDefault();
                 
                 try {
-                  // Get active tab
                   const activeTab = document.querySelector(".search-tab.active")?.getAttribute("data-tab");
                   if (!activeTab) {
                     throw new Error('No active search tab selected');
@@ -2414,7 +2394,6 @@
                   const serviceType = typeMap[activeTab];
                   console.log(`Starting search for ${serviceType}`);
 
-                  // Get form values based on active tab
                   let searchParams = {};
                   
                   switch(activeTab) {
@@ -2461,20 +2440,17 @@
 
                   console.log('Search parameters:', searchParams);
 
-                  // Show loading state
                   const searchResults = getElement("search-results");
                   if (searchResults) {
                     searchResults.innerHTML = `
                       <div class="loading-state">
                         <i class="fas fa-spinner fa-spin"></i>
                         <p>Searching for ${activeTab}...</p>
-                        <div class="loading-progress"></div>
                       </div>
                     `;
                     searchResults.classList.add("active");
                   }
 
-                  // Build query parameters
                   const params = new URLSearchParams();
                   params.append('type', serviceType);
                   
@@ -2488,63 +2464,42 @@
                     params.append('rating', searchParams.minRating);
                   }
                   
-                  // Add filters based on service type
                   if (searchParams.filters && searchParams.filters.length) {
                     params.append('amenities', searchParams.filters.join(','));
                   }
                   
-                  // Add dates based on service type
                   if (searchParams.checkIn) params.append('startDate', searchParams.checkIn);
                   if (searchParams.checkOut) params.append('endDate', searchParams.checkOut);
                   if (searchParams.date) params.append('startDate', searchParams.date);
                   if (searchParams.pickupDate) params.append('startDate', searchParams.pickupDate);
                   if (searchParams.dropoffDate) params.append('endDate', searchParams.dropoffDate);
                   
-                  // Add capacity
                   if (searchParams.guests) params.append('capacity', searchParams.guests);
                   if (searchParams.tickets) params.append('capacity', searchParams.tickets);
 
-                  const apiUrl = `/api/services?${params.toString()}`;
+                  const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
                   console.log('Making API request to:', apiUrl);
 
-                  // Make API call to backend with timeout
-                  const controller = new AbortController();
-                  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-                  const response = await fetch(apiUrl, { 
-                    signal: controller.signal 
-                  }).finally(() => clearTimeout(timeoutId));
-
+                  const response = await fetch(apiUrl);
+                  
                   if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `Server responded with ${response.status}`);
+                    throw new Error(`Server responded with ${response.status}`);
                   }
 
                   const data = await response.json();
                   console.log('Received search results:', data);
 
-                  // Validate response structure
-                  if (!data || typeof data !== 'object') {
-                    throw new Error('Invalid response format from server');
-                  }
-
-                  // Display results
                   displaySearchResults(data, activeTab);
                   
                 } catch (error) {
                   logError("search form submission", error);
                   
-                  const errorMessage = error.name === 'AbortError' ? 
-                    'Search timed out. Please try again.' : 
-                    error.message || 'Failed to load search results';
-
                   const searchResults = getElement("search-results");
                   if (searchResults) {
                     searchResults.innerHTML = `
                       <div class="error-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h4>Search Error</h4>
-                        <p>${errorMessage}</p>
+                        <p>${error.message || 'Failed to load search results'}</p>
                         <button onclick="retrySearch()">Try Again</button>
                       </div>
                     `;
@@ -2560,21 +2515,17 @@
 
       setupSearchForms();
 
-      // Enhanced displaySearchResults function
+      // Display search results
       function displaySearchResults(services, type) {
         try {
           console.log(`Displaying ${services?.length || 0} results for ${type}`);
           
-          const resultsContainer = getElement("results-container", "display results");
+          const resultsContainer = getElement("results-container");
           const resultsCount = document.querySelector('.results-count');
           
-          if (!resultsContainer || !resultsCount) {
-            throw new Error('Results display elements not found');
-          }
+          if (!resultsContainer || !resultsCount) return;
 
           resultsContainer.innerHTML = '';
-          
-          // Update results count
           resultsCount.textContent = `${services?.length || 0} results found`;
 
           if (!services || services.length === 0) {
@@ -2582,339 +2533,119 @@
               <div class="no-results">
                 <i class="fas fa-search"></i>
                 <h4>No ${type} found matching your criteria</h4>
-                <p>Try adjusting your search filters</p>
               </div>
             `;
             return;
           }
 
-          // Create result cards with validation
-          services.forEach((service, index) => {
-            try {
-              if (!service || typeof service !== 'object') {
-                console.warn('Invalid service data at index', index, service);
-                return;
-              }
-
-              // Validate required fields
-              const requiredFields = ['id', 'title', 'location'];
-              const missingFields = requiredFields.filter(field => !service[field]);
-              
-              if (missingFields.length > 0) {
-                console.warn(`Service at index ${index} missing fields:`, missingFields);
-                return;
-              }
-
-              const resultItem = document.createElement('div');
-              resultItem.className = 'result-item';
-              
-              // Determine price display based on service type
-              let priceDisplay;
-              switch(type) {
-                case 'hotels':
-                  priceDisplay = `From ${service.price || 0} SAR/night`;
-                  break;
-                case 'restaurants':
-                  priceDisplay = `Average meal: ${service.price || 0} SAR`;
-                  break;
-                case 'cars':
-                  priceDisplay = `From ${service.price || 0} SAR/day`;
-                  break;
-                default:
-                  priceDisplay = `From ${service.price || 0} SAR`;
-              }
-
-              // Build rating stars
-              const rating = parseFloat(service.rating) || 0;
-              const clampedRating = Math.min(5, Math.max(0, rating)); // Ensure rating is between 0-5
-              const fullStars = Math.floor(clampedRating);
-              const halfStar = clampedRating % 1 >= 0.5 ? 1 : 0;
-              const emptyStars = 5 - fullStars - halfStar;
-              
-              const stars = `
-                ${'<i class="fas fa-star"></i>'.repeat(fullStars)}
-                ${'<i class="fas fa-star-half-alt"></i>'.repeat(halfStar)}
-                ${'<i class="far fa-star"></i>'.repeat(emptyStars)}
-                <span>${clampedRating.toFixed(1)}</span>
-              `;
-
-              // Build amenities list safely
-              const amenitiesList = Array.isArray(service.amenities) ? 
-                service.amenities.slice(0, 3).map(amenity => 
-                  `<span class="amenity-tag">${amenity}</span>`
-                ).join('') : '';
-
-              resultItem.innerHTML = `
-                <div class="result-image">
-                  ${service.image ? 
-                    `<img src="${service.image}" alt="${service.title}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\\'fas fa-image\\'></i>'">` : 
-                    `<i class="fas fa-image"></i>`}
-                  ${service.featured ? '<span class="featured-badge">Featured</span>' : ''}
-                </div>
-                <h4>${escapeHtml(service.title)}</h4>
-                <p class="location"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(service.location)}</p>
-                <div class="result-rating">${stars}</div>
-                <p class="result-price">${priceDisplay}</p>
-                ${amenitiesList ? `<div class="amenities">${amenitiesList}</div>` : ''}
-                <p class="description">${escapeHtml(service.description?.substring(0, 100) || 'No description available')}...</p>
-                <div class="result-actions">
-                  <button class="result-button book-result-btn" 
-                          data-id="${service.id}" 
-                          data-type="${typeMap[type]}"
-                          aria-label="Book ${service.title}">
-                    ${type === 'restaurants' ? 'Reserve' : 
-                      type === 'cars' ? 'Rent Now' : 
-                      type === 'events' ? 'Get Tickets' : 'Book Now'}
-                  </button>
-                </div>
-              `;
-
-              // Add event listener to the book button
-              const bookBtn = resultItem.querySelector('.book-result-btn');
-              if (bookBtn) {
-                bookBtn.addEventListener('click', function() {
-                  try {
-                    const serviceId = this.getAttribute('data-id');
-                    const serviceType = this.getAttribute('data-type');
-                    console.log(`Attempting to book service ${serviceId} of type ${serviceType}`);
-                    handleReservation(serviceId, serviceType);
-                  } catch (error) {
-                    logError("book button click", error);
-                  }
-                });
-              }
-
-              resultsContainer.appendChild(resultItem);
-            } catch (error) {
-              logError("creating result card", error, { serviceIndex: index });
+          services.forEach((service) => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            
+            let priceDisplay;
+            switch(type) {
+              case 'hotels': priceDisplay = `From ${service.price || 0} SAR/night`; break;
+              case 'restaurants': priceDisplay = `Average meal: ${service.price || 0} SAR`; break;
+              case 'cars': priceDisplay = `From ${service.price || 0} SAR/day`; break;
+              default: priceDisplay = `From ${service.price || 0} SAR`;
             }
+
+            const rating = parseFloat(service.rating) || 0;
+            const stars = `
+              ${'<i class="fas fa-star"></i>'.repeat(Math.floor(rating))}
+              ${rating % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+              <span>${rating.toFixed(1)}</span>
+            `;
+
+            resultItem.innerHTML = `
+              <div class="result-image">
+                ${service.image ? `<img src="${service.image}" alt="${service.title}">` : '<i class="fas fa-image"></i>'}
+              </div>
+              <h4>${service.title}</h4>
+              <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.location}</p>
+              <div class="result-rating">${stars}</div>
+              <p class="result-price">${priceDisplay}</p>
+              <div class="result-actions">
+                <button class="result-button book-result-btn" 
+                        data-id="${service.id}" 
+                        data-type="${typeMap[type]}">
+                  ${type === 'restaurants' ? 'Reserve' : 
+                   type === 'cars' ? 'Rent Now' : 
+                   type === 'events' ? 'Get Tickets' : 'Book Now'}
+                </button>
+              </div>
+            `;
+
+            resultItem.querySelector('.book-result-btn')?.addEventListener('click', function() {
+              handleReservation(service.id, typeMap[type]);
+            });
+
+            resultsContainer.appendChild(resultItem);
           });
 
         } catch (error) {
           logError("displaySearchResults", error);
-          
-          const resultsContainer = getElement("results-container");
-          if (resultsContainer) {
-            resultsContainer.innerHTML = `
-              <div class="error-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Failed to display results: ${error.message}</p>
-              </div>
-            `;
-          }
         }
       }
 
-      // HTML escaping helper to prevent XSS
-      function escapeHtml(unsafe) {
-        if (typeof unsafe !== 'string') return '';
-        return unsafe
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
-
-      // Enhanced reservation handler
+      // Handle reservations
       async function handleReservation(serviceId, serviceType) {
         try {
           const token = localStorage.getItem('token');
           
           if (!token) {
-            console.log('No token found, showing login message');
             showLoginMessage('make a reservation');
             return;
           }
 
-          // Get reservation details based on service type
           let reservationData = { 
             serviceId, 
             serviceType,
             timestamp: new Date().toISOString()
           };
-          
-          // Helper to get date input value safely
-          function getDateInputValue(id) {
-            const el = getElement(id);
-            return el?.value ? new Date(el.value).toISOString() : null;
-          }
 
-          // Add fields based on service type
-          switch(serviceType) {
-            case 'hotel':
-              reservationData.startDate = getDateInputValue("check-in");
-              reservationData.endDate = getDateInputValue("check-out");
-              reservationData.guests = parseInt(getElement("guests")?.value) || 1;
-              break;
-            case 'car':
-              reservationData.startDate = getDateInputValue("car-pickup-date");
-              reservationData.endDate = getDateInputValue("car-dropoff-date");
-              break;
-            case 'restaurant':
-              reservationData.startDate = getDateInputValue("restaurant-date");
-              reservationData.guests = parseInt(getElement("restaurant-guests")?.value) || 1;
-              break;
-            case 'event':
-              reservationData.startDate = getDateInputValue("event-date");
-              reservationData.tickets = parseInt(getElement("event-tickets")?.value) || 1;
-              break;
-          }
-
-          console.log('Reservation data:', reservationData);
-
-          // Validate required fields
-          if (!reservationData.startDate) {
-            throw new Error('Missing required date for reservation');
-          }
-
-          // Show loading state
-          const loadingModal = showLoadingModal('Processing your reservation...');
-
-          // Make API call with timeout
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-          const response = await fetch('/api/bookings', {
+          const response = await fetch(`${API_BASE_URL}/reservations`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(reservationData),
-            signal: controller.signal
-          }).finally(() => clearTimeout(timeoutId));
+            body: JSON.stringify(reservationData)
+          });
 
           if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Booking failed with status ${response.status}`);
+            throw new Error('Booking failed');
           }
 
           const data = await response.json();
           console.log('Booking response:', data);
 
-          // Validate response
-          if (!data || !data.success) {
-            throw new Error(data?.message || 'Invalid response from booking service');
-          }
+          alert('Reservation successful!');
 
-          // Close loading modal
-          loadingModal.remove();
-
-          // Show success message
-          showReservationSuccess(data);
-          
         } catch (error) {
-          logError("handleReservation", error, { serviceId, serviceType });
-          
-          // Ensure loading modal is removed
-          document.querySelector('.loading-modal')?.remove();
-          
-          showReservationError(error.message || 'Failed to complete reservation');
+          logError("handleReservation", error);
+          alert(error.message || 'Failed to complete reservation');
         }
       }
 
-      // Modal management functions
-      function showLoadingModal(message) {
-        try {
-          // Remove any existing modals
-          document.querySelector('.loading-modal')?.remove();
-          
-          const modal = document.createElement('div');
-          modal.className = 'loading-modal';
-          modal.innerHTML = `
-            <div class="loading-content">
-              <i class="fas fa-spinner fa-spin"></i>
-              <p>${escapeHtml(message)}</p>
-            </div>
-          `;
-          document.body.appendChild(modal);
-          return modal;
-        } catch (error) {
-          logError("showLoadingModal", error);
-          return null;
-        }
-      }
-
-      function showReservationSuccess(reservation) {
-        try {
-          const modal = document.createElement('div');
-          modal.className = 'reservation-modal';
-          modal.setAttribute('role', 'dialog');
-          modal.setAttribute('aria-modal', 'true');
-          modal.innerHTML = `
-            <div class="reservation-content">
-              <i class="fas fa-check-circle"></i>
-              <h3>Reservation Confirmed!</h3>
-              <p>Your reservation has been successfully created.</p>
-              ${reservation.confirmationNumber ? 
-                `<p class="confirmation">Confirmation #: ${escapeHtml(reservation.confirmationNumber)}</p>` : ''}
-              <div class="reservation-actions">
-                <button onclick="window.location.href='reservations.html'">
-                  View My Reservations
-                </button>
-                <button onclick="this.closest('.reservation-modal').remove()">
-                  Continue Browsing
-                </button>
-              </div>
-            </div>
-          `;
-          document.body.appendChild(modal);
-        } catch (error) {
-          logError("showReservationSuccess", error);
-        }
-      }
-
-      function showReservationError(message) {
-        try {
-          const modal = document.createElement('div');
-          modal.className = 'reservation-modal error';
-          modal.innerHTML = `
-            <div class="reservation-content">
-              <i class="fas fa-exclamation-circle"></i>
-              <h3>Reservation Failed</h3>
-              <p>${escapeHtml(message)}</p>
-              <div class="reservation-actions">
-                <button onclick="this.closest('.reservation-modal').remove()">
-                  OK
-                </button>
-              </div>
-            </div>
-          `;
-          document.body.appendChild(modal);
-        } catch (error) {
-          logError("showReservationError", error);
-        }
-      }
-
+      // Show login message
       function showLoginMessage(action) {
-        try {
-          const loginMessage = document.createElement("div");
-          loginMessage.className = "login-message";
-          loginMessage.innerHTML = `
-            <div class="login-message-content">
-              <p>Please login to ${escapeHtml(action)}.</p>
-              <div class="login-actions">
-                <button onclick="window.location.href='login.html'" class="login-redirect-btn">
-                  Go to Login Page
-                </button>
-                <button onclick="this.closest('.login-message').remove()" class="login-cancel-btn">
-                  Cancel
-                </button>
-              </div>
+        const loginMessage = document.createElement("div");
+        loginMessage.className = "login-message";
+        loginMessage.innerHTML = `
+          <div class="login-message-content">
+            <p>Please login to ${action}.</p>
+            <div class="login-actions">
+              <button onclick="window.location.href='login.html'">
+                Go to Login Page
+              </button>
+              <button onclick="this.closest('.login-message').remove()">
+                Cancel
+              </button>
             </div>
-          `;
-          document.body.appendChild(loginMessage);
-
-          // Close when clicking outside
-          loginMessage.addEventListener("click", function (e) {
-            if (e.target === loginMessage) {
-              loginMessage.remove();
-            }
-          });
-        } catch (error) {
-          logError("showLoginMessage", error);
-        }
+          </div>
+        `;
+        document.body.appendChild(loginMessage);
       }
 
       // Initialize date inputs
@@ -2924,12 +2655,8 @@
           const tomorrow = new Date();
           tomorrow.setDate(today.getDate() + 1);
 
-          // Format dates for input fields (YYYY-MM-DD)
-          const formatDate = (date) => {
-            return date.toISOString().split('T')[0];
-          };
+          const formatDate = (date) => date.toISOString().split('T')[0];
 
-          // Set default dates
           const dateInputs = [
             { id: "check-in", date: today },
             { id: "check-out", date: tomorrow },
@@ -2940,21 +2667,19 @@
           ];
 
           dateInputs.forEach(({id, date}) => {
-            const input = getElement(id, "date initialization");
+            const input = getElement(id);
             if (input) {
               input.value = formatDate(date);
-              input.min = formatDate(new Date()); // Don't allow dates in the past
+              input.min = formatDate(new Date());
             }
           });
 
-          // Update min date for check-out when check-in changes
           const checkIn = getElement("check-in");
           const checkOut = getElement("check-out");
           
           if (checkIn && checkOut) {
             checkIn.addEventListener("change", function() {
               checkOut.min = this.value;
-              // Ensure check-out isn't before check-in
               if (new Date(checkOut.value) < new Date(this.value)) {
                 checkOut.value = this.value;
               }
@@ -2966,76 +2691,6 @@
       }
 
       setupDateInputs();
-
-      // Setup modal interactions
-      function setupModals() {
-        try {
-          // Add login requirement for all booking buttons in modals
-          document.querySelectorAll(".modal-footer button").forEach((button) => {
-            button.addEventListener("click", function () {
-              const modal = this.closest(".modal");
-              if (!modal) return;
-              
-              const action = modal.id.includes("hotel") ? "book accommodation" :
-                            modal.id.includes("car") ? "rent a car" :
-                            modal.id.includes("restaurant") ? "make a reservation" :
-                            "purchase tickets";
-              showLoginMessage(action);
-            });
-          });
-
-          // Add login requirement for featured service booking buttons
-          document.querySelectorAll(".book-now-btn").forEach((button) => {
-            button.addEventListener("click", function () {
-              const card = this.closest(".service-card");
-              if (!card) return;
-              
-              const service = card.querySelector("h3")?.textContent || 'this service';
-              showLoginMessage(`book ${service}`);
-            });
-          });
-
-          // View details button handlers for service cards
-          document.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', function() {
-              const serviceType = this.getAttribute('data-service');
-              if (!serviceType) return;
-              
-              const modalId = `${serviceType}Modal`;
-              const modal = getElement(modalId);
-              if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
-              }
-            });
-          });
-
-          // Close modal buttons
-          document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', function() {
-              const modal = this.closest('.modal');
-              if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = ''; // Re-enable scrolling
-              }
-            });
-          });
-
-          // Close modals when clicking outside
-          document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-              if (e.target === this) {
-                this.style.display = 'none';
-                document.body.style.overflow = ''; // Re-enable scrolling
-              }
-            });
-          });
-        } catch (error) {
-          logError("setupModals", error);
-        }
-      }
-
-      setupModals();
 
       // Logout functionality
       const logoutBtn = getElement('logoutBtn');
@@ -3059,19 +2714,6 @@
       console.log('Page initialization complete');
     } catch (error) {
       logError("DOMContentLoaded", error);
-      
-      // Show a global error message if something went terribly wrong
-      const errorDisplay = document.createElement('div');
-      errorDisplay.className = 'global-error';
-      errorDisplay.innerHTML = `
-        <div class="error-content">
-          <i class="fas fa-exclamation-triangle"></i>
-          <h3>Page Error</h3>
-          <p>Something went wrong while loading the page. Please refresh.</p>
-          <button onclick="window.location.reload()">Refresh Page</button>
-        </div>
-      `;
-      document.body.appendChild(errorDisplay);
     }
   });
 </script>
