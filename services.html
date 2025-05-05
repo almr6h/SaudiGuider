@@ -2705,7 +2705,18 @@
       
       if (!token) {
         showLoginMessage('make a reservation');
-        return;
+        return false;
+      }
+
+      // Verify token is valid
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!payload || !payload.id) {
+          throw new Error('Invalid token');
+        }
+      } catch (e) {
+        showLoginMessage('make a reservation');
+        return false;
       }
 
       let reservationData = { 
@@ -2730,11 +2741,152 @@
       const data = await response.json();
       console.log('Booking response:', data);
 
-      alert('Reservation successful!');
+      // Show success message
+      showBookingSuccess();
+      
+      // Refresh reservations display if on reservations page
+      if (window.location.pathname.includes('reservations.html')) {
+        displayUserReservations();
+      }
+
+      return true;
 
     } catch (error) {
       logError("handleReservation", error);
       alert(error.message || 'Failed to complete reservation');
+      return false;
+    }
+  }
+
+  // Show booking success message
+  function showBookingSuccess() {
+    const successMsg = document.createElement('div');
+    successMsg.className = 'booking-success';
+    successMsg.innerHTML = `
+      <div class="success-content">
+        <i class="fas fa-check-circle"></i>
+        <h4>Booking Successful!</h4>
+        <p>Your reservation has been confirmed.</p>
+        <button onclick="this.closest('.booking-success').remove()">OK</button>
+      </div>
+    `;
+    document.body.appendChild(successMsg);
+  }
+
+  // Display user reservations (for reservations page)
+  async function displayUserReservations() {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const reservationsContainer = document.getElementById('reservations-container');
+      if (!reservationsContainer) return;
+
+      reservationsContainer.innerHTML = `
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading your reservations...</p>
+        </div>
+      `;
+
+      const response = await fetch(`${API_BASE_URL}/reservations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to load reservations');
+      }
+
+      const data = await response.json();
+      
+      if (data.data && data.data.length > 0) {
+        reservationsContainer.innerHTML = `
+          <h3>Your Reservations</h3>
+          <div class="reservations-list"></div>
+        `;
+        
+        const listContainer = reservationsContainer.querySelector('.reservations-list');
+        
+        data.data.forEach(reservation => {
+          const reservationItem = document.createElement('div');
+          reservationItem.className = 'reservation-item';
+          reservationItem.innerHTML = `
+            <div class="reservation-info">
+              <h4>${reservation.serviceTitle || 'Service'}</h4>
+              <p>Type: ${reservation.serviceType}</p>
+              <p>Booked on: ${new Date(reservation.timestamp).toLocaleString()}</p>
+              <p>Status: Confirmed</p>
+            </div>
+            <button class="cancel-btn" data-id="${reservation._id}">Cancel</button>
+          `;
+          listContainer.appendChild(reservationItem);
+        });
+
+        // Add cancel handlers
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            cancelReservation(this.getAttribute('data-id'));
+          });
+        });
+      } else {
+        reservationsContainer.innerHTML = `
+          <div class="no-reservations">
+            <i class="fas fa-calendar-times"></i>
+            <h4>No Reservations Found</h4>
+            <p>You haven't made any reservations yet.</p>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading reservations:', error);
+      const reservationsContainer = document.getElementById('reservations-container');
+      if (reservationsContainer) {
+        reservationsContainer.innerHTML = `
+          <div class="error-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Error Loading Reservations</h4>
+            <p>${error.message || 'Please try again later'}</p>
+            <button onclick="displayUserReservations()">Retry</button>
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Cancel reservation
+  async function cancelReservation(reservationId) {
+    try {
+      if (!confirm('Are you sure you want to cancel this reservation?')) {
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showLoginMessage('manage reservations');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel reservation');
+      }
+
+      alert('Reservation cancelled successfully');
+      displayUserReservations(); // Refresh the list
+    } catch (error) {
+      console.error('Error cancelling reservation:', error);
+      alert(error.message || 'Failed to cancel reservation');
     }
   }
 
@@ -2980,6 +3132,20 @@
       document.querySelectorAll('.search-form').forEach(form => {
         form.addEventListener('submit', handleSearchFormSubmit);
       });
+
+      // Add click handlers to all book buttons
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('book-btn')) {
+          const serviceId = e.target.getAttribute('data-id');
+          const serviceType = e.target.getAttribute('data-type');
+          handleReservation(serviceId, serviceType);
+        }
+      });
+
+      // Check if we're on reservations page
+      if (window.location.pathname.includes('reservations.html')) {
+        displayUserReservations();
+      }
 
       // Logout functionality
       const logoutBtn = getElement('logoutBtn');
