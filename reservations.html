@@ -392,8 +392,17 @@
 
         // Format date for display
         function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+            if (!dateString) return 'Not specified';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Invalid date';
+                
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return 'Invalid date';
+            }
         }
 
         // Display user reservations
@@ -424,9 +433,10 @@
 
                 if (!response.ok) throw new Error('Failed to load reservations');
 
-                const { data: reservations } = await response.json();
+                const result = await response.json();
+                const reservations = result.data || [];
 
-                if (!reservations || reservations.length === 0) {
+                if (reservations.length === 0) {
                     container.innerHTML = `
                         <div class="no-reservations">
                             <i class="fas fa-calendar-times"></i>
@@ -443,40 +453,69 @@
                 // Build reservations list
                 container.innerHTML = `
                     <div class="reservations-list">
-                        ${reservations.map(reservation => `
-                            <div class="reservation-card" data-id="${reservation._id}">
-                                <div class="reservation-header">
-                                    <h3>${reservation.service?.title || 'Unknown Service'}</h3>
-                                    <span class="status-badge ${reservation.status}">
-                                        ${reservation.status}
-                                    </span>
+                        ${reservations.map(reservation => {
+                            const service = reservation.service || {};
+                            const serviceTitle = service.title || 'Unknown Service';
+                            const serviceLocation = service.location || 'Location not specified';
+                            const servicePrice = service.price ? `${service.price} SAR` : 'Price not available';
+                            const startDate = formatDate(reservation.startDate);
+                            const endDate = formatDate(reservation.endDate);
+                            const status = reservation.status || 'confirmed';
+
+                            return `
+                                <div class="reservation-card" data-id="${reservation._id}">
+                                    <div class="reservation-header">
+                                        <h3>${serviceTitle}</h3>
+                                        <span class="status-badge ${status}">
+                                            ${status}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="reservation-details">
+                                        <p><i class="fas fa-calendar-alt"></i> ${startDate} - ${endDate}</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> ${serviceLocation}</p>
+                                        <p><i class="fas fa-tag"></i> ${servicePrice}</p>
+                                    </div>
+                                    
+                                    <div class="reservation-actions">
+                                        <button class="cancel-btn" data-id="${reservation._id}">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                        <button class="details-btn" data-id="${reservation._id}">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </button>
+                                    </div>
                                 </div>
-                                
-                                <div class="reservation-details">
-                                    <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
-                                    <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
-                                    <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
-                                </div>
-                                
-                                <div class="reservation-actions">
-                                    <button class="cancel-btn" data-id="${reservation._id}">
-                                        <i class="fas fa-times"></i> Cancel
-                                    </button>
-                                    <button class="details-btn" onclick="viewReservationDetails('${reservation._id}')">
-                                        <i class="fas fa-info-circle"></i> Details
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 `;
 
                 // Add cancel handlers
                 document.querySelectorAll('.cancel-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const reservationId = btn.getAttribute('data-id');
                         if (confirm('Are you sure you want to cancel this reservation?')) {
-                            await cancelReservation(btn.dataset.id);
+                            await cancelReservation(reservationId);
                         }
+                    });
+                });
+
+                // Add details handlers
+                document.querySelectorAll('.details-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const reservationId = btn.getAttribute('data-id');
+                        viewReservationDetails(reservationId);
+                    });
+                });
+
+                // Add click handler for entire card
+                document.querySelectorAll('.reservation-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const reservationId = card.getAttribute('data-id');
+                        viewReservationDetails(reservationId);
                     });
                 });
 
@@ -511,7 +550,10 @@
                     }
                 });
 
-                if (!response.ok) throw new Error('Failed to cancel reservation');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to cancel reservation');
+                }
 
                 showErrorToUser('Reservation cancelled successfully', 3000);
                 displayUserReservations(); // Refresh the list
@@ -519,6 +561,15 @@
                 console.error('Error cancelling reservation:', error);
                 showErrorToUser(error.message || 'Failed to cancel reservation');
             }
+        }
+
+        // View reservation details
+        function viewReservationDetails(reservationId) {
+            alert(`Viewing details for reservation ${reservationId}\n\nThis would show more detailed information in a modal or separate page.`);
+            // In a real implementation, you would:
+            // 1. Fetch detailed reservation data
+            // 2. Show a modal with the details
+            // 3. Include options to modify the reservation
         }
 
         // Show login message
@@ -560,12 +611,6 @@
             } catch (error) {
                 console.error('Error checking auth state:', error);
             }
-        }
-
-        // View reservation details (placeholder - implement as needed)
-        function viewReservationDetails(reservationId) {
-            alert(`Viewing details for reservation ${reservationId}`);
-            // Implement detailed view modal or page as needed
         }
 
         // Initialize the page
