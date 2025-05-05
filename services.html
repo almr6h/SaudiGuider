@@ -2240,7 +2240,21 @@
  <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
-  
+  function setupSorting() {
+  const sortSelect = document.getElementById('sort-by');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
+                        document.querySelector('.search-form:not([style*="none"])');
+      if (activeForm) {
+        activeForm.dispatchEvent(new Event('submit'));
+      } else {
+        // If no active form, apply client-side sorting
+        applySorting(this.value);
+      }
+    });
+  }
+}
   // Service type mapping
   const typeMap = {
     'hotels': 'hotel',
@@ -2413,7 +2427,13 @@ function displaySearchResults(data, type) {
       `;
       return;
     }
-
+     const sortSelect = document.getElementById('sort-by');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      applySorting(this.value);
+    });
+  }
+});
     // Create result cards
     services.forEach((service) => {
       const resultItem = document.createElement('div');
@@ -2506,13 +2526,7 @@ function parseRating(ratingText) {
 
 // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-  const sortSelect = document.getElementById('sort-by');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-      applySorting(this.value);
-    });
-  }
-});
+ 
 
 // Helper function to get appropriate icon
 function getIconForType(type) {
@@ -2929,6 +2943,8 @@ async function handleSearchFormSubmit(e) {
 
       // Setup search tabs
       setupSearchTabs();
+    
+      setupSorting();
 
       // Setup date inputs
       setupDateInputs();
