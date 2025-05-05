@@ -299,6 +299,153 @@
         text-align: center;
         margin-bottom: 2rem;
       }
+        /* Booking Messages */
+.booking-message {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  transition: opacity 0.3s;
+}
+
+.booking-message.success {
+  border-top: 4px solid #4CAF50;
+}
+
+.message-content {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  gap: 12px;
+}
+
+.message-content i {
+  font-size: 24px;
+  color: #4CAF50;
+}
+
+.message-content h4 {
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.message-content p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.close-message {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+}
+
+.message-actions {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 12px;
+}
+
+.message-actions button {
+  flex: 1;
+  padding: 8px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Reservations List */
+.reservations-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.reservation-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.reservation-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status-badge.confirmed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.reservation-details {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #555;
+}
+
+.reservation-details i {
+  width: 20px;
+  text-align: center;
+  color: #777;
+}
+
+.reservation-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.reservation-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cancel-btn {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.details-btn {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
 
       .section-text {
         max-width: 800px;
@@ -2813,6 +2960,14 @@ async function handleReservation(serviceId, serviceType) {
 
     // Show success and refresh
     showBookingSuccess();
+      // In your handleReservation function after successful API call:
+showBookingSuccess();
+if (window.location.pathname.includes('reservations.html')) {
+  displayUserReservations();
+} else {
+  // Refresh reservation count in header/nav
+  updateReservationCount();
+}
     refreshReservationDisplay();
     
     return true;
@@ -2850,21 +3005,42 @@ function getReservationDates(serviceType) {
 
 // Improved success notification
 function showBookingSuccess() {
-  const existing = document.getElementById('booking-success');
-  if (existing) existing.remove();
+  // Remove any existing messages
+  const existingMsg = document.querySelector('.booking-message');
+  if (existingMsg) existingMsg.remove();
 
-  const successEl = document.createElement('div');
-  successEl.id = 'booking-success';
-  successEl.innerHTML = `
-    <div class="success-content">
+  // Create success message element
+  const successMsg = document.createElement('div');
+  successMsg.className = 'booking-message success';
+  successMsg.innerHTML = `
+    <div class="message-content">
       <i class="fas fa-check-circle"></i>
-      <h4>Booking Confirmed!</h4>
-      <p>Your reservation was successful.</p>
-      <button onclick="this.closest('#booking-success').remove()">OK</button>
-      <a href="reservations.html">View My Reservations</a>
+      <div>
+        <h4>Reservation Confirmed!</h4>
+        <p>Your booking was successful.</p>
+      </div>
+      <button class="close-message">&times;</button>
+    </div>
+    <div class="message-actions">
+      <button onclick="window.location.href='reservations.html'">
+        View My Reservations
+      </button>
     </div>
   `;
-  document.body.appendChild(successEl);
+
+  // Add to DOM
+  document.body.appendChild(successMsg);
+
+  // Close button handler
+  successMsg.querySelector('.close-message').addEventListener('click', () => {
+    successMsg.remove();
+  });
+
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    successMsg.style.opacity = '0';
+    setTimeout(() => successMsg.remove(), 300);
+  }, 5000);
 }
 
 // Refresh reservations display
@@ -2891,88 +3067,106 @@ function refreshReservationDisplay() {
 
   // Display user reservations (for reservations page)
   async function displayUserReservations() {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        window.location.href = 'login.html';
-        return;
+  const container = document.getElementById('reservations-container');
+  if (!container) return;
+
+  try {
+    // Show loading state
+    container.innerHTML = `
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading your reservations...</p>
+      </div>
+    `;
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
+    });
 
-      const reservationsContainer = document.getElementById('reservations-container');
-      if (!reservationsContainer) return;
+    if (!response.ok) throw new Error('Failed to load reservations');
 
-      reservationsContainer.innerHTML = `
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p>Loading your reservations...</p>
+    const { data: reservations } = await response.json();
+
+    if (reservations.length === 0) {
+      container.innerHTML = `
+        <div class="no-reservations">
+          <i class="fas fa-calendar-times"></i>
+          <h3>No Reservations Found</h3>
+          <p>You haven't made any reservations yet.</p>
+          <button onclick="window.location.href='services.html'">
+            Book Now
+          </button>
         </div>
       `;
+      return;
+    }
 
-      const response = await fetch(`${API_BASE_URL}/reservations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    // Build reservations list
+    container.innerHTML = `
+      <h2>My Reservations</h2>
+      <div class="reservations-list">
+        ${reservations.map(reservation => `
+          <div class="reservation-card" data-id="${reservation._id}">
+            <div class="reservation-header">
+              <h3>${reservation.service?.title || 'Unknown Service'}</h3>
+              <span class="status-badge ${reservation.status}">
+                ${reservation.status}
+              </span>
+            </div>
+            
+            <div class="reservation-details">
+              <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
+              <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
+              <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
+            </div>
+            
+            <div class="reservation-actions">
+              <button class="cancel-btn" data-id="${reservation._id}">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+              <button class="details-btn" onclick="viewReservationDetails('${reservation._id}')">
+                <i class="fas fa-info-circle"></i> Details
+              </button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Add cancel handlers
+    document.querySelectorAll('.cancel-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+          await cancelReservation(btn.dataset.id);
         }
       });
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to load reservations');
-      }
-
-      const data = await response.json();
-      
-      if (data.data && data.data.length > 0) {
-        reservationsContainer.innerHTML = `
-          <h3>Your Reservations</h3>
-          <div class="reservations-list"></div>
-        `;
-        
-        const listContainer = reservationsContainer.querySelector('.reservations-list');
-        
-        data.data.forEach(reservation => {
-          const reservationItem = document.createElement('div');
-          reservationItem.className = 'reservation-item';
-          reservationItem.innerHTML = `
-            <div class="reservation-info">
-              <h4>${reservation.serviceTitle || 'Service'}</h4>
-              <p>Type: ${reservation.serviceType}</p>
-              <p>Booked on: ${new Date(reservation.timestamp).toLocaleString()}</p>
-              <p>Status: Confirmed</p>
-            </div>
-            <button class="cancel-btn" data-id="${reservation._id}">Cancel</button>
-          `;
-          listContainer.appendChild(reservationItem);
-        });
-
-        // Add cancel handlers
-        document.querySelectorAll('.cancel-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            cancelReservation(this.getAttribute('data-id'));
-          });
-        });
-      } else {
-        reservationsContainer.innerHTML = `
-          <div class="no-reservations">
-            <i class="fas fa-calendar-times"></i>
-            <h4>No Reservations Found</h4>
-            <p>You haven't made any reservations yet.</p>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Error loading reservations:', error);
-      const reservationsContainer = document.getElementById('reservations-container');
-      if (reservationsContainer) {
-        reservationsContainer.innerHTML = `
-          <div class="error-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h4>Error Loading Reservations</h4>
-            <p>${error.message || 'Please try again later'}</p>
-            <button onclick="displayUserReservations()">Retry</button>
-          </div>
-        `;
-      }
-    }
+  } catch (error) {
+    console.error('Failed to load reservations:', error);
+    container.innerHTML = `
+      <div class="error-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Error Loading Reservations</h3>
+        <p>${error.message || 'Please try again later'}</p>
+        <button onclick="displayUserReservations()">
+          <i class="fas fa-sync-alt"></i> Retry
+        </button>
+      </div>
+    `;
   }
+}
+
+// Helper function to format dates
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
 
   // Cancel reservation
   async function cancelReservation(reservationId) {
