@@ -1985,6 +1985,11 @@
                 <option value="4">4+ Stars</option>
                 <option value="4.5">4.5+ Stars</option>
               </select>
+                <label for="electric-filter">Filter:</label>
+    <select id="electric-filter" class="form-control">
+      <option value="all">All Cars</option>
+      <option value="electric">Electric Cars (Tesla)</option>
+    </select>
             </div>
             <button type="submit" class="search-button">
               <i class="fas fa-search"></i> Search
@@ -2815,6 +2820,16 @@
     try {
       const searchResults = document.getElementById('search-results');
       const resultsContainer = document.getElementById('results-container');
+        const params = new URLSearchParams();
+    params.append('type', serviceType);
+
+    // Add electric car filter for car searches
+    if (serviceType === 'car') {
+      const electricFilter = document.getElementById('electric-filter').value;
+      if (electricFilter === 'electric') {
+        params.append('brand', 'Tesla');
+      }
+    }
       
       if (searchResults) {
         searchResults.innerHTML = `
