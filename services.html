@@ -2699,27 +2699,17 @@
   };
 
   // Handle reservations
-  async function handleReservation(serviceId, serviceType) {
+ async function handleReservation(serviceId, serviceType) {
   try {
-    // 1. Check authentication
     const token = localStorage.getItem('token');
+    
+    // 1. Check token exists
     if (!token) {
       showLoginMessage('make a reservation');
       return false;
     }
 
-    // 2. Verify token structure
-    let payload;
-    try {
-      payload = JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      console.error('Invalid token structure');
-      localStorage.removeItem('token');
-      showLoginMessage('make a reservation');
-      return false;
-    }
-
-    // 3. Make the reservation request
+    // 2. Make the API call
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
       headers: {
@@ -2733,19 +2723,24 @@
       })
     });
 
-    // 4. Handle response
+    // 3. Handle response
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
       if (response.status === 401) {
-        // Token is invalid - force logout
-        localStorage.removeItem('token');
-        showLoginMessage('make a reservation');
+        // Specific handling for auth errors
+        if (data.error === 'auth/user-not-found') {
+          localStorage.removeItem('token');
+          showLoginMessage('make a reservation');
+          alert('Your account no longer exists. Please register again.');
+        } else {
+          showLoginMessage('make a reservation');
+        }
       }
-      throw new Error(errorData.message || 'Booking failed');
+      throw new Error(data.message || 'Booking failed');
     }
 
-    // 5. Show success
-    const data = await response.json();
+    // 4. Success case
     showBookingSuccess();
     return true;
 
