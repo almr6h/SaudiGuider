@@ -2820,16 +2820,8 @@
     try {
       const searchResults = document.getElementById('search-results');
       const resultsContainer = document.getElementById('results-container');
-        const params = new URLSearchParams();
-    params.append('type', serviceType);
+       
 
-    // Add electric car filter for car searches
-    if (serviceType === 'car') {
-      const electricFilter = document.getElementById('electric-filter').value;
-      if (electricFilter === 'electric') {
-        params.append('brand', 'Tesla');
-      }
-    }
       
       if (searchResults) {
         searchResults.innerHTML = `
@@ -2845,6 +2837,10 @@
 
       const params = new URLSearchParams();
       params.append('type', serviceType);
+        if (serviceType === 'car') {
+      const electricFilter = document.getElementById('electric-filter').value;
+      if (electricFilter === 'electric') {
+        params.append('title', 'Tesla');
 
       const location = form.querySelector('[id*="destination"]')?.value?.trim();
       if (location) params.append('location', location);
