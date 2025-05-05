@@ -1592,12 +1592,6 @@
                   >
                     View Details
                   </button>
-                  <button
-                    class="book-now-btn"
-                    aria-label="Book a luxury hotel now"
-                  >
-                    Book Now
-                  </button>
                 </div>
               </div>
             </div>
@@ -1642,9 +1636,7 @@
                   >
                     View Details
                   </button>
-                  <button class="book-now-btn" aria-label="Rent a car now">
-                    Rent Now
-                  </button>
+                 
                 </div>
               </div>
             </div>
@@ -1689,12 +1681,7 @@
                   >
                     View Details
                   </button>
-                  <button
-                    class="book-now-btn"
-                    aria-label="Book a restaurant now"
-                  >
-                    Reserve Now
-                  </button>
+                 
                 </div>
               </div>
             </div>
@@ -1738,12 +1725,7 @@
                   >
                     View Details
                   </button>
-                  <button
-                    class="book-now-btn"
-                    aria-label="Book event tickets now"
-                  >
-                    Get Tickets
-                  </button>
+                  
                 </div>
               </div>
             </div>
@@ -3070,7 +3052,7 @@ async function handleReservation(serviceId, serviceType, event) {
   if (existingMsg) existingMsg.remove();
 
   const pointsMessage = pointsEarned > 0 
-    ? `<p>You earned ${pointsEarned} loyalty points!</p>`
+    ? `<p><i class="fas fa-coins" style="color: gold;"></i> You earned ${pointsEarned} loyalty points!</p>`
     : '';
 
   const successMsg = document.createElement('div');
