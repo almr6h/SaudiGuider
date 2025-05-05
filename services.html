@@ -2925,54 +2925,74 @@
   };
 
   async function handleReservation(serviceId, serviceType, event) {
-    const button = event.target.closest('.book-btn');
-    const originalText = button.innerHTML;
+  const button = event.target.closest('.book-btn');
+  const originalText = button.innerHTML;
+  
+  try {
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+    const { startDate, endDate } = getReservationDates(serviceType);
     
-    try {
-      button.disabled = true;
-      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-      const { startDate, endDate } = getReservationDates(serviceType);
-      
-      if (!serviceId || !startDate || !endDate) {
-        throw new Error('Please complete all required fields');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/reservations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          serviceId,
-          serviceType,
-          startDate,
-          endDate
-        })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.message || 'Booking failed');
-
-      showBookingSuccess();
-      if (window.location.pathname.includes('reservations.html')) {
-        displayUserReservations();
-      } else {
-        updateReservationCount();
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Reservation error:', error);
-      showErrorToUser(error.message);
-      return false;
-    } finally {
-      button.disabled = false;
-      button.innerHTML = originalText;
+    if (!serviceId || !startDate || !endDate) {
+      throw new Error('Please complete all required fields');
     }
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        serviceId,
+        serviceType,
+        startDate,
+        endDate,
+        guests: 1 // Add default guests if needed
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      // More detailed error messages
+      let errorMsg = data.message || 'Booking failed';
+      if (response.status === 400) {
+        errorMsg = data.message || 'Invalid request data';
+      } else if (response.status === 500) {
+        errorMsg = 'Server error, please try again later';
+      }
+      throw new Error(errorMsg);
+    }
+
+    showBookingSuccess();
+    if (window.location.pathname.includes('reservations.html')) {
+      await displayUserReservations();
+    } else {
+      await updateReservationCount();
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Full reservation error:', {
+      error: error.message,
+      serviceId,
+      serviceType
+    });
+    
+    let userMessage = error.message;
+    if (error.message.includes('already have a reservation')) {
+      userMessage += '. Please check your existing reservations.';
+    }
+    
+    showErrorToUser(userMessage);
+    return false;
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalText;
   }
+}
 
   function getReservationDates(serviceType) {
     switch(serviceType) {
@@ -3402,21 +3422,30 @@
     }
   }
 
-  async function updateReservationCount() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/reservations/count`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const { count } = await response.json();
-      document.querySelectorAll('.reservation-count').forEach(el => {
-        el.textContent = count;
-      });
-    } catch (error) {
-      console.error('Failed to update reservation count:', error);
+ async function updateReservationCount() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      console.log('Failed to get reservations count');
+      return;
     }
+
+    const { data: reservations } = await response.json();
+    const count = reservations?.length || 0;
+    
+    document.querySelectorAll('.reservation-count').forEach(el => {
+      el.textContent = count;
+    });
+  } catch (error) {
+    console.error('Failed to update reservation count:', error);
   }
+}
 
   function viewReservationDetails(reservationId) {
     // Implement your reservation details view logic here
