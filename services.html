@@ -2702,51 +2702,41 @@
  async function handleReservation(serviceId, serviceType) {
   try {
     const token = localStorage.getItem('token');
-    
-    // 1. Check token exists
     if (!token) {
-      showLoginMessage('make a reservation');
+      showLoginMessage();
       return false;
     }
 
-    // 2. Make the API call
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        serviceId,
-        serviceType,
-        timestamp: new Date().toISOString()
-      })
+      body: JSON.stringify({ serviceId, serviceType })
     });
 
-    // 3. Handle response
-    const data = await response.json();
-    
     if (!response.ok) {
-      if (response.status === 401) {
-        // Specific handling for auth errors
-        if (data.error === 'auth/user-not-found') {
-          localStorage.removeItem('token');
-          showLoginMessage('make a reservation');
-          alert('Your account no longer exists. Please register again.');
-        } else {
-          showLoginMessage('make a reservation');
-        }
+      const errorData = await response.json();
+      
+      // Handle specific auth errors
+      if (errorData.error === 'auth/user-not-found') {
+        localStorage.removeItem('token');
+        alert('Your account is no longer available. Please contact support.');
+        window.location.href = '/login.html';
+        return false;
       }
-      throw new Error(data.message || 'Booking failed');
+      
+      throw new Error(errorData.message || 'Booking failed');
     }
 
-    // 4. Success case
+    // Success case
     showBookingSuccess();
     return true;
 
   } catch (error) {
     console.error('Reservation error:', error);
-    alert(error.message || 'Reservation failed. Please try again.');
+    alert(error.message || 'Could not complete booking');
     return false;
   }
 }
