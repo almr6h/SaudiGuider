@@ -2994,26 +2994,66 @@
   }
 }
 
-  function getReservationDates(serviceType) {
-    switch(serviceType) {
-      case 'hotel':
-        return {
-          startDate: document.getElementById('check-in')?.value,
-          endDate: document.getElementById('check-out')?.value
-        };
-      case 'car':
-        return {
-          startDate: document.getElementById('car-pickup-date')?.value,
-          endDate: document.getElementById('car-dropoff-date')?.value
-        };
-      default:
-        const date = document.querySelector(`#${serviceType}-date`)?.value;
-        return {
-          startDate: date || new Date().toISOString(),
-          endDate: date ? new Date(new Date(date).getTime() + 86400000).toISOString() : ''
-        };
-    }
+ function getReservationDates(serviceType) {
+  const now = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(now.getDate() + 1);
+
+  const formatForInput = (date) => date.toISOString().split('T')[0];
+  const formatForAPI = (date) => date.toISOString();
+
+  switch(serviceType) {
+    case 'hotel':
+      const checkIn = document.getElementById('check-in');
+      const checkOut = document.getElementById('check-out');
+      
+      // Set minimum dates if not set
+      if (checkIn && !checkIn.value) {
+        checkIn.value = formatForInput(now);
+        checkIn.min = formatForInput(now);
+      }
+      if (checkOut && !checkOut.value) {
+        checkOut.value = formatForInput(tomorrow);
+        checkOut.min = formatForInput(tomorrow);
+      }
+      
+      return {
+        startDate: checkIn?.value ? formatForAPI(new Date(checkIn.value)) : formatForAPI(tomorrow),
+        endDate: checkOut?.value ? formatForAPI(new Date(checkOut.value)) : formatForAPI(new Date(tomorrow.getTime() + 86400000))
+      };
+      
+    case 'car':
+      const pickupDate = document.getElementById('car-pickup-date');
+      const dropoffDate = document.getElementById('car-dropoff-date');
+      
+      if (pickupDate && !pickupDate.value) {
+        pickupDate.value = formatForInput(now);
+        pickupDate.min = formatForInput(now);
+      }
+      if (dropoffDate && !dropoffDate.value) {
+        dropoffDate.value = formatForInput(tomorrow);
+        dropoffDate.min = formatForInput(tomorrow);
+      }
+      
+      return {
+        startDate: pickupDate?.value ? formatForAPI(new Date(pickupDate.value)) : formatForAPI(now),
+        endDate: dropoffDate?.value ? formatForAPI(new Date(dropoffDate.value)) : formatForAPI(tomorrow)
+      };
+      
+    default:
+      const dateInput = document.querySelector(`#${serviceType}-date`);
+      if (dateInput && !dateInput.value) {
+        dateInput.value = formatForInput(now);
+        dateInput.min = formatForInput(now);
+      }
+      
+      const selectedDate = dateInput?.value ? new Date(dateInput.value) : now;
+      return {
+        startDate: formatForAPI(selectedDate),
+        endDate: formatForAPI(new Date(selectedDate.getTime() + 86400000))
+      };
   }
+}
 
   function showBookingSuccess() {
     const existingMsg = document.querySelector('.booking-message');
