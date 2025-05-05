@@ -587,6 +587,8 @@
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 2rem;
         padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
       }
       
       .article-card {
@@ -662,8 +664,10 @@
         gap: 1rem;
         padding: 1rem;
         background: var(--medium-gray);
-        margin: 1rem 2rem;
+        margin: 1rem auto;
         border-radius: 8px;
+        max-width: 1400px;
+        flex-wrap: wrap;
       }
       
       .category-btn {
@@ -690,6 +694,69 @@
         .category-filter {
           flex-wrap: wrap;
         }
+      }
+
+      /* Modal styles for article content */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+      }
+
+      .modal-content {
+        background-color: var(--dark-gray);
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      }
+
+      .close-modal {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close-modal:hover,
+      .close-modal:focus {
+        color: white;
+        text-decoration: none;
+      }
+
+      .article-content-modal h2 {
+        color: var(--secondary);
+        margin-bottom: 1rem;
+      }
+
+      .article-content-modal h3 {
+        color: var(--secondary);
+        margin: 1.5rem 0 0.5rem;
+      }
+
+      .article-content-modal p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .article-content-modal ul {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      .article-content-modal li {
+        margin-bottom: 0.5rem;
       }
     </style>
 </head>
@@ -764,6 +831,10 @@
         <button class="category-btn" data-category="culture">Culture</button>
         <button class="category-btn" data-category="food">Food</button>
         <button class="category-btn" data-category="family">Family</button>
+        <button class="category-btn" data-category="wellness">Wellness</button>
+        <button class="category-btn" data-category="spiritual">Spiritual</button>
+        <button class="category-btn" data-category="eco">Eco</button>
+        <button class="category-btn" data-category="festivals">Festivals</button>
       </div>
 
       <!-- Articles Grid -->
@@ -779,7 +850,7 @@
             <p class="article-excerpt">
               Your complete guide to dune bashing, scuba diving, and desert camping in Saudi Arabia's stunning landscapes...
             </p>
-            <a href="article-detail.html?id=1" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="1">Read More</a>
           </div>
         </article>
 
@@ -794,7 +865,7 @@
             <p class="article-excerpt">
               Explore Diriyah, Hegra, and Al-Ahsa Oasis - Saudi Arabia's breathtaking UNESCO World Heritage Sites...
             </p>
-            <a href="article-detail.html?id=2" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="2">Read More</a>
           </div>
         </article>
 
@@ -809,7 +880,7 @@
             <p class="article-excerpt">
               From street food to fine dining - explore Saudi Arabia's rich culinary landscape with our foodie guide...
             </p>
-            <a href="article-detail.html?id=3" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="3">Read More</a>
           </div>
         </article>
 
@@ -824,12 +895,12 @@
             <p class="article-excerpt">
               Your guide to scenic drives from the Red Sea coast to mountain passes and hidden desert gems...
             </p>
-            <a href="article-detail.html?id=4" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="4">Read More</a>
           </div>
         </article>
 
         <!-- Article 5 -->
-        <article class="article-card" data-category="culture">
+        <article class="article-card" data-category="wellness">
           <div class="article-image">
             <img src="./images/luxury-retreat.jpg" alt="Luxury retreat in Saudi Arabia" loading="lazy">
           </div>
@@ -839,7 +910,7 @@
             <p class="article-excerpt">
               Discover Saudi Arabia's premium spa sanctuaries, desert yoga retreats and mountain wellness experiences...
             </p>
-            <a href="article-detail.html?id=5" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="5">Read More</a>
           </div>
         </article>
 
@@ -854,9 +925,62 @@
             <p class="article-excerpt">
               A family-friendly guide to Saudi Arabia featuring water parks, wildlife encounters and kid-approved activities...
             </p>
-            <a href="article-detail.html?id=6" class="read-more">Read More</a>
+            <a href="#" class="read-more" data-article-id="6">Read More</a>
           </div>
         </article>
+
+        <!-- Article 7 -->
+        <article class="article-card" data-category="spiritual">
+          <div class="article-image">
+            <img src="./images/holy-sites.jpg" alt="Mecca and Medina holy sites" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Spiritual</span>
+            <h3>Sacred Journeys</h3>
+            <p class="article-excerpt">
+              Your spiritual guide to Mecca, Medina, and pilgrimage sites in Saudi Arabia...
+            </p>
+            <a href="#" class="read-more" data-article-id="7">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 8 -->
+        <article class="article-card" data-category="eco">
+          <div class="article-image">
+            <img src="./images/eco-tourism.jpg" alt="Eco tourism in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Eco Tourism</span>
+            <h3>Green Horizons</h3>
+            <p class="article-excerpt">
+              Exploring eco and sustainable tourism opportunities in Saudi Arabia's natural reserves...
+            </p>
+            <a href="#" class="read-more" data-article-id="8">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 9 -->
+        <article class="article-card" data-category="festivals">
+          <div class="article-image">
+            <img src="./images/festivals.jpg" alt="Festivals in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Festivals</span>
+            <h3>Unmissable Festivals</h3>
+            <p class="article-excerpt">
+              Your guide to music, arts, and cultural events throughout Saudi Arabia...
+            </p>
+            <a href="#" class="read-more" data-article-id="9">Read More</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Modal for displaying full articles -->
+      <div id="articleModal" class="modal">
+        <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <div id="articleContent" class="article-content-modal"></div>
+        </div>
       </div>
     </main>
 
@@ -926,6 +1050,456 @@
     </footer>
 
     <script>
+      // Article data
+      const articles = {
+        1: {
+          title: "Thrilling Adventures in Saudi Arabia: Your Complete Guide to Dune Bashing, Scuba Diving, and Desert Camping",
+          category: "Adventure",
+          content: `
+            <h2>Thrilling Adventures in Saudi Arabia: Your Complete Guide to Dune Bashing, Scuba Diving, and Desert Camping</h2>
+            <p>Saudi Arabia's sweeping deserts, crystalline Red Sea coast, and vast wilderness make it an adrenaline-seeker's paradise. Whether you're roaring across crimson dunes, diving among vibrant coral reefs, or sleeping under a blanket of stars, Saudi Guider has everything you need---hotels, 4×4 rentals, restaurants, and guided events---to turn your next trip into the adventure of a lifetime.</p>
+            
+            <h3>1. Dune Bashing in the Empty Quarter</h3>
+            <ul>
+              <li><strong>Where to go</strong>: The Rub' al Khali (Empty Quarter) near Al Hofuf and Najran offers some of the highest, most dramatic dunes in the world.</li>
+              <li><strong>Booking with Saudi Guider</strong>: Choose a half-day or full-day 4×4 tour departing from your hotel. Our packages include certified guides, safety gear, and optional sandboarding.</li>
+              <li><strong>Stay & Eat</strong>: Overnight at a desert glamping site---complete with private tent, bonfire, and local cuisine. After your ride, head back to Al Hofuf's bustling souq for traditional kabsa at a family-run restaurant.</li>
+            </ul>
+            
+            <h3>2. Scuba Diving the Red Sea</h3>
+            <ul>
+              <li><strong>Top dive spots</strong>: Explore the wreck of the SS Thistlegorm near Yanbu or the vibrant reefs off Jeddah's coast. Visibility can exceed 30 meters, with sightings of eagle rays, turtles, and even reef sharks.</li>
+              <li><strong>Saudi Guider dive packages</strong>: We partner with PADI-certified dive centers offering beginner intro dives, advanced courses, and multi-day liveaboard trips. Gear rental and wetsuits are included.</li>
+              <li><strong>Where to stay</strong>: Book waterside resorts in Neom or Sharm Yanbu---many with private beaches and on-site dive schools. After surfacing, recharge with fresh seafood at a beachfront café.</li>
+            </ul>
+            
+            <h3>3. Desert Camping under the Stars</h3>
+            <ul>
+              <li><strong>Best spots</strong>: Wadi Rum-style landscapes in AlUla, the volcanic fields of Harrat Khaybar, or the dunes of Nafud Al-Kabir.</li>
+              <li><strong>Guided experiences</strong>: Opt for a sunset camel trek followed by a traditional Bedouin dinner around the campfire. Saudi Guider's all-inclusive tours cover transport (4×4 or camel), meals, and luxury tent accommodations with solar lighting and plush bedding.</li>
+              <li><strong>Nearby comforts</strong>: Combine your camping trip with a night in AlUla's eco-resort or Hegra's boutique guesthouse. Sample local date-based desserts and mint tea before bedtime.</li>
+            </ul>
+            
+            <p><strong>Ready to Book?</strong><br>
+            Whether you crave a heart-pounding ride over undulating dunes, an underwater odyssey among untouched reefs, or the simple magic of sleeping beneath the Milky Way, Saudi Guider makes it seamless. Browse our curated adventure packages, secure your hotel and car rental, and add on restaurant reservations or special-event tickets---all in one place.</p>
+            
+            <p><strong>Embrace the thrill</strong>---your Saudi adventure awaits!</p>
+          `
+        },
+        2: {
+          title: "Discover Iconic UNESCO Sites",
+          category: "Culture",
+          content: `
+            <h2>Discover Iconic UNESCO Sites</h2>
+            <ul>
+              <li><strong>Diriyah (Al-Turaif)</strong>: Walk the adobe-brick streets of the Saud dynasty's original capital, beautifully restored into a cultural district with galleries and cafés.</li>
+              <li><strong>Hegra (Madâ'in Sâlih)</strong>: Marvel at over 130 Nabatean tomb façades carved into sandstone cliffs---Saudi Guider's guided tours include transport from AlUla and access to the new visitor center.</li>
+              <li><strong>Al-Ahsa Oasis</strong>: Explore one of the world's largest date-palm oases, its palm groves interwoven with historic canals and mosques. Book an evening lantern tour and sunset stroll.</li>
+            </ul>
+            
+            <p><strong>Stay & Eat</strong>: Base yourself in Riyadh's upscale Tahlia Street or AlUla's eco-resort. After touring, savor traditional mandi or jareesh at a nearby family-run eatery.</p>
+            
+            <h3>2. Dive into Modern Museums & Art Districts</h3>
+            <ul>
+              <li><strong>National Museum, Riyadh</strong>: A state-of-the-art journey from prehistoric Arabia to the modern Kingdom---book skip-the-line tickets and an English-language audio guide.</li>
+              <li><strong>Athr Gallery, Jeddah</strong>: Cutting-edge Saudi and international contemporary art housed in a converted historic building in Al-Balad. Combine your visit with a walking tour of nearby street-mural districts.</li>
+              <li><strong>Misk Art Institute, Riyadh</strong>: Rotating exhibitions and immersive installations spotlight homegrown talent. Reserve a curator-led tour and end with coffee at the on-site café.</li>
+            </ul>
+            
+            <p><strong>Getting Around</strong>: Rent a car through Saudi Guider to zip between city districts, or add private-driver service for a seamless day of gallery hopping.</p>
+            
+            <h3>3. Experience Heritage Villages & Festivals</h3>
+            <ul>
+              <li><strong>Rijal Alma Heritage Village</strong>: Perched in the Asir Mountains, these multicolored stone houses host cultural workshops---book hands-on sessions in weaving or pottery.</li>
+              <li><strong>Jeddah Season & Riyadh Season</strong>: Don't miss folk-dance performances, craft markets, and food pavilions. Saudi Guider can bundle your festival tickets with VIP seating and transport.</li>
+              <li><strong>AlUla Old Town</strong>: Wander narrow alleyways where locals still practice traditional crafts. Finish with a stop at a date-wine tasting event under ancient palm groves.</li>
+            </ul>
+            
+            <p><strong>Overnight Options</strong>: Stay in restored heritage guesthouses, then enjoy farm-to-table dishes at on-site restaurants featuring local produce.</p>
+            
+            <p>Embrace Saudi Arabia's vibrant past and present---with hotels, cars, restaurants, and events all booked in one place, Saudi Guider ensures your cultural journey is effortless and unforgettable.</p>
+          `
+        },
+        3: {
+          title: "Savoring Saudi Arabia: A Culinary Journey from Street Food to Fine Dining",
+          category: "Food",
+          content: `
+            <h2>Savoring Saudi Arabia: A Culinary Journey from Street Food to Fine Dining</h2>
+            <p>Embark on a mouthwatering tour of Saudi Arabia's rich culinary landscape, where age-old recipes meet modern twists. From bustling souqs to sleek rooftop restaurants, Saudi Guider will handle your hotel stay, car rental, table reservations, and tickets to food festivals---so you can focus on the flavors.</p>
+            
+            <h3>1. Street Food & Local Markets</h3>
+            <p><strong>Must-try bites</strong>:</p>
+            <ul>
+              <li><strong>Mutabbaq</strong> (savory stuffed pancake) in Jeddah's Old Souq al-Alawi</li>
+              <li><strong>Shawarma</strong> stalls lining Riyadh's Tahlia Street</li>
+              <li><strong>Fresh dates and gahwa</strong> (spiced coffee) at Al-Ahsa's sprawling date markets</li>
+            </ul>
+            
+            <p><strong>Booking with Saudi Guider</strong>:</p>
+            <ul>
+              <li>Reserve a guided food-market walk with a local host</li>
+              <li>Add on hotel pickup and drop-off in your private car</li>
+            </ul>
+            
+            <p><strong>Where to stay</strong>: Boutique riads near the souq, or a modern downtown hotel just steps from the food stalls.</p>
+            
+            <h3>2. Fine Dining & Modern Gastronomy</h3>
+            <p><strong>Top tables</strong>:</p>
+            <ul>
+              <li><strong>Fusion-forward tasting menus</strong> at Neom's cliff-edge resorts</li>
+              <li><strong>Rooftop lounge dining</strong> overlooking Riyadh's skyline, pairing local ingredients with global techniques</li>
+              <li><strong>Seafood specialties</strong> at Yanbu's waterfront fine-dining spots</li>
+            </ul>
+            
+            <p><strong>Saudi Guider perks</strong>:</p>
+            <ul>
+              <li>Priority reservations and chef's-table upgrades</li>
+              <li>Chauffeured transfers in luxury sedans or SUVs</li>
+            </ul>
+            
+            <p><strong>Stay & unwind</strong>: Book a 5-star resort with on-site spa to balance indulgence and relaxation.</p>
+            
+            <h3>3. Hands-On Culinary Experiences</h3>
+            <p><strong>Cooking classes</strong>:</p>
+            <ul>
+              <li>Learn to craft <strong>kabsa</strong> and <strong>mandi</strong> in a Jeddah beachfront kitchen</li>
+              <li>Master <strong>date-based desserts</strong> and <strong>Arabic coffee rituals</strong> in AlUla's eco-retreat</li>
+            </ul>
+            
+            <p><strong>Food festivals</strong>:</p>
+            <ul>
+              <li><strong>Riyadh Food Festival</strong>: street-food pop-ups, celebrity chef demos, and dessert competitions</li>
+              <li><strong>Jeddah Gastronomy Week</strong>: wine-pairing dinners and international chef showcases</li>
+            </ul>
+            
+            <p><strong>Seamless booking</strong>:</p>
+            <ul>
+              <li>Bundle class fees, festival passes, and car hire in one checkout</li>
+              <li>Opt for a multi-day culinary tour package with overnight stays in regional guesthouses.</li>
+            </ul>
+            
+            <p>Elevate your trip with Saudi Guider's all-in-one platform: secure your hotel, chauffeur-driven car, restaurant reservations, and event tickets in minutes. Get ready to taste the heart of Saudi Arabia---one unforgettable dish at a time.</p>
+          `
+        },
+        4: {
+          title: "Epic Saudi Road Trips: Your Guide to Scenic Drives, Hidden Gems, and Seamless Bookings",
+          category: "Adventure",
+          content: `
+            <h2>Epic Saudi Road Trips: Your Guide to Scenic Drives, Hidden Gems, and Seamless Bookings</h2>
+            <p>Hit the open road and discover Saudi Arabia's ever-changing landscapes---from coral-lined coasts to misty mountain passes---at your own pace. With Saudi Guider managing your car rental, hotels, restaurant reservations, and event tickets, all you need is a playlist and your sense of adventure.</p>
+            
+            <h3>1. Red Sea Coastal Route: Jeddah → Farasan Islands</h3>
+            <ul>
+              <li><strong>Highlights</strong>: Cruise along the palm-fringed Corniche, pause for fresh seafood in Umluj ("The Maldives of Saudi"), then ferry to the unspoiled Farasan archipelago for snorkeling with turtles.</li>
+              <li><strong>Saudi Guider package</strong>: Automatic SUV rental with optional rooftop tent, waterside resort bookings in Umluj, seafood feast reservations, and ferry tickets to Farasan.</li>
+              <li><strong>Must-stop eats</strong>: Grilled khobez sandwiches at a local bakery in Al Lith; sunset mezze platter at a beachside café in Farasan.</li>
+            </ul>
+            
+            <h3>2. Mountain Majesty: Taif → Abha → Al-Soudah</h3>
+            <ul>
+              <li><strong>Highlights</strong>: Start amid Taif's rose gardens and souqs, ascend the winding Asir highlands to Abha's misty terraces, then conquer Saudi's highest peak at Al-Soudah National Park---home to juniper forests and panoramic viewpoints.</li>
+              <li><strong>Saudi Guider package</strong>: 4×4 hire for hill roads, eco-lodge stays in Abha, guided hiking permits in Al-Soudah, and dinner reservations at a mountain-view restaurant.</li>
+              <li><strong>Local flavors</strong>: Try Asiri hininy (date-based mash) with spiced laban for breakfast; sample slow-cooked lamb mandi under the stars.</li>
+            </ul>
+            
+            <h3>3. Heritage Highway: Riyadh → Qassim → AlUla</h3>
+            <ul>
+              <li><strong>Highlights</strong>: Journey through the Kingdom's heartland---stop at Qassim's sprawling date farms, explore mud-brick villages near Buraidah, then arrive in AlUla for otherworldly rock formations and ancient tombs.</li>
+              <li><strong>Saudi Guider package</strong>: Sedan or minivan rental, farmhouse guesthouse bookings in Qassim, guided Hegra tours, and AlUla Old Town craft-market passes.</li>
+              <li><strong>Enchanting meals</strong>: Savor farm-fresh vegetables with jareesh in a Qassim homestead; end your day with date-and-rosewater dessert at an AlUla café.</li>
+            </ul>
+            
+            <h3>Road-Tripping Tips & Extras</h3>
+            <ul>
+              <li><strong>Best seasons</strong>: October--April for milder temperatures on desert plains and mountain roads.</li>
+              <li><strong>Car selection</strong>: Opt for a 4×4 if you plan on unpaved scenic detours; a sedan works well on major highways.</li>
+              <li><strong>Events along the way</strong>: Time your Taif drive for the annual Rose Festival (March), or catch the AlUla Arts & Culture Festival (January). Saudi Guider bundles event tickets, shuttles, and VIP passes.</li>
+              <li><strong>Dining reservations</strong>: Pre-book seafood feasts, mountain-top grills, and heritage-home dinners to guarantee the best views and freshest flavors.</li>
+            </ul>
+            
+            <p>Fuel your wanderlust with Saudi Guider's all-in-one road-trip platform: select your route, book your car and stays, reserve table and festival tickets---and get ready for the drive of a lifetime. Whether you're chasing coastlines, cloud-kissed peaks, or ancient wonders, Saudi's highways await.</p>
+          `
+        },
+        5: {
+          title: "Indulge & Unwind: The Ultimate Luxury and Wellness Retreats in Saudi Arabia",
+          category: "Wellness",
+          content: `
+            <h2>Indulge & Unwind: The Ultimate Luxury and Wellness Retreats in Saudi Arabia</h2>
+            <p>Treat yourself to the pinnacle of relaxation and rejuvenation with Saudi Arabia's burgeoning luxury and wellness scene. From beachfront spa sanctuaries to desert yoga retreats and mountain-infused aromatherapy, Saudi Guider will arrange your five-star hotel, chauffeured transfer, gourmet dining reservations, and exclusive wellness experiences---all in one seamless package.</p>
+            
+            <h3>1. Red Sea Spa Sanctuaries</h3>
+            <p><strong>Where</strong>: Neom and Sharm Yanbu</p>
+            <p><strong>Highlights</strong>:</p>
+            <ul>
+              <li><strong>Thermal seawater therapy</strong> pools overlooking the reef</li>
+              <li><strong>Hydrotherapy circuits</strong> with cold plunge, steam rooms, and vitality showers</li>
+              <li><strong>Marine-based treatments</strong> using algae wraps and sea-salt exfoliation</li>
+            </ul>
+            <p><strong>Stay & Book</strong>: Ultra-luxury resorts on Saudi Guider include private villas with infinity pools. We'll secure your beachfront suite, airport limousine, and table at the resort's fine-dining seafood restaurant.</p>
+            
+            <h3>2. Desert Mind-Body Retreats</h3>
+            <p><strong>Where</strong>: Rub' al Khali (Empty Quarter) & AlUla outskirts</p>
+            <p><strong>Highlights</strong>:</p>
+            <ul>
+              <li><strong>Sunrise yoga and meditation</strong> on red-sand dunes</li>
+              <li><strong>Sound-bath ceremonies</strong> in open-air Bedouin pavilions</li>
+              <li><strong>Aromatic desert herbal wraps</strong> infused with local sage and frankincense</li>
+            </ul>
+            <p><strong>Seamless Experience</strong>: Saudi Guider's desert-retreat package includes a private 4×4 pickup, glamping tent with en-suite bath, full-board healthy meals, and a starlit sound-bath event.</p>
+            
+            <h3>3. Mountain-Air Aromatherapy & Thermal Springs</h3>
+            <p><strong>Where</strong>: Asir Mountains near Abha and Al-Soudah</p>
+            <p><strong>Highlights</strong>:</p>
+            <ul>
+              <li><strong>Cedar-wood sauna</strong> perched over misty juniper forests</li>
+              <li><strong>Natural hot-spring pools</strong> rich in minerals for skin and muscle renewal</li>
+              <li><strong>Guided forest-bath "shinrin-yoku"</strong> walks with essential-oil inhalation</li>
+            </ul>
+            <p><strong>What's Included</strong>: Book a boutique eco-lodge through Saudi Guider and add on guided nature therapy sessions, local-cuisine tasting dinners, and resort transfers.</p>
+            
+            <h3>4. Holistic Wellness Programs</h3>
+            <p><strong>Customize Your Journey</strong>:</p>
+            <ul>
+              <li><strong>Detox & nutrition reset</strong>: Personalized meal plans featuring farm-fresh dates, quinoa zisr, and Saudi honeys</li>
+              <li><strong>Mindful movement</strong>: Private pilates, breathwork coaching, and paddle-board meditation at dawn</li>
+              <li><strong>Beauty rituals</strong>: Rose-water facials, camel-milk body scrubs, and luxury hammam experiences</li>
+            </ul>
+            <p><strong>Booking Perks</strong>: Saudi Guider arranges all sessions, spa-menu selections, and transfers---plus VIP access to fitness classes or celebrity-led workshops.</p>
+            
+            <p><strong>Ready to Relax?</strong><br>
+            Whether you crave the restorative calm of the desert's vast horizons, the healing waters of seaside sanctuaries, or the crisp mountain air of Asir's highlands, Saudi Guider crafts a bespoke luxury-wellness retreat tailored to you. Book your suite, spa treatments, car service, and gourmet meals in minutes---and let the journey to total renewal begin.</p>
+          `
+        },
+        6: {
+          title: "Fun for All Ages: A Family-Friendly Guide to Saudi Arabia",
+          category: "Family",
+          content: `
+            <h2>Fun for All Ages: A Family-Friendly Guide to Saudi Arabia</h2>
+            <p>Traveling with little ones or teens? Saudi Arabia offers countless experiences that will delight every member of the family. From splash-worthy water parks to immersive cultural edutainment, Saudi Guider handles your hotel, car rental, restaurant reservations, and event tickets---so parents can relax and kids can play!</p>
+            
+            <h3>1. Top Family Destinations</h3>
+            <p><strong>Qiddiya Entertainment City (Riyadh)</strong></p>
+            <ul>
+              <li><strong>Why go</strong>: Coming online in phases throughout 2025, Qiddiya will feature theme-park rides, splash parks, and live shows suitable for all ages.</li>
+              <li><strong>Saudi Guider booking</strong>: Reserve day-pass bundles with shuttle transfers, meal vouchers, and front-of-line access.</li>
+            </ul>
+            
+            <p><strong>Red Sea Resorts (Yanbu & Umluj)</strong></p>
+            <ul>
+              <li><strong>Why go</strong>: Kid-friendly beaches with gentle surf, safe snorkeling zones, and glass-bottom boat tours.</li>
+              <li><strong>Perks</strong>: Family suites with cribs and adjoining rooms; book sea-view villas through Saudi Guider with babysitting add-ons.</li>
+            </ul>
+            
+            <p><strong>Asir National Park (Abha)</strong></p>
+            <ul>
+              <li><strong>Why go</strong>: Cool mountain air, cable-car rides up Jebel Al-Soudah, and easy forest-trail walks perfect for youngsters.</li>
+              <li><strong>Extras</strong>: Saudi Guider's eco-lodge packages include guided nature walks with interactive wildlife spotting.</li>
+            </ul>
+            
+            <h3>2. Kid-Approved Activities</h3>
+            <p><strong>Splash Parks & Water Play</strong></p>
+            <ul>
+              <li><strong>Top picks</strong>: Fakieh Aquarium's water playground in Jeddah, and the Atlantis Water Park (opening 2025) in Neom.</li>
+              <li><strong>Booking tip</strong>: Pre-book combo tickets with hotel pick-up through Saudi Guider to avoid lines.</li>
+            </ul>
+            
+            <p><strong>Edutainment & Wildlife Encounters</strong></p>
+            <ul>
+              <li><strong>Safari Riyadh</strong>: Drive-through animal reserve featuring giraffes, zebras, and rhinos.</li>
+              <li><strong>AlAhsa Camel Festival</strong>: Hands-on camel-riding lessons and colorful folkloric shows (seasonal).</li>
+            </ul>
+            
+            <p><strong>Interactive Museums</strong></p>
+            <ul>
+              <li><strong>SEEK Museum (Jeddah)</strong>: STEM-focused exhibits with hands-on experiments.</li>
+              <li><strong>Saudi Railway Museum (Dammam)</strong>: Ride vintage train cars and learn rail history with audio storytelling.</li>
+            </ul>
+            
+            <h3>3. Family-Friendly Stays & Dining</h3>
+            <p><strong>Hotel Features</strong>:</p>
+            <ul>
+              <li>Look for properties offering kids' clubs, playrooms, and suites with kitchenettes. Saudi Guider highlights these in your search filters.</li>
+            </ul>
+            
+            <p><strong>Villas & Apartments</strong>:</p>
+            <ul>
+              <li>Spacious two- to three-bedroom villas in Neom or AlUla---complete with private pools and BBQ areas.</li>
+            </ul>
+            
+            <p><strong>Restaurants</strong>:</p>
+            <ul>
+              <li><strong>Kid menus</strong>: Many family-owned eateries in AlKhobar and Jeddah's Corniche offer children's portions of kebabs, pasta, and fruit platters.</li>
+              <li><strong>Special requests</strong>: Use Saudi Guider to note allergies or request high chairs and birthday-cake surprises.</li>
+            </ul>
+            
+            <h3>4. Essential Tips & Seamless Booking</h3>
+            <ul>
+              <li><strong>Timing</strong>: Travel October--April to avoid summer heat; mornings are best for outdoor play.</li>
+              <li><strong>Packing</strong>: Bring sun-protective clothing, refillable water bottles, and light layers for cooler evenings in the mountains.</li>
+              <li><strong>Health & Safety</strong>: Tap water is safe; most resorts welcome medical requests (e.g., baby formula) if noted in advance.</li>
+              <li><strong>How Saudi Guider helps</strong>:
+                <ul>
+                  <li><strong>All-in-one checkout</strong>: Hotel, car seat rental, attraction tickets, and restaurant reservations.</li>
+                  <li><strong>24/7 support</strong>: Change plans on the go with in-app messaging---perfect for nap-time tweaks or sudden snack runs.</li>
+                </ul>
+              </li>
+            </ul>
+            
+            <p>With its mix of thrilling attractions, natural wonders, and thoughtfully designed family services, Saudi Arabia makes for an unforgettable kids-and-parents getaway. Let Saudi Guider handle the logistics so you can focus on making memories together!</p>
+          `
+        },
+        7: {
+          title: "Sacred Journeys: Your Spiritual Guide to Mecca, Medina, and Pilgrimage Sites",
+          category: "Spiritual",
+          content: `
+            <h2>Sacred Journeys: Your Spiritual Guide to Mecca, Medina, and Pilgrimage Sites</h2>
+            <p>Embark on the ultimate spiritual voyage through Islam's holiest cities and sacred landmarks. Saudi Guider handles your Umrah/Hajj package---from accommodation steps away from the Haram to private transfers, iftar reservations, and guided ziyarat tours---so you can focus entirely on your devotion.</p>
+            
+            <h3>1. Mecca: Performing Umrah & the Hajj Pilgrimage</h3>
+            <p><strong>Umrah Made Easy</strong></p>
+            <ul>
+              <li><strong>Visa & permits</strong>: We partner with licensed operators to secure your Umrah visa and Tawafa-only access.</li>
+              <li><strong>Prime accommodation</strong>: Choose from hotels overlooking Masjid al-Haram, many with Haram views from your room and 24/7 shuttle service.</li>
+              <li><strong>Guided rituals</strong>: Private "umrah coach" to lead you through Ihram preparation, Tawaf, Sa'i between Safa & Marwah, and Zamzam water collection.</li>
+            </ul>
+            
+            <p><strong>Hajj Packages</strong></p>
+            <ul>
+              <li><strong>Fully managed journeys</strong>: From booking the "arafat" and "mina" tents to Arafat-Muzdalifah transport, Saudi Guider's Hajj cohorts include multilingual scholars, catered meals, and on-site medical support.</li>
+              <li><strong>Family & VIP options</strong>: Gender-segregated tents, luxury tent upgrades, and family-friendly camps with play areas for children.</li>
+            </ul>
+            
+            <h3>2. Medina: Visiting the Prophet's Mosque & Sacred Sites</h3>
+            <p><strong>Al-Masjid an-Nabawi</strong></p>
+            <ul>
+              <li><strong>Hotel proximity</strong>: Stay within a five-minute walk of the Rawdah ("Garden of Paradise") for easier Taraweeh and Qiyam-al-Layl.</li>
+              <li><strong>Prayer-time reminders</strong>: In-app alerts for adhan and lecture schedules.</li>
+            </ul>
+            
+            <p><strong>Ziyarat Excursions</strong></p>
+            <ul>
+              <li><strong>Mount Uhud & Jannatul Baqi</strong>: Small-group tours with knowledgeable guides narrating the Battle of Uhud and the significance of the Prophet's family cemetery.</li>
+              <li><strong>Quba & Qiblatain Mosques</strong>: Private transfer with seated recitation sessions by local imams.</li>
+            </ul>
+            
+            <h3>3. Beyond the Two Holy Mosques: Other Spiritual Highlights</h3>
+            <p><strong>Makkah's Holy Well of Zamzam</strong></p>
+            <ul>
+              <li><strong>Zamzam distribution tour</strong>: Witness the bottling process at the Zamzam Water Factory and take home fresh samples.</li>
+            </ul>
+            
+            <p><strong>King Fahd Qur'an Printing Complex (Madinah)</strong></p>
+            <ul>
+              <li><strong>Guided visit</strong>: See the world's largest Qur'an printing facility and learn about modern preservation techniques.</li>
+            </ul>
+            
+            <p><strong>Historical Pilgrimage Routes</strong></p>
+            <ul>
+              <li><strong>Ancient Caravan Trails</strong>: Drive or camel-trek segments of the old Hajj routes through the Hijaz mountains, with overnight stops in restored caravanserais.</li>
+            </ul>
+            
+            <p><strong>Ramadan & Religious Events</strong></p>
+            <ul>
+              <li><strong>Iftar tents & Suhoor experiences</strong>: Reserve seats in plush Ramadan tents around the Two Holy Mosques.</li>
+              <li><strong>Taraweeh livestreams</strong>: Premium access to live Qur'an recitations broadcast from the Haram via your mobile app.</li>
+            </ul>
+            
+            <p><strong>Ready for your most meaningful journey yet?</strong><br>
+            With Saudi Guider, your spiritual itinerary is fully custom: book your sacred-site hotels, chauffeured car or minibus transfers, iftar and suhoor reservations, and guided ziyarat tours all in one go. Let us handle the logistics---so you can lift your heart in prayer, reflection, and gratitude.</p>
+          `
+        },
+        8: {
+          title: "Green Horizons: Exploring Eco & Sustainable Tourism in Saudi Arabia",
+          category: "Eco",
+          content: `
+            <h2>Green Horizons: Exploring Eco & Sustainable Tourism in Saudi Arabia</h2>
+            <p>Saudi Arabia is transforming its natural heritage into a cornerstone of Vision 2030, with 15 protected areas under the Saudi Wildlife Authority and the Saudi Green Initiative's pledge to plant 10 billion trees---creating new ecotourism opportunities that safeguard ecosystems while benefiting local communities. Saudi Guider's eco-friendly packages make it easy to tread lightly and travel responsibly.</p>
+            
+            <h3>1. Marine & Coastal Conservation Experiences</h3>
+            <p><strong>Farasan Islands Marine Sanctuary</strong>: Spanning 1,050 km² with over 84 coral islands, this reserve off Jazan balances conservation with sustainable community development. Snorkel amid vibrant reefs, spot endangered turtles, or join a guided mangrove restoration tour.</p>
+            
+            <p><strong>Red Sea Project Eco-Tours</strong>: Explore protected coral nurseries and participate in citizen-science dives that monitor reef health---ideal for divers and marine enthusiasts seeking a low-impact adventure.</p>
+            
+            <h3>2. Desert & Wildlife Reserves</h3>
+            <p><strong>'Uruq Bani Maʿārid</strong>: Saudi's first Natural UNESCO World Heritage site (inscribed September 2023), this 12 658 km² reserve on the Empty Quarter is reviving Arabian oryx, sand gazelles, and other native species through reintroduction programs.</p>
+            
+            <p><strong>Prince Mohammed bin Salman Royal Reserve</strong>: Covering 24 500 km² between Tabuk and Al Madinah, this royal reserve protects desert oases and mountain habitats. Book a sunrise jeep safari to track ibex, foxes, and migratory birds with expert naturalists.</p>
+            
+            <h3>3. Eco-Lodges & Sustainable Stays</h3>
+            <p><strong>Zardun Sanctuary (NEOM)</strong>: A four-square-kilometer luxury eco-retreat melding contemporary comfort with wildlife conservation---stay in solar-powered villas overlooking restored habitats.</p>
+            
+            <p><strong>Sharaan Nature Reserve, AlUla</strong>: Integrated into the landscape, its eco-lodges use local materials and solar energy, offering guided hikes that spotlight native flora and rock-art conservation.</p>
+            
+            <p><strong>Soudah Development, Asir</strong>: High-altitude cabins and forest baths in cedar groves emphasize minimal impact and community empowerment, with proceeds supporting reforestation.</p>
+            
+            <h3>4. Responsible Travel Tips & Volunteering</h3>
+            <ul>
+              <li><strong>Volunteer with the Saudi Wildlife Authority</strong>: Join anti-poaching patrols or wildlife-monitoring projects in key reserves.</li>
+              <li><strong>Choose Certified Eco-Tours</strong>: Look for operators endorsed by the National Center for Wildlife to ensure best practices.</li>
+              <li><strong>Minimize Footprint</strong>: Use reef-safe sunscreen, bring refillable water bottles, and opt for electric or hybrid vehicles through Saudi Guider's rental options.</li>
+              <li><strong>Support Local Communities</strong>: Buy handicrafts from Bedouin cooperatives and dine at family-run date farms or camel-milk cafés.</li>
+            </ul>
+            
+            <p>With Saudi Guider, crafting a carbon-conscious, eco-compatible itinerary is effortless: book your green hotel, sustainable transport, guided eco-activities, and more---all in one place. Embark on a journey that celebrates Saudi Arabia's natural wonders while preserving them for generations to come.</p>
+          `
+        },
+        9: {
+          title: "Unmissable Festivals & Live Experiences: Your Guide to Music, Arts, and Cultural Events in Saudi Arabia",
+          category: "Festivals",
+          content: `
+            <h2>Unmissable Festivals & Live Experiences: Your Guide to Music, Arts, and Cultural Events in Saudi Arabia</h2>
+            <p>Saudi Arabia's calendar is now bursting with world-class festivals, concerts, and cultural showcases that celebrate global talent and homegrown creativity. From electrifying music festivals to immersive art fairs, Saudi Guider makes it effortless to secure your event tickets, nearby hotels, car rentals, and dinner reservations---so you can dive straight into the experience.</p>
+            
+            <h3>1. Annual Extravaganzas: Seasons of Spectacle</h3>
+            <p><strong>Riyadh Season</strong> (October--March)<br>
+            A months-long celebration featuring outdoor concerts, theatrical productions, theme-park pop-ups, and international sporting events. Saudi Guider bundles "Silver" or "Gold" passes with VIP seating, shuttle service, and hotel stays within walking distance of King Abdullah Financial District venues.</p>
+            
+            <p><strong>Jeddah Season</strong> (November--February)<br>
+            Coastal festivities include beachfront light shows, food truck festivals, and headline concerts by regional and international artists. Book curated day-pass packages that combine concert entry with a seafood dinner cruise on the Corniche.</p>
+            
+            <p><strong>Winter at Tantora</strong> (January--February, AlUla)<br>
+            Set among ancient rock formations, this festival mixes classical music performances, hot-air balloon glides at dawn, and traditional Emirati-style cultural nights. Saudi Guider offers "festival + glamping" packages including front-row concert seats and guided archaeological tours.</p>
+            
+            <h3>2. Premier Music Festivals & Concerts</h3>
+            <p><strong>MDLBeast Soundstorm</strong> (Riyadh)<br>
+            One of the world's fastest-growing electronic-dance festivals, featuring top DJs, immersive stage designs, and art installations. Opt for Saudi Guider's "Soundstorm Elite" pass for backstage access, priority parking, and chauffeured transfers in a luxury SUV.</p>
+            
+            <p><strong>Red Sea Jazz Festival</strong> (Jeddah)<br>
+            An intimate showcase of jazz legends and emerging musicians on an open-air stage overlooking the Red Sea. Combine your two-day festival pass with a private yacht dinner charter arranged through Saudi Guider.</p>
+            
+            <p><strong>Global Pop & Rock Tours</strong><br>
+            International stadium tours now regularly stop in Riyadh or Jeddah. Saudi Guider's "Concert Concierge" ensures you get the best seats, pre-show dining reservations at top rooftop lounges, and seamless transfers.</p>
+            
+            <h3>3. Film, Art & Cultural Showcases</h3>
+            <p><strong>Red Sea International Film Festival</strong> (Jeddah)<br>
+            Premier films from the Middle East and around the world, plus panel discussions with directors and actors. Saudi Guider's "Film Buff" package includes festival badges, reserved seating, and nearby boutique-hotel bookings.</p>
+            
+            <p><strong>Diriyah Biennale</strong> (Riyadh)<br>
+            An open-air contemporary art exhibition staged within the UNESCO-listed At-Turaif district. Book guided curator tours, followed by dinner at a nearby heritage café.</p>
+            
+            <p><strong>Art Jameel Exhibitions</strong> (Multiple Cities)<br>
+            Rotating galleries spotlighting regional artists---add on private studio visits and art-making workshops for an insider's look at Saudi's art scene.</p>
+            
+            <h3>4. Pop-Up Cultural Happenings</h3>
+            <p><strong>Street-Art Nights</strong> in Al-Balad (Jeddah)<br>
+            Watch live mural-painting while sampling fusion street-food stalls. Choose a "Street-Art & Eat" bundle that pairs guided tours with tastings at selected food carts.</p>
+            
+            <p><strong>Poetry & Storytelling Evenings</strong> in Taif and Abha<br>
+            Intimate gatherings of traditional poets (nabati) and contemporary spoken-word artists under the city's cool mountain breeze. Saudi Guider can reserve your spot and arrange transfers to and from your hotel.</p>
+            
+            <h3>5. Booking Tips & Saudi Guider Perks</h3>
+            <ul>
+              <li><strong>Early Access</strong>: Many festivals sell out weeks in advance---lock in your tickets and accommodation as soon as dates are announced.</li>
+              <li><strong>Custom Bundles</strong>: Mix-and-match events, dinner reservations, and car hire in a single checkout.</li>
+              <li><strong>24/7 Support</strong>: Adjust plans on the go via in-app chat---perfect for last-minute add-ons or seat upgrades.</li>
+              <li><strong>Insider Alerts</strong>: Opt in for push notifications on exclusive pop-up announcements and ticket drops.</li>
+            </ul>
+            
+            <p>Whether you're chasing headliner shows, film premieres, or one-off cultural pop-ups, Saudi Guider ensures your festival journey is seamless from booking to encore. Get ready to experience Saudi Arabia at its most vibrant and theatrical!</p>
+          `
+        }
+      };
+
       // Category Filter Functionality
       document.querySelectorAll('.category-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -981,6 +1555,41 @@
           }
         }
       }
+
+      // Article modal functionality
+      const modal = document.getElementById('articleModal');
+      const modalContent = document.getElementById('articleContent');
+      const closeModal = document.querySelector('.close-modal');
+      
+      document.querySelectorAll('.read-more').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const articleId = this.getAttribute('data-article-id');
+          const article = articles[articleId];
+          
+          if (article) {
+            modalContent.innerHTML = `
+              <h2>${article.title}</h2>
+              <span class="article-category">${article.category}</span>
+              ${article.content}
+            `;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+          }
+        });
+      });
+      
+      closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+      
+      window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      });
 
       // Initialize
       document.addEventListener('DOMContentLoaded', function() {
