@@ -2718,7 +2718,7 @@
   };
 
   // Handle reservations
- async function handleReservation(serviceId, serviceType) {
+async function handleReservation(serviceId, serviceType) {
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -2726,24 +2726,36 @@
       return false;
     }
 
-    // Get dates based on form inputs
+    // Get form data
     const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
-                      document.querySelector('.search-form:not([style*="none"])');
+                     document.querySelector('.search-form:not([style*="none"])');
     
-    let startDate, endDate;
+    // Get dates and guests from the form
+    let startDate, endDate, guests;
     if (activeForm) {
       startDate = activeForm.querySelector('[id*="check-in"], [id*="pickup-date"], [id*="date"]')?.value;
       endDate = activeForm.querySelector('[id*="check-out"], [id*="dropoff-date"]')?.value;
+      guests = activeForm.querySelector('[id*="guests"], [id*="tickets"]')?.value || 1;
     }
 
-    // Create the request body matching backend expectations
+    // Validate required fields
+    if (!serviceId) {
+      throw new Error('No service selected');
+    }
+
+    // Create request body
     const requestBody = {
       serviceId,
       serviceType,
       startDate: startDate || new Date().toISOString(),
-      endDate: endDate || new Date(Date.now() + 86400000).toISOString(), // Default to tomorrow
-      guests: 1 // Default value
+      endDate: endDate || new Date(Date.now() + 86400000).toISOString(),
+      guests: parseInt(guests) || 1
     };
+
+    console.log('Submitting reservation:', requestBody); // Debug log
+
+    // Show loading state
+    showReservationModal(true, 'Processing your reservation...');
 
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
@@ -2754,18 +2766,23 @@
       body: JSON.stringify(requestBody)
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Booking failed');
+      console.error('API Error Response:', data); // Debug log
+      throw new Error(data.message || `Booking failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    showBookingSuccess();
+    // Show success
+    showReservationModal(true, 'Reservation confirmed!');
     return true;
 
   } catch (error) {
     console.error('Reservation error:', error);
-    showReservationModal(false, error.message);
+    showReservationModal(false, 
+      error.message.includes('400') ? 'Invalid reservation data. Please check your dates and try again.' 
+      : error.message || 'Failed to complete reservation. Please try again.'
+    );
     return false;
   }
 }
