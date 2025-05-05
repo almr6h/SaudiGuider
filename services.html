@@ -2487,28 +2487,40 @@
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
 
   // Enhanced error display
-  function showErrorToUser(message, duration = 5000) {
-    const existing = document.getElementById('booking-error');
-    if (existing) existing.remove();
+ function showErrorToUser(message, duration = 5000) {
+  const existing = document.getElementById('booking-error');
+  if (existing) existing.remove();
 
-    const errorEl = document.createElement('div');
-    errorEl.id = 'booking-error';
-    errorEl.innerHTML = `
-      <div class="error-content">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h4>Booking Error</h4>
-        <p>${message}</p>
-        ${message.includes('already have a reservation') ? 
-          '<a href="reservations.html">View Existing Reservations</a>' : ''}
-      </div>
-    `;
-    document.body.appendChild(errorEl);
-
-    setTimeout(() => {
-      errorEl.style.opacity = '0';
-      setTimeout(() => errorEl.remove(), 300);
-    }, duration);
+  // Special handling for date errors
+  if (message.includes('Start date must be in the future') || 
+      message.includes('End date must be after start date')) {
+    message = 'Please select future dates for your reservation. ' + message;
+    
+    // Highlight date inputs
+    document.querySelectorAll('#check-in, #check-out, #car-pickup-date, #car-dropoff-date, [id$="-date"]').forEach(input => {
+      input.style.border = '1px solid #ff0000';
+      setTimeout(() => input.style.border = '', 3000);
+    });
   }
+
+  const errorEl = document.createElement('div');
+  errorEl.id = 'booking-error';
+  errorEl.innerHTML = `
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h4>Booking Error</h4>
+      <p>${message}</p>
+      ${message.includes('already have a reservation') ? 
+        '<a href="reservations.html">View Existing Reservations</a>' : ''}
+    </div>
+  `;
+  document.body.appendChild(errorEl);
+
+  setTimeout(() => {
+    errorEl.style.opacity = '0';
+    setTimeout(() => errorEl.remove(), 300);
+  }, duration);
+}
 
   // Success message display
   function showSuccessMessage(message, duration = 3000) {
@@ -3325,45 +3337,52 @@
   }
 
   function setupDateInputs() {
-    try {
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
+  try {
+    const now = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
 
-      const formatDate = (date) => date.toISOString().split('T')[0];
+    const formatDate = (date) => date.toISOString().split('T')[0];
 
-      const dateInputs = [
-        { id: "check-in", date: today },
-        { id: "check-out", date: tomorrow },
-        { id: "restaurant-date", date: today },
-        { id: "car-pickup-date", date: today },
-        { id: "car-dropoff-date", date: tomorrow },
-        { id: "event-date", date: today }
-      ];
+    const dateInputs = [
+      { id: "check-in", date: now },
+      { id: "check-out", date: tomorrow },
+      { id: "restaurant-date", date: now },
+      { id: "car-pickup-date", date: now },
+      { id: "car-dropoff-date", date: tomorrow },
+      { id: "event-date", date: now }
+    ];
 
-      dateInputs.forEach(({id, date}) => {
-        const input = getElement(id);
-        if (input) {
+    dateInputs.forEach(({id, date}) => {
+      const input = getElement(id);
+      if (input) {
+        input.min = formatDate(now);
+        if (!input.value) {
           input.value = formatDate(date);
-          input.min = formatDate(new Date());
+        }
+      }
+    });
+
+    // Ensure check-out is after check-in
+    const checkIn = getElement("check-in");
+    const checkOut = getElement("check-out");
+    
+    if (checkIn && checkOut) {
+      checkIn.addEventListener("change", function() {
+        const selectedDate = new Date(this.value);
+        const nextDay = new Date(selectedDate);
+        nextDay.setDate(selectedDate.getDate() + 1);
+        
+        checkOut.min = formatDate(nextDay);
+        if (new Date(checkOut.value) < nextDay) {
+          checkOut.value = formatDate(nextDay);
         }
       });
-
-      const checkIn = getElement("check-in");
-      const checkOut = getElement("check-out");
-      
-      if (checkIn && checkOut) {
-        checkIn.addEventListener("change", function() {
-          checkOut.min = this.value;
-          if (new Date(checkOut.value) < new Date(this.value)) {
-            checkOut.value = this.value;
-          }
-        });
-      }
-    } catch (error) {
-      logError("setupDateInputs", error);
     }
+  } catch (error) {
+    logError("setupDateInputs", error);
   }
+}
 
   function setupSearchTabs() {
     try {
