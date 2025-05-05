@@ -3631,107 +3631,128 @@ function showBookingSuccess(pointsEarned = 0) {
     }
   });
 
-    // Comparison functionality
-const comparisonBar = document.getElementById('comparisonBar');
-const comparisonView = document.getElementById('comparisonView');
-const comparisonTable = document.getElementById('comparisonTable');
-const comparisonCount = document.getElementById('comparisonCount');
-const viewComparisonBtn = document.getElementById('viewComparison');
-const clearComparisonBtn = document.getElementById('clearComparison');
-const closeComparisonBtn = document.querySelector('.close-comparison');
+   document.addEventListener('DOMContentLoaded', function() {
+    // Initialize comparison elements with null checks
+    const comparisonBar = document.getElementById('comparisonBar');
+    const comparisonView = document.getElementById('comparisonView');
+    const comparisonTable = document.getElementById('comparisonTable');
+    const comparisonCount = document.getElementById('comparisonCount');
+    const viewComparisonBtn = document.getElementById('viewComparison');
+    const clearComparisonBtn = document.getElementById('clearComparison');
+    const closeComparisonBtn = document.querySelector('.close-comparison');
 
-let comparedItems = [];
-
-// Toggle item comparison
-document.addEventListener('change', function(e) {
-  if (e.target.classList.contains('compare-check')) {
-    const card = e.target.closest('.service-card, .result-item');
-    const serviceId = card.querySelector('.book-btn')?.dataset.id || 
-                     card.dataset.id;
-    const serviceType = card.querySelector('.book-btn')?.dataset.type || 
-                       card.dataset.type;
-    
-    if (e.target.checked) {
-      if (comparedItems.length >= 4) {
-        e.target.checked = false;
-        showErrorToUser('You can compare up to 4 items at once');
+    // Only proceed if required elements exist
+    if (!comparisonBar || !comparisonView || !comparisonTable || !comparisonCount) {
+        console.error('Comparison elements not found in DOM');
         return;
-      }
-      
-      comparedItems.push({
-        id: serviceId,
-        type: serviceType,
-        title: card.querySelector('h3')?.textContent || 'Untitled',
-        price: card.querySelector('.price')?.textContent || 'N/A',
-        rating: card.querySelector('.rating')?.textContent || 'N/A',
-        location: card.querySelector('.location')?.textContent || 'N/A'
-      });
-    } else {
-      comparedItems = comparedItems.filter(item => item.id !== serviceId);
     }
-    
-    updateComparisonUI();
-  }
+
+    let comparedItems = [];
+
+    // Toggle item comparison with event delegation
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('compare-check')) {
+            const card = e.target.closest('.service-card, .result-item');
+            if (!card) return;
+
+            const serviceId = card.querySelector('.book-btn')?.dataset?.id || 
+                            card.dataset?.id;
+            const serviceType = card.querySelector('.book-btn')?.dataset?.type || 
+                            card.dataset?.type;
+            
+            if (e.target.checked) {
+                if (comparedItems.length >= 4) {
+                    e.target.checked = false;
+                    showErrorToUser('You can compare up to 4 items at once');
+                    return;
+                }
+                
+                comparedItems.push({
+                    id: serviceId,
+                    type: serviceType,
+                    title: card.querySelector('h3')?.textContent || 'Untitled',
+                    price: card.querySelector('.price')?.textContent || 'N/A',
+                    rating: card.querySelector('.rating')?.textContent || 'N/A',
+                    location: card.querySelector('.location')?.textContent || 'N/A'
+                });
+            } else {
+                comparedItems = comparedItems.filter(item => item.id !== serviceId);
+            }
+            
+            updateComparisonUI();
+        }
+    });
+
+    function updateComparisonUI() {
+        if (!comparisonCount || !comparisonBar) return;
+        
+        comparisonCount.textContent = `${comparedItems.length} item${comparedItems.length !== 1 ? 's' : ''} selected`;
+        
+        comparisonBar.style.display = comparedItems.length > 0 ? 'flex' : 'none';
+        
+        if (viewComparisonBtn) {
+            viewComparisonBtn.disabled = comparedItems.length < 2;
+        }
+    }
+
+    // Add event listeners with null checks
+    if (viewComparisonBtn) {
+        viewComparisonBtn.addEventListener('click', function() {
+            if (comparedItems.length < 2) {
+                showErrorToUser('Please select at least 2 items to compare');
+                return;
+            }
+            
+            buildComparisonTable();
+        });
+    }
+
+    if (clearComparisonBtn) {
+        clearComparisonBtn.addEventListener('click', function() {
+            comparedItems = [];
+            document.querySelectorAll('.compare-check').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateComparisonUI();
+        });
+    }
+
+    if (closeComparisonBtn) {
+        closeComparisonBtn.addEventListener('click', function() {
+            comparisonView.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+    }
+
+    function buildComparisonTable() {
+        if (!comparisonTable || !comparisonView) return;
+        
+        let tableHTML = `
+            <table class="comparison-table">
+                <tr>
+                    <th>Feature</th>
+                    ${comparedItems.map(item => `<th>${item.title}</th>`).join('')}
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    ${comparedItems.map(item => `<td>${item.price}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td>Rating</td>
+                    ${comparedItems.map(item => `<td>${item.rating}</td>`).join('')}
+                </tr>
+                <tr>
+                    <td>Location</td>
+                    ${comparedItems.map(item => `<td>${item.location}</td>`).join('')}
+                </tr>
+            </table>
+        `;
+        
+        comparisonTable.innerHTML = tableHTML;
+        comparisonView.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
 });
-
-// Update comparison UI
-function updateComparisonUI() {
-  comparisonCount.textContent = `${comparedItems.length} item${comparedItems.length !== 1 ? 's' : ''} selected`;
-  
-  if (comparedItems.length > 0) {
-    comparisonBar.style.display = 'flex';
-  } else {
-    comparisonBar.style.display = 'none';
-  }
-}
-
-// View comparison
-viewComparisonBtn.addEventListener('click', function() {
-  if (comparedItems.length < 2) {
-    showErrorToUser('Please select at least 2 items to compare');
-    return;
-  }
-  
-  // Build comparison table
-  let tableHTML = `
-    <table class="comparison-table">
-      <tr>
-        <th>Feature</th>
-        ${comparedItems.map(item => `<th>${item.title}</th>`).join('')}
-      </tr>
-      <tr>
-        <td>Price</td>
-        ${comparedItems.map(item => `<td>${item.price}</td>`).join('')}
-      </tr>
-      <tr>
-        <td>Rating</td>
-        ${comparedItems.map(item => `<td>${item.rating}</td>`).join('')}
-      </tr>
-      <tr>
-        <td>Location</td>
-        ${comparedItems.map(item => `<td>${item.location}</td>`).join('')}
-      </tr>
-    </table>
-  `;
-  
-  comparisonTable.innerHTML = tableHTML;
-  comparisonView.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-});
-
-// Clear comparison
-clearComparisonBtn.addEventListener('click', function() {
-  comparedItems = [];
-  document.querySelectorAll('.compare-check').forEach(checkbox => {
-    checkbox.checked = false;
-  });
-  updateComparisonUI();
-});
-
-// Close comparison view
-closeComparisonBtn.addEventListener('click', function() {
-  comparisonView.style.display = 'none';
-  document.body.style.overflow = 'auto';
 });
 </script>
       <!-- Comparison Bar (appears when items are selected) -->
