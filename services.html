@@ -2240,7 +2240,38 @@
 <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+function showErrorToUser(message, duration = 5000) {
+  // Create or reuse error element
+  let errorEl = document.getElementById('error-toast');
+  if (!errorEl) {
+    errorEl = document.createElement('div');
+    errorEl.id = 'error-toast';
+    errorEl.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff4444;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    `;
+    document.body.appendChild(errorEl);
+  }
 
+  errorEl.textContent = message;
+  errorEl.style.opacity = '1';
+
+  // Auto-hide after duration
+  setTimeout(() => {
+    errorEl.style.opacity = '0';
+  }, duration);
+}
+    
   function setupSorting() {
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
@@ -2701,17 +2732,32 @@
   // Handle reservations
 async function handleReservation(serviceId, serviceType) {
   try {
-    // Get dates from form inputs
-    const startDate = document.getElementById('check-in')?.value || new Date().toISOString();
-    const endDate = document.getElementById('check-out')?.value || 
-                   new Date(Date.now() + 86400000).toISOString(); // Default: +1 day
-
+    // Get required fields from the DOM
     const token = localStorage.getItem('token');
     if (!token) {
       showLoginMessage('make a reservation');
       return false;
     }
 
+    // Get dates based on service type
+    let startDate, endDate;
+    if (serviceType === 'hotel') {
+      startDate = document.getElementById('check-in')?.value;
+      endDate = document.getElementById('check-out')?.value;
+    } else if (serviceType === 'car') {
+      startDate = document.getElementById('car-pickup-date')?.value;
+      endDate = document.getElementById('car-dropoff-date')?.value;
+    } else {
+      startDate = document.querySelector(`#${serviceType}-date`)?.value || new Date().toISOString();
+      endDate = new Date(new Date(startDate).getTime() + 86400000).toISOString(); // +1 day
+    }
+
+    // Validate required fields
+    if (!serviceId || !startDate || !endDate) {
+      throw new Error('Please complete all required fields');
+    }
+
+    // Make the API request
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
       headers: {
@@ -2731,10 +2777,12 @@ async function handleReservation(serviceId, serviceType) {
       throw new Error(errorData.error || 'Booking failed');
     }
 
+    const data = await response.json();
     showBookingSuccess();
     return true;
+    
   } catch (error) {
-    logError("handleReservation", error, { serviceId, serviceType });
+    console.error('Reservation error:', error);
     showErrorToUser(error.message);
     return false;
   }
