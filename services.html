@@ -661,6 +661,61 @@
         color: white;
         font-size: 1.2rem;
       }
+        /* Comparison controls */
+.compare-checkbox {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.compare-checkbox input[type="checkbox"] {
+  width: auto;
+}
+
+.comparison-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--dark-gray);
+  padding: 1rem;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  z-index: 999;
+}
+
+.comparison-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+  display: none;
+}
+
+.comparison-table {
+  width: 100%;
+  background: var(--dark-gray);
+  border-collapse: collapse;
+}
+
+.comparison-table th, .comparison-table td {
+  padding: 1rem;
+  border: 1px solid var(--border-gray);
+  text-align: left;
+}
+
+.comparison-table th {
+  background: var(--secondary-dark);
+  color: white;
+}
 
       .location, .price, .rating {
         margin: 8px 0;
@@ -2743,6 +2798,12 @@ function showErrorToUser(message, duration = 5000) {
             <p class="price">${price}</p>
             <p class="rating">${rating}</p>
             ${amenitiesHTML}
+
+            <div class="compare-checkbox">
+    <input type="checkbox" id="compare-${service._id || service.id}" 
+           class="compare-check" data-id="${service._id || service.id}">
+    <label for="compare-${service._id || service.id}">Compare</label>
+  </div>
             <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">
               Book Now
             </button>
@@ -3569,6 +3630,122 @@ function showBookingSuccess(pointsEarned = 0) {
       logError("DOMContentLoaded", error);
     }
   });
+
+    // Comparison functionality
+const comparisonBar = document.getElementById('comparisonBar');
+const comparisonView = document.getElementById('comparisonView');
+const comparisonTable = document.getElementById('comparisonTable');
+const comparisonCount = document.getElementById('comparisonCount');
+const viewComparisonBtn = document.getElementById('viewComparison');
+const clearComparisonBtn = document.getElementById('clearComparison');
+const closeComparisonBtn = document.querySelector('.close-comparison');
+
+let comparedItems = [];
+
+// Toggle item comparison
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('compare-check')) {
+    const card = e.target.closest('.service-card, .result-item');
+    const serviceId = card.querySelector('.book-btn')?.dataset.id || 
+                     card.dataset.id;
+    const serviceType = card.querySelector('.book-btn')?.dataset.type || 
+                       card.dataset.type;
+    
+    if (e.target.checked) {
+      if (comparedItems.length >= 4) {
+        e.target.checked = false;
+        showErrorToUser('You can compare up to 4 items at once');
+        return;
+      }
+      
+      comparedItems.push({
+        id: serviceId,
+        type: serviceType,
+        title: card.querySelector('h3')?.textContent || 'Untitled',
+        price: card.querySelector('.price')?.textContent || 'N/A',
+        rating: card.querySelector('.rating')?.textContent || 'N/A',
+        location: card.querySelector('.location')?.textContent || 'N/A'
+      });
+    } else {
+      comparedItems = comparedItems.filter(item => item.id !== serviceId);
+    }
+    
+    updateComparisonUI();
+  }
+});
+
+// Update comparison UI
+function updateComparisonUI() {
+  comparisonCount.textContent = `${comparedItems.length} item${comparedItems.length !== 1 ? 's' : ''} selected`;
+  
+  if (comparedItems.length > 0) {
+    comparisonBar.style.display = 'flex';
+  } else {
+    comparisonBar.style.display = 'none';
+  }
+}
+
+// View comparison
+viewComparisonBtn.addEventListener('click', function() {
+  if (comparedItems.length < 2) {
+    showErrorToUser('Please select at least 2 items to compare');
+    return;
+  }
+  
+  // Build comparison table
+  let tableHTML = `
+    <table class="comparison-table">
+      <tr>
+        <th>Feature</th>
+        ${comparedItems.map(item => `<th>${item.title}</th>`).join('')}
+      </tr>
+      <tr>
+        <td>Price</td>
+        ${comparedItems.map(item => `<td>${item.price}</td>`).join('')}
+      </tr>
+      <tr>
+        <td>Rating</td>
+        ${comparedItems.map(item => `<td>${item.rating}</td>`).join('')}
+      </tr>
+      <tr>
+        <td>Location</td>
+        ${comparedItems.map(item => `<td>${item.location}</td>`).join('')}
+      </tr>
+    </table>
+  `;
+  
+  comparisonTable.innerHTML = tableHTML;
+  comparisonView.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+});
+
+// Clear comparison
+clearComparisonBtn.addEventListener('click', function() {
+  comparedItems = [];
+  document.querySelectorAll('.compare-check').forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  updateComparisonUI();
+});
+
+// Close comparison view
+closeComparisonBtn.addEventListener('click', function() {
+  comparisonView.style.display = 'none';
+  document.body.style.overflow = 'auto';
+});
 </script>
+      <!-- Comparison Bar (appears when items are selected) -->
+<div class="comparison-bar" id="comparisonBar">
+  <span id="comparisonCount">0 items selected</span>
+  <button id="viewComparison">View Comparison</button>
+  <button id="clearComparison">Clear All</button>
+</div>
+
+<!-- Comparison Modal -->
+<div class="comparison-view" id="comparisonView">
+  <button class="close-comparison">&times; Close</button>
+  <h2>Compare Services</h2>
+  <div class="comparison-table-container" id="comparisonTable"></div>
+</div>
   </body>
 </html>
