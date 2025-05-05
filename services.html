@@ -3151,15 +3151,19 @@ function formatDate(dateString) {
 // Enhanced cancelReservation function
 async function cancelReservation(reservationId) {
   try {
+    if (!confirm('Are you sure you want to cancel this reservation?')) return;
+
     const token = localStorage.getItem('token');
     if (!token) {
-      showLoginMessage('cancel reservations');
+      showLoginMessage('manage reservations');
       return;
     }
 
     const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     if (!response.ok) {
@@ -3174,33 +3178,6 @@ async function cancelReservation(reservationId) {
     showErrorToUser(error.message || 'Failed to cancel reservation');
   }
 }
-
-  async function cancelReservation(reservationId) {
-    try {
-      if (!confirm('Are you sure you want to cancel this reservation?')) return;
-
-      const token = localStorage.getItem('token');
-      if (!token) {
-        showLoginMessage('manage reservations');
-        return;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to cancel reservation');
-
-      showErrorToUser('Reservation cancelled successfully', 3000);
-      displayUserReservations();
-    } catch (error) {
-      console.error('Error cancelling reservation:', error);
-      showErrorToUser(error.message || 'Failed to cancel reservation');
-    }
-  }
 
   function showLoginMessage(action) {
     const loginMessage = document.createElement("div");
