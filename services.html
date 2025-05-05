@@ -2567,143 +2567,65 @@
   }
 
   // Handle search form submission
-  async function handleSearchFormSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
-    const serviceType = typeMap[activeTab];
-    
-    try {
-      // Show loading state
-      const searchResults = document.getElementById('search-results');
-      const resultsContainer = document.getElementById('results-container');
-      
-      if (searchResults) {
-        searchResults.innerHTML = `
-          <div class="loading-state">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Searching for ${activeTab}...</p>
-          </div>
-        `;
-        searchResults.classList.add('active');
-      }
+async function handleReservation(serviceId, serviceType) {
+  try {
+    console.log('[DEBUG] Starting reservation process...');
+    console.log(`[DEBUG] Service ID: ${serviceId}, Type: ${serviceType}`);
 
-      if (resultsContainer) resultsContainer.innerHTML = '';
-
-      // Build query params
-      const params = new URLSearchParams();
-      params.append('type', serviceType);
-
-      // Location
-      const location = form.querySelector('[id*="destination"]')?.value?.trim();
-      if (location) params.append('location', location);
-
-      // Dates
-      if (serviceType === 'hotel') {
-        const checkIn = form.querySelector('#check-in')?.value;
-        const checkOut = form.querySelector('#check-out')?.value;
-        if (checkIn) params.append('startDate', checkIn);
-        if (checkOut) params.append('endDate', checkOut);
-      } else if (serviceType === 'car') {
-        const pickupDate = form.querySelector('#car-pickup-date')?.value;
-        const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
-        if (pickupDate) params.append('startDate', pickupDate);
-        if (dropoffDate) params.append('endDate', dropoffDate);
-      } else {
-        const date = form.querySelector('[id*="date"]')?.value;
-        if (date) params.append('startDate', date);
-      }
-
-      // Capacity/Guests
-      const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
-      if (capacityInput?.value) params.append('capacity', capacityInput.value);
-
-      // Price Range
-      const priceRange = form.querySelector('[id*="price-range"]')?.value;
-      if (priceRange && priceRange !== 'all') {
-        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
-        if (!isNaN(minPrice)) params.append('minPrice', minPrice);
-        if (!isNaN(maxPrice)) params.append('maxPrice', maxPrice);
-      }
-
-      // Rating
-      const minRating = form.querySelector('[id*="min-rating"]')?.value;
-      if (minRating && minRating !== '0') params.append('rating', minRating);
-
-      // Amenities/Categories
-      const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
-      if (amenitiesSelect) {
-        const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
-          .map(option => option.value)
-          .filter(val => val);
-        if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
-      }
-      
-      // Get current sort value
-      const sortSelect = document.getElementById('sort-by');
-      const sortBy = sortSelect ? sortSelect.value : 'recommended';
-      params.append('sort', sortBy);
-      
-      // Make API request
-      const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
-      console.log('API Request:', apiUrl);
-      
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
-      
-      const data = await response.json();
-      if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
-
-      // Display results
-      if (data.data?.length > 0) {
-        if (searchResults) {
-          searchResults.innerHTML = `
-            <div class="sort-controls">
-              <div class="sort-options">
-                <label for="sort-by">Sort by:</label>
-                <select id="sort-by">
-                  <option value="recommended">Recommended</option>
-                  <option value="price-low">Price (Low to High)</option>
-                  <option value="price-high">Price (High to Low)</option>
-                  <option value="rating">Rating</option>
-                  <option value="name-asc">Name (A-Z)</option>
-                </select>
-              </div>
-              <div class="results-count">${data.data.length} results found</div>
-            </div>
-            <div id="results-container" class="results-grid"></div>
-          `;
-          
-          // Set the sort select to current value
-          if (sortSelect) {
-            document.getElementById('sort-by').value = sortBy;
-          }
-        }
-        displaySearchResults(data, serviceType);
-      } else {
-        searchResults.innerHTML = `
-          <div class="no-results">
-            <i class="fas fa-search"></i>
-            <h4>No ${activeTab} found</h4>
-            <p>Try adjusting your search criteria</p>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      const searchResults = document.getElementById('search-results');
-      if (searchResults) {
-        searchResults.innerHTML = `
-          <div class="error-state">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h4>Search Failed</h4>
-            <p>${error.message || 'Please try again later'}</p>
-            <button onclick="retrySearch()" class="retry-btn">Try Again</button>
-          </div>
-        `;
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('[AUTH ERROR] No token found in localStorage');
+      showLoginMessage('make a reservation');
+      return false;
     }
+
+    console.log('[DEBUG] User token found, preparing request...');
+
+    const reservationData = {
+      serviceId,
+      serviceType,
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 86400000).toISOString(),
+      guests: 1
+    };
+
+    console.log('[DEBUG] Reservation data:', JSON.stringify(reservationData, null, 2));
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(reservationData)
+    });
+
+    console.log(`[DEBUG] Response status: ${response.status}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[API ERROR] Failed reservation:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData
+      });
+      throw new Error(errorData.message || `Server responded with ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[DEBUG] Reservation successful:', data);
+    showReservationModal(true, 'Reservation confirmed!');
+    return true;
+  } catch (error) {
+    console.error('[ERROR] Reservation failed:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    showReservationModal(false, error.message || 'Reservation failed');
+    return false;
   }
+}
 
   // Global retry function
   window.retrySearch = function() {
