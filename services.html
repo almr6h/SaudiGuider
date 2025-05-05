@@ -2739,26 +2739,26 @@ async function handleReservation(serviceId, serviceType) {
     }
 
     // Validate dates
-    function isValidDate(dateString) {
-      return !isNaN(Date.parse(dateString));
-    }
+   // In your handleReservation function, modify the date handling:
+function formatDateForAPI(dateString) {
+  if (!dateString) return new Date().toISOString();
+  
+  // Convert from YYYY-MM-DD (HTML date input) to ISO format
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    throw new Error('Invalid date format');
+  }
+  return date.toISOString();
+}
 
-    if (startDate && !isValidDate(startDate)) {
-      throw new Error('Invalid start date format');
-    }
-
-    if (endDate && !isValidDate(endDate)) {
-      throw new Error('Invalid end date format');
-    }
-
-    // Create request body
-    const requestBody = {
-      serviceId,
-      serviceType,
-      startDate: startDate || new Date().toISOString(),
-      endDate: endDate || new Date(Date.now() + 86400000).toISOString(),
-      guests: parseInt(guests) || 1
-    };
+// Then use it when building your request:
+const requestBody = {
+  serviceId,
+  serviceType,
+  startDate: formatDateForAPI(startDate),
+  endDate: formatDateForAPI(endDate),
+  guests: parseInt(guests) || 1
+};
 
     console.log('Submitting reservation:', JSON.stringify(requestBody, null, 2));
 
