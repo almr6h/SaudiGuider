@@ -1,632 +1,1078 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="View and manage your reservations with Saudi Guider."
+    />
     <title>My Reservations | Saudi Guider</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <style>
-        /* Reservation Page Styles */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+        
+      /* CSS Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Base Styles */
+      body {
+        font-family: var(--font-main);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--light);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+        padding-top: 6rem;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: var(--light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: var(--box-shadow);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 10px;
+      }
+
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: var(--light);
+      }
+
+      /* Navigation */
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--light);
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color var(--transition-speed) ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      /* Auth Buttons */
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+      .user-dropdown {
+        position: relative;
+        display: none;
+      }
+
+      .user-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--dark-gray);
+        min-width: 200px;
+        box-shadow: var(--box-shadow);
+        border-radius: 6px;
+        z-index: 1001;
+        padding: 0.5rem 0;
+      }
+
+      .dropdown-menu a {
+        color: var(--light);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: var(--medium-gray);
+      }
+
+      .user-dropdown:hover .dropdown-menu {
+        display: block;
+      }
+
+      .auth-buttons button {
+        background-color: #69a7c8;
+        border: none;
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color var(--transition-speed) ease;
+      }
+
+      .auth-buttons button:hover,
+      .auth-buttons button:focus {
+        background-color: #4c8ba9;
+      }
+
+      /* Mobile Nav Toggle */
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      /* Main Content */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      /* Reservation Page Styles */
+      .reservations-title {
+        text-align: center;
+        margin: 2rem 0;
+        color: var(--light);
+      }
+
+      .reservations-container {
+        background-color: var(--dark-gray);
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .loading-state, .no-results, .error-state {
+        text-align: center;
+        padding: 2rem;
+        background: var(--medium-gray);
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .loading-state i {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+        animation: spin 1s linear infinite;
+      }
+
+      .error-state i, .no-results i {
+        font-size: 3rem;
+        color: #ff5252;
+        margin-bottom: 1rem;
+      }
+
+      .no-results i {
+        color: var(--secondary);
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .reservations-list {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .reservation-card {
+        background-color: var(--medium-gray);
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      }
+
+      .reservation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--feature-shadow);
+      }
+
+      .reservation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-gray);
+      }
+
+      .reservation-header h3 {
+        margin: 0;
+        color: var(--secondary);
+      }
+
+      .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      .status-badge.confirmed {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+      }
+
+      .status-badge.cancelled {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+      }
+
+      .status-badge.completed {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+      }
+
+      .reservation-details {
+        margin-bottom: 1.5rem;
+      }
+
+      .reservation-details p {
+        margin: 0.75rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .reservation-details i {
+        width: 20px;
+        text-align: center;
+        color: var(--secondary);
+      }
+
+      .reservation-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .reservation-actions button {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        transition: all var(--transition-speed);
+      }
+
+      .cancel-btn {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+      }
+
+      .cancel-btn:hover {
+        background-color: rgba(239, 68, 68, 0.3);
+      }
+
+      .details-btn {
+        background-color: var(--secondary-dark);
+        color: white;
+      }
+
+      .details-btn:hover {
+        background-color: var(--secondary);
+      }
+
+      /* Booking Message Styles */
+      .booking-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        background: var(--dark-gray);
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+        transition: opacity 0.3s;
+        border-top: 4px solid #4CAF50;
+      }
+
+      .message-content {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .message-content i {
+        font-size: 1.5rem;
+        color: #4CAF50;
+      }
+
+      .message-content h4 {
+        margin: 0 0 0.25rem 0;
+        color: var(--light);
+      }
+
+      .message-content p {
+        margin: 0;
+        color: var(--light);
+        opacity: 0.8;
+        font-size: 0.9rem;
+      }
+
+      .close-message {
+        margin-left: auto;
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        cursor: pointer;
+        color: var(--light);
+        opacity: 0.7;
+      }
+
+      .message-actions {
+        display: flex;
+        border-top: 1px solid var(--border-gray);
+        padding: 0.75rem;
+      }
+
+      .message-actions button {
+        flex: 1;
+        padding: 0.5rem;
+        background: var(--medium-gray);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: var(--light);
+        transition: background-color var(--transition-speed);
+      }
+
+      .message-actions button:hover {
+        background: var(--border-gray);
+      }
+
+      @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          background-color: var(--dark);
+          height: calc(100vh - 80px);
+          transition: left var(--transition-speed) ease;
+          z-index: 999;
+          padding: 2rem;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-buttons {
+          margin-right: 1rem;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background-color: #1e3a8a;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .user-nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .reservations-title {
-            text-align: center;
-            margin: 30px 0;
-            color: #1e3a8a;
-        }
-
-        .reservations-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .loading-state i {
-            font-size: 30px;
-            color: #1e3a8a;
-            margin-bottom: 15px;
-        }
-
-        .no-reservations {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .no-reservations i {
-            font-size: 50px;
-            color: #9ca3af;
-            margin-bottom: 20px;
-        }
-
-        .no-reservations button {
-            background-color: #1e3a8a;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .error-state {
-            text-align: center;
-            padding: 40px 0;
-            color: #dc2626;
-        }
-
-        .error-state i {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-
-        .error-state button {
-            background-color: #dc2626;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .reservations-list {
-            display: grid;
-            gap: 20px;
-        }
-
-        .reservation-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .reservation-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .reservation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 10px;
-        }
-
-        .reservation-header h3 {
-            margin: 0;
-            color: #1e3a8a;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-badge.confirmed {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.cancelled {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-badge.completed {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .reservation-details {
-            margin-bottom: 15px;
-        }
-
-        .reservation-details p {
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .reservation-details i {
-            width: 20px;
-            text-align: center;
-            color: #6b7280;
+          padding: 1rem;
         }
 
         .reservation-actions {
-            display: flex;
-            gap: 10px;
+          flex-direction: column;
         }
 
-        .reservation-actions button {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            font-weight: 500;
-        }
-
-        .cancel-btn {
-            background-color: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .cancel-btn:hover {
-            background-color: #fecaca;
-        }
-
-        .details-btn {
-            background-color: #e0e7ff;
-            color: #4338ca;
-        }
-
-        .details-btn:hover {
-            background-color: #c7d2fe;
-        }
-
-        /* Booking Message Styles */
         .booking-message {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            transition: opacity 0.3s;
+          width: calc(100% - 2rem);
+          left: 1rem;
+          right: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo a {
+          font-size: 1.5rem;
         }
 
-        .booking-message.success {
-            border-top: 4px solid #4CAF50;
+        .logo img {
+          width: 40px;
         }
 
-        .message-content {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            gap: 12px;
+        .auth-button {
+          padding: 0.4rem 0.8rem;
+          font-size: 0.9rem;
         }
-
-        .message-content i {
-            font-size: 24px;
-            color: #4CAF50;
-        }
-
-        .message-content h4 {
-            margin: 0 0 4px 0;
-            color: #333;
-        }
-
-        .message-content p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .close-message {
-            margin-left: auto;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .message-actions {
-            display: flex;
-            border-top: 1px solid #eee;
-            padding: 12px;
-        }
-
-        .message-actions button {
-            flex: 1;
-            padding: 8px;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        @media (max-width: 768px) {
-            .reservation-actions {
-                flex-direction: column;
-            }
-            
-            .booking-message {
-                width: 90%;
-                left: 5%;
-                right: 5%;
-            }
-        }
+      }
     </style>
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <div class="logo">Saudi Guider</div>
-            <nav class="user-nav">
-                <a href="services.html">Services</a>
-                <a href="reservations.html">My Reservations</a>
-                <span id="usernameDisplay">User</span>
-                <button id="logoutBtn">Logout</button>
-            </nav>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="reservations.html" class="active" aria-current="page">My Reservations</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button onclick="window.location.href='signup.html'" aria-label="Sign up">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+
+      <div class="user-dropdown" id="userDropdown" style="display: none;">
+        <button class="user-toggle">
+          <span id="usernameDisplay"></span>
+          <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </div>
+      </div>
     </header>
 
-    <div class="container">
+    <main id="main-content">
+      <div class="container">
         <h1 class="reservations-title">My Reservations</h1>
         <div class="reservations-container">
-            <div id="reservations-container">
-                <!-- Reservations will be loaded here -->
-            </div>
+          <div id="reservations-container">
+            <!-- Reservations will be loaded here -->
+          </div>
         </div>
-    </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            recommendations.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter" aria-hidden="true"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram" aria-hidden="true"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#popular-destinations">Popular Destinations</a></li>
+            <li><a href="#travel-guides">Travel Guides</a></li>
+            <li><a href="#cultural-experiences">Cultural Experiences</a></li>
+            <li><a href="#travel-tips">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
+              Saudi Arabia
+            </p>
+            <p>
+              <i class="fas fa-phone" aria-hidden="true"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
 
     <script>
-        // API Configuration
-        const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+      // API Configuration
+      const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
 
-        // Enhanced error display
-        function showErrorToUser(message, duration = 5000) {
-            const existing = document.getElementById('booking-error');
-            if (existing) existing.remove();
+      // Enhanced error display
+      function showErrorToUser(message, duration = 5000) {
+        const existing = document.getElementById('booking-error');
+        if (existing) existing.remove();
 
-            const errorEl = document.createElement('div');
-            errorEl.id = 'booking-error';
-            errorEl.innerHTML = `
-                <div class="error-content">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4>Booking Error</h4>
-                    <p>${message}</p>
-                    ${message.includes('already have a reservation') ? 
-                        '<a href="reservations.html">View Existing Reservations</a>' : ''}
-                </div>
-            `;
-            document.body.appendChild(errorEl);
+        const errorEl = document.createElement('div');
+        errorEl.className = 'error-state';
+        errorEl.innerHTML = `
+          <i class="fas fa-exclamation-triangle"></i>
+          <h4>Booking Error</h4>
+          <p>${message}</p>
+          ${message.includes('already have a reservation') ? 
+            '<a href="reservations.html" style="color: var(--secondary);">View Existing Reservations</a>' : ''}
+          <button onclick="this.closest('.error-state').remove()" class="retry-btn" style="margin-top: 1rem;">
+            OK
+          </button>
+        `;
+        document.body.appendChild(errorEl);
 
-            setTimeout(() => {
-                errorEl.style.opacity = '0';
-                setTimeout(() => errorEl.remove(), 300);
-            }, duration);
+        setTimeout(() => {
+          errorEl.style.opacity = '0';
+          setTimeout(() => errorEl.remove(), 300);
+        }, duration);
+      }
+
+      // Show booking success message
+      function showBookingSuccess() {
+        const existingMsg = document.querySelector('.booking-message');
+        if (existingMsg) existingMsg.remove();
+
+        const successMsg = document.createElement('div');
+        successMsg.className = 'booking-message';
+        successMsg.innerHTML = `
+          <div class="message-content">
+            <i class="fas fa-check-circle"></i>
+            <div>
+              <h4>Reservation Confirmed!</h4>
+              <p>Your booking was successful.</p>
+            </div>
+            <button class="close-message">&times;</button>
+          </div>
+          <div class="message-actions">
+            <button onclick="window.location.href='reservations.html'">
+              View My Reservations
+            </button>
+          </div>
+        `;
+
+        document.body.appendChild(successMsg);
+
+        successMsg.querySelector('.close-message').addEventListener('click', () => {
+          successMsg.remove();
+        });
+
+        setTimeout(() => {
+          successMsg.style.opacity = '0';
+          setTimeout(() => successMsg.remove(), 300);
+        }, 5000);
+      }
+
+      // Format date for display
+      function formatDate(dateString) {
+        if (!dateString) return 'Not specified';
+        try {
+          const date = new Date(dateString);
+          if (isNaN(date.getTime())) return 'Invalid date';
+          
+          const options = { year: 'numeric', month: 'short', day: 'numeric' };
+          return date.toLocaleDateString('en-US', options);
+        } catch (e) {
+          console.error('Error formatting date:', e);
+          return 'Invalid date';
         }
+      }
 
-        // Show booking success message
-        function showBookingSuccess() {
-            const existingMsg = document.querySelector('.booking-message');
-            if (existingMsg) existingMsg.remove();
+      // Display user reservations
+      async function displayUserReservations() {
+        const container = document.getElementById('reservations-container');
+        if (!container) return;
 
-            const successMsg = document.createElement('div');
-            successMsg.className = 'booking-message success';
-            successMsg.innerHTML = `
-                <div class="message-content">
-                    <i class="fas fa-check-circle"></i>
-                    <div>
-                        <h4>Reservation Confirmed!</h4>
-                        <p>Your booking was successful.</p>
-                    </div>
-                    <button class="close-message">&times;</button>
-                </div>
-                <div class="message-actions">
-                    <button onclick="window.location.href='reservations.html'">
-                        View My Reservations
-                    </button>
-                </div>
+        try {
+          // Show loading state
+          container.innerHTML = `
+            <div class="loading-state">
+              <i class="fas fa-spinner fa-spin"></i>
+              <p>Loading your reservations...</p>
+            </div>
+          `;
+
+          const token = localStorage.getItem('token');
+          if (!token) {
+            window.location.href = 'login.html';
+            return;
+          }
+
+          const response = await fetch(`${API_BASE_URL}/reservations`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!response.ok) throw new Error('Failed to load reservations');
+
+          const result = await response.json();
+          const reservations = result.data || [];
+
+          if (reservations.length === 0) {
+            container.innerHTML = `
+              <div class="no-results">
+                <i class="fas fa-calendar-times"></i>
+                <h4>No Reservations Found</h4>
+                <p>You haven't made any reservations yet.</p>
+                <button onclick="window.location.href='services.html'" class="search-button" style="margin-top: 1rem;">
+                  <i class="fas fa-search"></i> Book Now
+                </button>
+              </div>
             `;
+            return;
+          }
 
-            document.body.appendChild(successMsg);
+          // Build reservations list
+          container.innerHTML = `
+            <div class="reservations-list">
+              ${reservations.map(reservation => {
+                const service = reservation.service || {};
+                const serviceTitle = service.title || 'Unknown Service';
+                const serviceLocation = service.location || 'Location not specified';
+                const servicePrice = service.price ? `${service.price} SAR` : 'Price not available';
+                const startDate = formatDate(reservation.startDate);
+                const endDate = formatDate(reservation.endDate);
+                const status = reservation.status || 'confirmed';
 
-            successMsg.querySelector('.close-message').addEventListener('click', () => {
-                successMsg.remove();
+                return `
+                  <div class="reservation-card" data-id="${reservation._id}">
+                    <div class="reservation-header">
+                      <h3>${serviceTitle}</h3>
+                      <span class="status-badge ${status}">
+                        ${status.charAt(0).toUpperCase() + status.slice(1)}
+                      </span>
+                    </div>
+                    
+                    <div class="reservation-details">
+                      <p><i class="fas fa-calendar-alt"></i> ${startDate} - ${endDate}</p>
+                      <p><i class="fas fa-map-marker-alt"></i> ${serviceLocation}</p>
+                      <p><i class="fas fa-tag"></i> ${servicePrice}</p>
+                    </div>
+                    
+                    <div class="reservation-actions">
+                      <button class="cancel-btn" data-id="${reservation._id}">
+                        <i class="fas fa-times"></i> Cancel
+                      </button>
+                      <button class="details-btn" data-id="${reservation._id}">
+                        <i class="fas fa-info-circle"></i> Details
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+
+          // Add cancel handlers
+          document.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const reservationId = btn.getAttribute('data-id');
+              if (confirm('Are you sure you want to cancel this reservation?')) {
+                await cancelReservation(reservationId);
+              }
+            });
+          });
+
+          // Add details handlers
+          document.querySelectorAll('.details-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const reservationId = btn.getAttribute('data-id');
+              viewReservationDetails(reservationId);
+            });
+          });
+
+          // Add click handler for entire card
+          document.querySelectorAll('.reservation-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const reservationId = card.getAttribute('data-id');
+              viewReservationDetails(reservationId);
+            });
+          });
+
+        } catch (error) {
+          console.error('Failed to load reservations:', error);
+          container.innerHTML = `
+            <div class="error-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <h4>Error Loading Reservations</h4>
+              <p>${error.message || 'Please try again later'}</p>
+              <button onclick="displayUserReservations()" class="retry-btn" style="margin-top: 1rem;">
+                <i class="fas fa-sync-alt"></i> Retry
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      // Cancel reservation
+      async function cancelReservation(reservationId) {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            showLoginMessage('manage reservations');
+            return;
+          }
+
+          const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to cancel reservation');
+          }
+
+          showErrorToUser('Reservation cancelled successfully', 3000);
+          displayUserReservations(); // Refresh the list
+        } catch (error) {
+          console.error('Error cancelling reservation:', error);
+          showErrorToUser(error.message || 'Failed to cancel reservation');
+        }
+      }
+
+      // View reservation details
+      function viewReservationDetails(reservationId) {
+        alert(`Viewing details for reservation ${reservationId}\n\nThis would show more detailed information in a modal or separate page.`);
+        // In a real implementation, you would:
+        // 1. Fetch detailed reservation data
+        // 2. Show a modal with the details
+        // 3. Include options to modify the reservation
+      }
+
+      // Show login message
+      function showLoginMessage(action) {
+        const loginMessage = document.createElement("div");
+        loginMessage.className = "login-message";
+        loginMessage.innerHTML = `
+          <div class="login-message-content">
+            <p>Please login to ${action}.</p>
+            <div class="login-actions">
+              <button onclick="window.location.href='login.html'" class="login-redirect-btn">
+                Go to Login Page
+              </button>
+              <button onclick="this.closest('.login-message').remove()" class="login-cancel-btn">
+                Cancel
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(loginMessage);
+      }
+
+      // Check authentication state
+      function checkAuthState() {
+        try {
+          const token = localStorage.getItem('token');
+          const authButtons = document.querySelector('.auth-buttons');
+          const userDropdown = document.getElementById('userDropdown');
+          const usernameDisplay = document.getElementById('usernameDisplay');
+
+          if (token) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userDropdown) userDropdown.style.display = 'block';
+            if (usernameDisplay) {
+              try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                usernameDisplay.textContent = payload.name || 'User';
+              } catch (e) {
+                usernameDisplay.textContent = 'User';
+              }
+            }
+          } else {
+            // Not logged in
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userDropdown) userDropdown.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error checking auth state:', error);
+        }
+      }
+
+      // Setup mobile navigation
+      function setupMobileNav() {
+        try {
+          const mobileToggle = document.querySelector(".mobile-nav-toggle");
+          const nav = document.getElementById("main-nav");
+
+          if (mobileToggle && nav) {
+            mobileToggle.addEventListener("click", function() {
+              try {
+                const isExpanded = nav.classList.toggle("active");
+                mobileToggle.setAttribute("aria-expanded", isExpanded);
+              } catch (error) {
+                console.error("mobileToggle click handler", error);
+              }
             });
 
-            setTimeout(() => {
-                successMsg.style.opacity = '0';
-                setTimeout(() => successMsg.remove(), 300);
-            }, 5000);
+            document.querySelectorAll("nav a").forEach((link) => {
+              link.addEventListener("click", () => {
+                nav.classList.remove("active");
+                mobileToggle.setAttribute("aria-expanded", "false");
+              });
+            });
+          }
+        } catch (error) {
+          console.error("setupMobileNav", error);
         }
+      }
 
-        // Format date for display
-        function formatDate(dateString) {
-            if (!dateString) return 'Not specified';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return 'Invalid date';
-                
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return date.toLocaleDateString('en-US', options);
-            } catch (e) {
-                console.error('Error formatting date:', e);
-                return 'Invalid date';
-            }
-        }
-
-        // Display user reservations
-        async function displayUserReservations() {
-            const container = document.getElementById('reservations-container');
-            if (!container) return;
-
-            try {
-                // Show loading state
-                container.innerHTML = `
-                    <div class="loading-state">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Loading your reservations...</p>
-                    </div>
-                `;
-
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE_URL}/reservations`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Failed to load reservations');
-
-                const result = await response.json();
-                const reservations = result.data || [];
-
-                if (reservations.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-reservations">
-                            <i class="fas fa-calendar-times"></i>
-                            <h3>No Reservations Found</h3>
-                            <p>You haven't made any reservations yet.</p>
-                            <button onclick="window.location.href='services.html'">
-                                Book Now
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Build reservations list
-                container.innerHTML = `
-                    <div class="reservations-list">
-                        ${reservations.map(reservation => {
-                            const service = reservation.service || {};
-                            const serviceTitle = service.title || 'Unknown Service';
-                            const serviceLocation = service.location || 'Location not specified';
-                            const servicePrice = service.price ? `${service.price} SAR` : 'Price not available';
-                            const startDate = formatDate(reservation.startDate);
-                            const endDate = formatDate(reservation.endDate);
-                            const status = reservation.status || 'confirmed';
-
-                            return `
-                                <div class="reservation-card" data-id="${reservation._id}">
-                                    <div class="reservation-header">
-                                        <h3>${serviceTitle}</h3>
-                                        <span class="status-badge ${status}">
-                                            ${status}
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="reservation-details">
-                                        <p><i class="fas fa-calendar-alt"></i> ${startDate} - ${endDate}</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> ${serviceLocation}</p>
-                                        <p><i class="fas fa-tag"></i> ${servicePrice}</p>
-                                    </div>
-                                    
-                                    <div class="reservation-actions">
-                                        <button class="cancel-btn" data-id="${reservation._id}">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </button>
-                                        <button class="details-btn" data-id="${reservation._id}">
-                                            <i class="fas fa-info-circle"></i> Details
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-
-                // Add cancel handlers
-                document.querySelectorAll('.cancel-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        e.stopPropagation();
-                        const reservationId = btn.getAttribute('data-id');
-                        if (confirm('Are you sure you want to cancel this reservation?')) {
-                            await cancelReservation(reservationId);
-                        }
-                    });
-                });
-
-                // Add details handlers
-                document.querySelectorAll('.details-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const reservationId = btn.getAttribute('data-id');
-                        viewReservationDetails(reservationId);
-                    });
-                });
-
-                // Add click handler for entire card
-                document.querySelectorAll('.reservation-card').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const reservationId = card.getAttribute('data-id');
-                        viewReservationDetails(reservationId);
-                    });
-                });
-
-            } catch (error) {
-                console.error('Failed to load reservations:', error);
-                container.innerHTML = `
-                    <div class="error-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error Loading Reservations</h3>
-                        <p>${error.message || 'Please try again later'}</p>
-                        <button onclick="displayUserReservations()">
-                            <i class="fas fa-sync-alt"></i> Retry
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // Cancel reservation
-        async function cancelReservation(reservationId) {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    showLoginMessage('manage reservations');
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to cancel reservation');
-                }
-
-                showErrorToUser('Reservation cancelled successfully', 3000);
-                displayUserReservations(); // Refresh the list
-            } catch (error) {
-                console.error('Error cancelling reservation:', error);
-                showErrorToUser(error.message || 'Failed to cancel reservation');
-            }
-        }
-
-        // View reservation details
-        function viewReservationDetails(reservationId) {
-            alert(`Viewing details for reservation ${reservationId}\n\nThis would show more detailed information in a modal or separate page.`);
-            // In a real implementation, you would:
-            // 1. Fetch detailed reservation data
-            // 2. Show a modal with the details
-            // 3. Include options to modify the reservation
-        }
-
-        // Show login message
-        function showLoginMessage(action) {
-            const loginMessage = document.createElement("div");
-            loginMessage.className = "login-message";
-            loginMessage.innerHTML = `
-                <div class="login-message-content">
-                    <p>Please login to ${action}.</p>
-                    <div class="login-actions">
-                        <button onclick="window.location.href='login.html'">
-                            Go to Login Page
-                        </button>
-                        <button onclick="this.closest('.login-message').remove()">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(loginMessage);
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", function() {
+        // Set current year in footer
+        const currentYearEl = document.getElementById("current-year");
+        if (currentYearEl) {
+          currentYearEl.textContent = new Date().getFullYear();
         }
 
         // Check authentication state
-        function checkAuthState() {
-            try {
-                const token = localStorage.getItem('token');
-                const usernameDisplay = document.getElementById('usernameDisplay');
+        checkAuthState();
 
-                if (token && usernameDisplay) {
-                    try {
-                        const payload = JSON.parse(atob(token.split('.')[1]));
-                        usernameDisplay.textContent = payload.name || 'User';
-                    } catch (e) {
-                        usernameDisplay.textContent = 'User';
-                    }
-                } else if (!token) {
-                    window.location.href = 'login.html';
-                }
-            } catch (error) {
-                console.error('Error checking auth state:', error);
-            }
+        // Setup mobile navigation
+        setupMobileNav();
+
+        // Display reservations
+        displayUserReservations();
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+          });
         }
-
-        // Initialize the page
-        document.addEventListener("DOMContentLoaded", function() {
-            checkAuthState();
-            displayUserReservations();
-
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    localStorage.removeItem('token');
-                    window.location.href = 'login.html';
-                });
-            }
-        });
+      });
     </script>
 </body>
 </html>
