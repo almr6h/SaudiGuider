@@ -2237,7 +2237,7 @@
       </div>
     </footer>
 
- <script>
+<script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
 
@@ -2247,11 +2247,19 @@
       sortSelect.addEventListener('change', function() {
         const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
                           document.querySelector('.search-form:not([style*="none"])');
+        
+        // Store the selected sort option
+        const selectedValue = this.value;
+        
         if (activeForm) {
-          activeForm.dispatchEvent(new Event('submit'));
+          // Apply sorting without form submission
+          applySorting(selectedValue);
         } else {
-          applySorting(this.value);
+          applySorting(selectedValue);
         }
+        
+        // Maintain the selected value
+        this.value = selectedValue;
       });
     }
   }
@@ -2515,6 +2523,12 @@
     // Re-insert sorted items
     resultsContainer.innerHTML = '';
     resultItems.forEach(item => resultsContainer.appendChild(item));
+    
+    // Update the sort select to reflect current sort
+    const sortSelect = document.getElementById('sort-by');
+    if (sortSelect) {
+      sortSelect.value = sortOption;
+    }
   }
 
   function parsePrice(priceText) {
@@ -2609,6 +2623,11 @@
         if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
       }
       
+      // Get current sort value
+      const sortSelect = document.getElementById('sort-by');
+      const sortBy = sortSelect ? sortSelect.value : 'recommended';
+      params.append('sort', sortBy);
+      
       // Make API request
       const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
       console.log('API Request:', apiUrl);
@@ -2618,9 +2637,6 @@
       
       const data = await response.json();
       if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
-
-      const sortBy = document.getElementById('sort-by')?.value || 'recommended';
-      params.append('sort', sortBy);
 
       // Display results
       if (data.data?.length > 0) {
@@ -2641,6 +2657,11 @@
             </div>
             <div id="results-container" class="results-grid"></div>
           `;
+          
+          // Set the sort select to current value
+          if (sortSelect) {
+            document.getElementById('sort-by').value = sortBy;
+          }
         }
         displaySearchResults(data, serviceType);
       } else {
