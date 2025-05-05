@@ -2701,24 +2701,25 @@
   // Handle reservations
   async function handleReservation(serviceId, serviceType) {
   try {
+    // 1. Check authentication
     const token = localStorage.getItem('token');
-    
     if (!token) {
       showLoginMessage('make a reservation');
       return false;
     }
 
-    // Verify token is valid
+    // 2. Verify token structure
+    let payload;
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload || !payload.id) {
-        throw new Error('Invalid token');
-      }
+      payload = JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
+      console.error('Invalid token structure');
+      localStorage.removeItem('token');
       showLoginMessage('make a reservation');
       return false;
     }
 
+    // 3. Make the reservation request
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
       headers: {
@@ -2732,22 +2733,25 @@
       })
     });
 
+    // 4. Handle response
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Booking failed');
+      if (response.status === 401) {
+        // Token is invalid - force logout
+        localStorage.removeItem('token');
+        showLoginMessage('make a reservation');
+      }
+      throw new Error(errorData.message || 'Booking failed');
     }
 
+    // 5. Show success
     const data = await response.json();
     showBookingSuccess();
-    
-    if (window.location.pathname.includes('reservations.html')) {
-      displayUserReservations();
-    }
-
     return true;
+
   } catch (error) {
-    logError("handleReservation", error);
-    alert(error.message || 'Failed to complete reservation');
+    console.error('Reservation error:', error);
+    alert(error.message || 'Reservation failed. Please try again.');
     return false;
   }
 }
