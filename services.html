@@ -2707,24 +2707,24 @@
       return false;
     }
 
-    // Verify the token structure first
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (!payload?.id) throw new Error('Invalid token structure');
-    } catch (e) {
-      localStorage.removeItem('token');
-      showLoginMessage('make a reservation');
-      return false;
+    // Get dates based on form inputs
+    const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
+                      document.querySelector('.search-form:not([style*="none"])');
+    
+    let startDate, endDate;
+    if (activeForm) {
+      startDate = activeForm.querySelector('[id*="check-in"], [id*="pickup-date"], [id*="date"]')?.value;
+      endDate = activeForm.querySelector('[id*="check-out"], [id*="dropoff-date"]')?.value;
     }
 
-    // Create the request body
+    // Create the request body matching backend expectations
     const requestBody = {
       serviceId,
       serviceType,
-      timestamp: new Date().toISOString()
+      startDate: startDate || new Date().toISOString(),
+      endDate: endDate || new Date(Date.now() + 86400000).toISOString(), // Default to tomorrow
+      guests: 1 // Default value
     };
-
-    console.log('Making reservation with:', requestBody); // Debug log
 
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
@@ -2736,8 +2736,7 @@
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Reservation failed:', errorData); // Debug log
+      const errorData = await response.json();
       throw new Error(errorData.message || 'Booking failed');
     }
 
@@ -2747,7 +2746,7 @@
 
   } catch (error) {
     console.error('Reservation error:', error);
-    alert(error.message || 'Failed to complete reservation. Please try again.');
+    showReservationModal(false, error.message);
     return false;
   }
 }
