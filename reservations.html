@@ -513,7 +513,7 @@
     </style>
 </head>
 <body>
-    <header>
+   <header>
       <div class="logo">
         <img
           src="./images/S_NoBack_500x500.png"
@@ -542,7 +542,6 @@
           <li><a href="services.html">Services</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="reservations.html" class="active" aria-current="page">My Reservations</a></li>
         </ul>
       </nav>
 
@@ -557,12 +556,12 @@
 
       <div class="user-dropdown" id="userDropdown" style="display: none;">
         <button class="user-toggle">
-          <span id="usernameDisplay"></span>
+          <span id="usernameDisplay">User</span>
           <i class="fas fa-caret-down"></i>
         </button>
         <div class="dropdown-menu">
           <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="reservations.html" class="active" aria-current="page"><i class="fas fa-calendar-check"></i> My Reservations</a>
           <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </div>
       </div>
@@ -908,7 +907,7 @@
       }
 
       // Check authentication state
-      function checkAuthState() {
+   function checkAuthState() {
         try {
           const token = localStorage.getItem('token');
           const authButtons = document.querySelector('.auth-buttons');
@@ -921,9 +920,11 @@
             if (usernameDisplay) {
               try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
-                usernameDisplay.textContent = payload.name || 'User';
+                // Display the actual username from token
+                usernameDisplay.textContent = payload.username || payload.name || 'My Account';
               } catch (e) {
-                usernameDisplay.textContent = 'User';
+                console.error('Error parsing token:', e);
+                usernameDisplay.textContent = 'My Account';
               }
             }
           } else {
