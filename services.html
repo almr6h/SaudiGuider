@@ -3000,13 +3000,16 @@ async function handleReservation(serviceId, serviceType, event) {
       })
     });
 
+    const responseData = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Booking failed. Please try again.');
+      throw new Error(responseData.message || 'Booking failed. Please try again.');
     }
 
-    const bookingData = await response.json();
-    const pointsEarned = bookingData.pointsEarned || 0;
+    // Extract points from response - adjust this based on your API response structure
+    const pointsEarned = responseData.data?.pointsEarned || 
+                         responseData.pointsEarned || 
+                         0;
     
     showBookingSuccess(pointsEarned);
     await updateReservationCount();
@@ -3065,12 +3068,16 @@ async function handleReservation(serviceId, serviceType, event) {
   };
 }
 
-  function showBookingSuccess(pointsEarned = 0) {
+function showBookingSuccess(pointsEarned = 0) {
   const existingMsg = document.querySelector('.booking-message');
   if (existingMsg) existingMsg.remove();
 
-  const pointsMessage = pointsEarned > 0 
-    ? `<p><i class="fas fa-coins" style="color: gold;"></i> You earned ${pointsEarned} loyalty points!</p>`
+  // Create more prominent points display
+  const pointsDisplay = pointsEarned > 0 
+    ? `<div style="margin-top: 10px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px; border-left: 3px solid gold;">
+         <i class="fas fa-coins" style="color: gold;"></i> 
+         <strong>+${pointsEarned} points</strong> added to your account!
+       </div>`
     : '';
 
   const successMsg = document.createElement('div');
@@ -3081,7 +3088,7 @@ async function handleReservation(serviceId, serviceType, event) {
       <div>
         <h4>Reservation Confirmed!</h4>
         <p>Your booking was successful.</p>
-        ${pointsMessage}
+        ${pointsDisplay}
       </div>
       <button class="close-message">&times;</button>
     </div>
@@ -3094,10 +3101,12 @@ async function handleReservation(serviceId, serviceType, event) {
 
   document.body.appendChild(successMsg);
 
+  // Close button functionality
   successMsg.querySelector('.close-message').addEventListener('click', () => {
     successMsg.remove();
   });
 
+  // Auto-close after 5 seconds
   setTimeout(() => {
     successMsg.style.opacity = '0';
     setTimeout(() => successMsg.remove(), 300);
