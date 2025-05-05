@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Discover insightful travel articles about Saudi Arabia's adventures, culture, cuisine and more with Saudi Guider." />
+    <title>Travel Articles | Saudi Guider</title>
+    <link rel="icon" type="image/x-icon" href="./images/S_NoBack_500x500.png" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      /* [All existing CSS variables and base styles from services.html] */
+       <style>
+      :root {
+        --primary: #5b6a7f;
+        --secondary: #8fb6c0;
+        --secondary-dark: #4c8ba9;
+        --light: #f0f0f0;
+        --dark: #212121;
+        --dark-gray: #2a2a2a;
+        --darker-gray: #1a1a1a;
+        --medium-gray: #3a3a3a;
+        --border-gray: #3a3a3a;
+        --font-main: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --transition-speed: 0.3s;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --feature-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* CSS Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Accessibility and Base Styles */
+      body {
+        font-family: var(--font-main);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--light);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+        padding-top: 6rem;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Typography */
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin-bottom: 0.5em;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      /* Focus States for Accessibility */
+      a:focus,
+      button:focus,
+      input:focus {
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+      }
+
+      /* Header Styles */
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: var(--box-shadow);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 60px;
+        margin-right: 0.75rem;
+      }
+
+      .logo a {
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: var(--light);
+      }
+
+      /* Navigation */
+      nav ul {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: var(--light);
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color var(--transition-speed) ease;
+        padding: 0.5rem;
+      }
+
+      nav a:hover,
+      nav a:focus {
+        color: #ffffff;
+      }
+
+      nav a.active {
+        border-bottom: 2px solid #ffffff;
+        padding-bottom: 3px;
+      }
+
+      /* Auth Buttons */
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .auth-buttons button {
+        background-color: #69a7c8;
+        border: none;
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color var(--transition-speed) ease;
+      }
+
+      .auth-buttons button:hover,
+      .auth-buttons button:focus {
+        background-color: #4c8ba9;
+      }
+
+       .user-dropdown {
+        position: relative;
+        display: none;
+      }
+
+      .user-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: var(--dark-gray);
+        min-width: 200px;
+        box-shadow: var(--box-shadow);
+        border-radius: 6px;
+        z-index: 1001;
+        padding: 0.5rem 0;
+      }
+
+      .dropdown-menu a {
+        color: var(--light);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: var(--medium-gray);
+      }
+
+      .user-dropdown:hover .dropdown-menu {
+        display: block;
+      }
+      
+      /* Mobile Nav Toggle */
+      .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        color: var(--light);
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 4rem 2rem;
+        background-color: var(--dark);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero h1 {
+        margin-bottom: 0.5rem;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        max-width: 800px;
+      }
+
+      .hero img {
+        width: 300px;
+        margin-top: 1.5rem;
+        border-radius: 10px;
+      }
+
+      /* Sections */
+      .section {
+        padding: 3rem 2rem;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .section-text {
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        text-align: center;
+      }
+
+      /* Company Intro */
+      .company-intro {
+        background-color: var(--dark-gray);
+      }
+
+      /* Famous Locations */
+      .famous-locations {
+        background-color: var(--darker-gray);
+        text-align: center;
+      }
+      .features {
+        background-color: var(
+          --darker-gray
+        ); /* Changed from default to match the famous-locations section */
+      }
+
+      /* Card Container and Cards */
+      .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.6rem;
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+
+      .card {
+        background-color: var(--medium-gray);
+        padding: 1.5rem;
+        border-radius: 10px;
+        width: 280px;
+        color: #fff;
+        box-shadow: var(--card-shadow);
+        transition: transform var(--transition-speed) ease;
+        text-align: center;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card h3 {
+        margin: 0.5rem 0;
+      }
+
+      .card p {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .card-link {
+        display: inline-block;
+        background-color: var(--secondary);
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin-top: 0.5rem;
+        transition: background-color var(--transition-speed);
+      }
+
+      .card-link:hover,
+      .card-link:focus {
+        background-color: var(--secondary-dark);
+      }
+
+      .icon {
+        font-size: 2.5rem;
+        color: #69a7c8;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Location card with images */
+      .location-card {
+        background-color: var(--medium-gray);
+        border-radius: 10px;
+        width: 280px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: transform var(--transition-speed) ease;
+      }
+
+      .location-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .location-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .location-card-content {
+        padding: 1.5rem;
+      }
+
+      .location-card h3 {
+        margin-top: 0;
+      }
+
+      /* AI Feature */
+      .ai-feature {
+        background-color: var(--dark-gray);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        padding: 3rem 2rem;
+      }
+
+      .ai-feature-content {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .ai-benefits {
+        list-style: none;
+        margin: 1.5rem 0;
+      }
+
+      .ai-benefits li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .ai-benefits i {
+        color: var(--secondary);
+        margin-right: 0.5rem;
+      }
+
+      .ai-feature-image {
+        flex: 1;
+        max-width: 300px;
+        max-height: 400px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .ai-feature-image img {
+        border-radius: 10px;
+        box-shadow: var(--feature-shadow);
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-section {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 1rem;
+        color: var(--secondary);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-section a {
+        color: var(--light);
+        text-decoration: none;
+        transition: color var(--transition-speed);
+      }
+
+      .footer-section a:hover,
+      .footer-section a:focus {
+        color: var(--secondary);
+        text-decoration: underline;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons a {
+        color: var(--light);
+        font-size: 1.5rem;
+        transition: color var(--transition-speed);
+      }
+
+      .social-icons a:hover,
+      .social-icons a:focus {
+        color: var(--secondary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border-gray);
+        padding-top: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .card-container {
+          gap: 1.5rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          padding: 1rem;
+        }
+
+        .mobile-nav-toggle {
+          display: block;
+        }
+
+        nav {
+          position: fixed;
+          top: 80px;
+          left: -100%;
+          width: 100%;
+          background-color: var(--dark);
+          height: calc(100vh - 80px);
+          transition: left var(--transition-speed) ease;
+          z-index: 999;
+          padding: 2rem;
+        }
+
+        nav.active {
+          left: 0;
+        }
+
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .auth-buttons {
+          margin-right: 1rem;
+        }
+
+        .section {
+          padding: 2rem 1rem;
+        }
+
+        .hero {
+          padding: 3rem 1rem;
+        }
+
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .ai-feature {
+          flex-direction: column;
+        }
+
+        .ai-feature-content,
+        .ai-feature-image {
+          flex: none;
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo a {
+          font-size: 1.5rem;
+        }
+
+        .logo img {
+          width: 40px;
+        }
+
+        .auth-button {
+          padding: 0.4rem 0.8rem;
+          font-size: 0.9rem;
+        }
+
+        .hero h1 {
+          font-size: 1.8rem;
+        }
+
+        .section-title {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+      /* Article-Specific Styles */
+      .articles-hero {
+        padding: 4rem 2rem;
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                    url('./images/articles-hero-bg.jpg') center/cover;
+        text-align: center;
+        color: white;
+      }
+      
+      .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+      }
+      
+      .article-card {
+        background: var(--dark-gray);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        box-shadow: var(--card-shadow);
+      }
+      
+      .article-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--feature-shadow);
+      }
+      
+      .article-image {
+        height: 200px;
+        overflow: hidden;
+      }
+      
+      .article-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+      
+      .article-card:hover .article-image img {
+        transform: scale(1.1);
+      }
+      
+      .article-content {
+        padding: 1.5rem;
+      }
+      
+      .article-category {
+        display: inline-block;
+        background: var(--secondary-dark);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+      
+      .article-excerpt {
+        color: var(--light);
+        opacity: 0.9;
+        margin: 1rem 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .read-more {
+        display: inline-block;
+        background: var(--secondary);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+      
+      .read-more:hover {
+        background: var(--secondary-dark);
+      }
+      
+      .category-filter {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--medium-gray);
+        margin: 1rem 2rem;
+        border-radius: 8px;
+      }
+      
+      .category-btn {
+        background: transparent;
+        border: none;
+        color: var(--light);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      
+      .category-btn.active, .category-btn:hover {
+        background: var(--secondary);
+        color: white;
+      }
+      
+      @media (max-width: 768px) {
+        .articles-grid {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+        }
+        
+        .category-filter {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+</head>
+<body>
+    <!-- Consistent Header -->
+    <header>
+      <div class="logo">
+        <img
+          src="./images/S_NoBack_500x500.png"
+          alt="Saudi Guider logo"
+          width="60"
+          height="60"
+          loading="lazy"
+        />
+        <a href="index.html" aria-label="Go to Saudi Guider Home"
+          >Saudi Guider</a
+        >
+      </div>
+
+      <button
+        class="mobile-nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="articles.html" class="active" aria-current="page">Articles</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="auth-buttons">
+        <button onclick="window.location.href='login.html'" aria-label="Log in">
+          <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <button onclick="window.location.href='signup.html'" aria-label="Sign up">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+
+      <div class="user-dropdown" id="userDropdown" style="display: none;">
+        <button class="user-toggle">
+          <span id="usernameDisplay"></span>
+          <i class="fas fa-caret-down"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+          <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- Hero Section -->
+      <section class="articles-hero" aria-labelledby="articles-title">
+        <h1 id="articles-title">Discover Saudi Arabia</h1>
+        <p>Insightful travel guides, adventure tips, and cultural explorations</p>
+      </section>
+
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button class="category-btn active" data-category="all">All Articles</button>
+        <button class="category-btn" data-category="adventure">Adventure</button>
+        <button class="category-btn" data-category="culture">Culture</button>
+        <button class="category-btn" data-category="food">Food</button>
+        <button class="category-btn" data-category="family">Family</button>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="articles-grid">
+        <!-- Article 1 -->
+        <article class="article-card" data-category="adventure">
+          <div class="article-image">
+            <img src="./images/dune-bashing.jpg" alt="Dune bashing in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Adventure</span>
+            <h3>Thrilling Adventures in Saudi Arabia</h3>
+            <p class="article-excerpt">
+              Your complete guide to dune bashing, scuba diving, and desert camping in Saudi Arabia's stunning landscapes...
+            </p>
+            <a href="article-detail.html?id=1" class="read-more">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 2 -->
+        <article class="article-card" data-category="culture">
+          <div class="article-image">
+            <img src="./images/unesco-sites.jpg" alt="UNESCO sites in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Culture</span>
+            <h3>Discover Iconic UNESCO Sites</h3>
+            <p class="article-excerpt">
+              Explore Diriyah, Hegra, and Al-Ahsa Oasis - Saudi Arabia's breathtaking UNESCO World Heritage Sites...
+            </p>
+            <a href="article-detail.html?id=2" class="read-more">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 3 -->
+        <article class="article-card" data-category="food">
+          <div class="article-image">
+            <img src="./images/saudi-cuisine.jpg" alt="Saudi Arabian cuisine" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Food</span>
+            <h3>Savoring Saudi Arabia: A Culinary Journey</h3>
+            <p class="article-excerpt">
+              From street food to fine dining - explore Saudi Arabia's rich culinary landscape with our foodie guide...
+            </p>
+            <a href="article-detail.html?id=3" class="read-more">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 4 -->
+        <article class="article-card" data-category="adventure">
+          <div class="article-image">
+            <img src="./images/road-trip.jpg" alt="Saudi Arabian road trip" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Adventure</span>
+            <h3>Epic Saudi Road Trips</h3>
+            <p class="article-excerpt">
+              Your guide to scenic drives from the Red Sea coast to mountain passes and hidden desert gems...
+            </p>
+            <a href="article-detail.html?id=4" class="read-more">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 5 -->
+        <article class="article-card" data-category="culture">
+          <div class="article-image">
+            <img src="./images/luxury-retreat.jpg" alt="Luxury retreat in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Wellness</span>
+            <h3>Luxury & Wellness Retreats</h3>
+            <p class="article-excerpt">
+              Discover Saudi Arabia's premium spa sanctuaries, desert yoga retreats and mountain wellness experiences...
+            </p>
+            <a href="article-detail.html?id=5" class="read-more">Read More</a>
+          </div>
+        </article>
+
+        <!-- Article 6 -->
+        <article class="article-card" data-category="family">
+          <div class="article-image">
+            <img src="./images/family-travel.jpg" alt="Family traveling in Saudi Arabia" loading="lazy">
+          </div>
+          <div class="article-content">
+            <span class="article-category">Family</span>
+            <h3>Fun for All Ages</h3>
+            <p class="article-excerpt">
+              A family-friendly guide to Saudi Arabia featuring water parks, wildlife encounters and kid-approved activities...
+            </p>
+            <a href="article-detail.html?id=6" class="read-more">Read More</a>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Saudi Guider</h3>
+          <p>
+            Your ultimate companion for exploring Saudi Arabia with personalized
+            recommendations.
+          </p>
+          <div class="social-icons">
+            <a href="#" aria-label="Follow us on Twitter"
+              ><i class="fab fa-twitter" aria-hidden="true"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
+              aria-label="Follow us on Instagram"
+              ><i class="fab fa-instagram" aria-hidden="true"></i
+            ></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="articles.html">Articles</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Explore Saudi Arabia</h3>
+          <ul>
+            <li><a href="#popular-destinations">Popular Destinations</a></li>
+            <li><a href="#travel-guides">Travel Guides</a></li>
+            <li><a href="#cultural-experiences">Cultural Experiences</a></li>
+            <li><a href="#travel-tips">Travel Tips</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <address>
+            <p>
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
+              Saudi Arabia
+            </p>
+            <p>
+              <i class="fas fa-phone" aria-hidden="true"></i>
+              <a href="tel:+966556294862">+966 55 629 4862</a>
+            </p>
+            <p>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
+            </p>
+          </address>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Category Filter Functionality
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Remove active class from all buttons
+          document.querySelectorAll('.category-btn').forEach(b => {
+            b.classList.remove('active');
+          });
+          
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          const category = this.dataset.category;
+          const articles = document.querySelectorAll('.article-card');
+          
+          articles.forEach(article => {
+            if (category === 'all' || article.dataset.category === category) {
+              article.style.display = 'block';
+            } else {
+              article.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Set current year in footer
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+
+      // Mobile navigation toggle
+      const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+      const nav = document.getElementById('main-nav');
+      
+      mobileNavToggle.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+        nav.classList.toggle('active');
+      });
+
+      // Check authentication state
+      function checkAuthState() {
+        const token = localStorage.getItem('token');
+        const authButtons = document.querySelector('.auth-buttons');
+        const userDropdown = document.getElementById('userDropdown');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+
+        if (token) {
+          authButtons.style.display = 'none';
+          userDropdown.style.display = 'block';
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            usernameDisplay.textContent = payload.name || 'My Account';
+          } catch (e) {
+            usernameDisplay.textContent = 'My Account';
+          }
+        }
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+        checkAuthState();
+        
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+          });
+        }
+      });
+    </script>
+</body>
+</html>
