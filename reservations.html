@@ -1,341 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Reservations - Saudi Guider</title>
-  <!-- Use the same CSS and scripts as your services page -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* Add to your existing CSS or create reservations.css */
-    .reservations-container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 2rem;
-    }
-    
-    .reservation-card {
-      background-color: #3a3a3a;
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-    
-    .reservation-info {
-      flex: 1;
-      min-width: 300px;
-    }
-    
-    .reservation-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    
-    .reservation-title {
-      color: #8fb6c0;
-      margin-bottom: 0.5rem;
-    }
-    
-    .reservation-detail {
-      margin-bottom: 0.5rem;
-      display: flex;
-    }
-    
-    .reservation-detail i {
-      width: 20px;
-      color: #8fb6c0;
-      margin-right: 10px;
-    }
-    
-    .status-pill {
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-    
-    .status-confirmed {
-      background-color: #2e7d32;
-      color: white;
-    }
-    
-    .status-cancelled {
-      background-color: #c62828;
-      color: white;
-    }
-    
-    .status-pending {
-      background-color: #f9a825;
-      color: black;
-    }
-    
-    .no-reservations {
-      text-align: center;
-      padding: 2rem;
-      color: #8fb6c0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations | Saudi Guider</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reservation Page Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .reservations-title {
+            text-align: center;
+            margin: 30px 0;
+            color: #1e3a8a;
+        }
+
+        .reservations-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading-state i {
+            font-size: 30px;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+        }
+
+        .no-reservations {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .no-reservations i {
+            font-size: 50px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .no-reservations button {
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #dc2626;
+        }
+
+        .error-state i {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .error-state button {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .reservations-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .reservation-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .reservation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .reservation-header h3 {
+            margin: 0;
+            color: #1e3a8a;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-badge.confirmed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.completed {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .reservation-details {
+            margin-bottom: 15px;
+        }
+
+        .reservation-details p {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reservation-details i {
+            width: 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .reservation-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reservation-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .cancel-btn {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .cancel-btn:hover {
+            background-color: #fecaca;
+        }
+
+        .details-btn {
+            background-color: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .details-btn:hover {
+            background-color: #c7d2fe;
+        }
+
+        /* Booking Message Styles */
+        .booking-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            transition: opacity 0.3s;
+        }
+
+        .booking-message.success {
+            border-top: 4px solid #4CAF50;
+        }
+
+        .message-content {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 12px;
+        }
+
+        .message-content i {
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        .message-content h4 {
+            margin: 0 0 4px 0;
+            color: #333;
+        }
+
+        .message-content p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .close-message {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .message-actions {
+            display: flex;
+            border-top: 1px solid #eee;
+            padding: 12px;
+        }
+
+        .message-actions button {
+            flex: 1;
+            padding: 8px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .reservation-actions {
+                flex-direction: column;
+            }
+            
+            .booking-message {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Use the same header as your services page -->
-  <header>
-   <div class="logo">
-        <img
-          src="./images/S_NoBack_500x500.png"
-          alt="Saudi Guider logo"
-          width="60"
-          height="60"
-          loading="lazy"
-        />
-        <a href="index.html" aria-label="Go to Saudi Guider Home"
-          >Saudi Guider</a
-        >
-      </div>
-
-      <button
-        class="mobile-nav-toggle"
-        aria-label="Toggle navigation menu"
-        aria-expanded="false"
-        aria-controls="main-nav"
-      >
-        <i class="fas fa-bars"></i>
-      </button>
-
-      <nav id="main-nav" aria-label="Main navigation">
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li>
-            <a href="services.html" class="active" aria-current="page"
-              >Services</a
-            >
-          </li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
-
-      <div class="auth-buttons">
-  <button onclick="window.location.href='login.html'" aria-label="Log in">
-    <i class="fas fa-sign-in-alt"></i> Log In
-  </button>
-  <button onclick="window.location.href='signup.html'" aria-label="Sign up">
-    <i class="fas fa-user-plus"></i> Sign Up
-  </button>
-</div>
-
-<div class="user-dropdown" id="userDropdown" style="display: none;">
-  <button class="user-toggle">
-    <span id="usernameDisplay"></span>
-    <i class="fas fa-caret-down"></i>
-  </button>
-  <div class="dropdown-menu">
-    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a href="reservations.html"><i class="fas fa-calendar-check"></i> Reservations</a>
-    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-  </div>
-</div>
-  </header>
-
-  <main>
-    <section class="reservations-container">
-      <h1>My Reservations</h1>
-      
-      <div id="reservations-list">
-        <!-- Reservations will be loaded here -->
-        <div class="no-reservations">
-          <i class="fas fa-calendar-times fa-3x"></i>
-          <h3>No reservations found</h3>
-          <p>You haven't made any reservations yet</p>
+    <header>
+        <div class="header-content">
+            <div class="logo">Saudi Guider</div>
+            <nav class="user-nav">
+                <a href="services.html">Services</a>
+                <a href="reservations.html">My Reservations</a>
+                <span id="usernameDisplay">User</span>
+                <button id="logoutBtn">Logout</button>
+            </nav>
         </div>
-      </div>
-    </section>
-  </main>
+    </header>
 
-  <!-- Use the same footer as your services page -->
-  <footer>
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>Saudi Guider</h3>
-          <p>
-            Your ultimate companion for exploring Saudi Arabia with personalized
-            AI assistance.
-          </p>
-          <div class="social-icons">
-            <a href="#" aria-label="Follow us on Twitter"
-              ><i class="fab fa-twitter" aria-hidden="true"></i
-            ></a>
-            <a
-              href="https://www.instagram.com/saudi_guider?igsh=OGFoY3k0d2N5dDM="
-              aria-label="Follow us on Instagram"
-              ><i class="fab fa-instagram" aria-hidden="true"></i
-            ></a>
-          </div>
-        </div>
-        <div class="footer-section">
-          <h3>Quick Links</h3>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Explore Saudi Arabia</h3>
-          <ul>
-            <li><a href="#popular-destinations">Popular Destinations</a></li>
-            <li><a href="#travel-guides">Travel Guides</a></li>
-            <li><a href="#cultural-experiences">Cultural Experiences</a></li>
-            <li><a href="#travel-tips">Travel Tips</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Contact Us</h3>
-          <address>
-            <p>
-              <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Jeddah,
-              Saudi Arabia
-            </p>
-            <p>
-              <i class="fas fa-phone" aria-hidden="true"></i>
-              <a href="tel:+966556294862">+966 55 629 4862</a>
-            </p>
-            <p>
-              <i class="fas fa-envelope" aria-hidden="true"></i>
-              <a href="mailto:saudiguider1@gmail.com">saudiguider1@gmail.com</a>
-            </p>
-          </address>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>
-          &copy; <span id="current-year">2025</span> Saudi Guider. All rights
-          reserved.
-        </p>
-      </div>
-  </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Load reservations from localStorage or API
-      loadReservations();
-      
-      function loadReservations() {
-        // In a real app, you would fetch from an API
-        // For now we'll use localStorage
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        
-        const reservationsList = document.getElementById('reservations-list');
-        
-        if (reservations.length === 0) {
-          reservationsList.innerHTML = `
-            <div class="no-reservations">
-              <i class="fas fa-calendar-times fa-3x"></i>
-              <h3>No reservations found</h3>
-              <p>You haven't made any reservations yet</p>
+    <div class="container">
+        <h1 class="reservations-title">My Reservations</h1>
+        <div class="reservations-container">
+            <div id="reservations-container">
+                <!-- Reservations will be loaded here -->
             </div>
-          `;
-          return;
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+
+        // Enhanced error display
+        function showErrorToUser(message, duration = 5000) {
+            const existing = document.getElementById('booking-error');
+            if (existing) existing.remove();
+
+            const errorEl = document.createElement('div');
+            errorEl.id = 'booking-error';
+            errorEl.innerHTML = `
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Booking Error</h4>
+                    <p>${message}</p>
+                    ${message.includes('already have a reservation') ? 
+                        '<a href="reservations.html">View Existing Reservations</a>' : ''}
+                </div>
+            `;
+            document.body.appendChild(errorEl);
+
+            setTimeout(() => {
+                errorEl.style.opacity = '0';
+                setTimeout(() => errorEl.remove(), 300);
+            }, duration);
         }
-        
-        reservationsList.innerHTML = '';
-        
-        reservations.forEach(reservation => {
-          const card = document.createElement('div');
-          card.className = 'reservation-card';
-          
-          const statusClass = `status-${reservation.status.toLowerCase()}`;
-          
-          card.innerHTML = `
-            <div class="reservation-info">
-              <h3 class="reservation-title">${reservation.serviceName}</h3>
-              <div class="reservation-detail">
-                <i class="fas fa-calendar-alt"></i>
-                <span>${new Date(reservation.date).toLocaleDateString()} at ${reservation.time}</span>
-              </div>
-              <div class="reservation-detail">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>${reservation.location}</span>
-              </div>
-              <div class="reservation-detail">
-                <i class="fas fa-users"></i>
-                <span>${reservation.guests} guests</span>
-              </div>
-              <div class="reservation-detail">
-                <i class="fas fa-money-bill-wave"></i>
-                <span>${reservation.price} SAR</span>
-              </div>
-            </div>
-            <div class="reservation-actions">
-              <span class="status-pill ${statusClass}">${reservation.status}</span>
-              ${reservation.status === 'Confirmed' ? 
-                `<button class="btn-cancel" data-id="${reservation.id}">Cancel</button>` : 
-                ''}
-            </div>
-          `;
-          
-          reservationsList.appendChild(card);
-        });
-        
-        // Add event listeners to cancel buttons
-        document.querySelectorAll('.btn-cancel').forEach(button => {
-          button.addEventListener('click', function() {
-            const reservationId = this.getAttribute('data-id');
-            cancelReservation(reservationId);
-          });
-        });
-      }
-      
-      function cancelReservation(reservationId) {
-        if (confirm('Are you sure you want to cancel this reservation?')) {
-          // In a real app, you would call an API here
-          const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-          const updatedReservations = reservations.map(res => {
-            if (res.id === reservationId) {
-              return { ...res, status: 'Cancelled' };
+
+        // Show booking success message
+        function showBookingSuccess() {
+            const existingMsg = document.querySelector('.booking-message');
+            if (existingMsg) existingMsg.remove();
+
+            const successMsg = document.createElement('div');
+            successMsg.className = 'booking-message success';
+            successMsg.innerHTML = `
+                <div class="message-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h4>Reservation Confirmed!</h4>
+                        <p>Your booking was successful.</p>
+                    </div>
+                    <button class="close-message">&times;</button>
+                </div>
+                <div class="message-actions">
+                    <button onclick="window.location.href='reservations.html'">
+                        View My Reservations
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(successMsg);
+
+            successMsg.querySelector('.close-message').addEventListener('click', () => {
+                successMsg.remove();
+            });
+
+            setTimeout(() => {
+                successMsg.style.opacity = '0';
+                setTimeout(() => successMsg.remove(), 300);
+            }, 5000);
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Display user reservations
+        async function displayUserReservations() {
+            const container = document.getElementById('reservations-container');
+            if (!container) return;
+
+            try {
+                // Show loading state
+                container.innerHTML = `
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading your reservations...</p>
+                    </div>
+                `;
+
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/reservations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load reservations');
+
+                const { data: reservations } = await response.json();
+
+                if (!reservations || reservations.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-reservations">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No Reservations Found</h3>
+                            <p>You haven't made any reservations yet.</p>
+                            <button onclick="window.location.href='services.html'">
+                                Book Now
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Build reservations list
+                container.innerHTML = `
+                    <div class="reservations-list">
+                        ${reservations.map(reservation => `
+                            <div class="reservation-card" data-id="${reservation._id}">
+                                <div class="reservation-header">
+                                    <h3>${reservation.service?.title || 'Unknown Service'}</h3>
+                                    <span class="status-badge ${reservation.status}">
+                                        ${reservation.status}
+                                    </span>
+                                </div>
+                                
+                                <div class="reservation-details">
+                                    <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
+                                    <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
+                                </div>
+                                
+                                <div class="reservation-actions">
+                                    <button class="cancel-btn" data-id="${reservation._id}">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                    <button class="details-btn" onclick="viewReservationDetails('${reservation._id}')">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                // Add cancel handlers
+                document.querySelectorAll('.cancel-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (confirm('Are you sure you want to cancel this reservation?')) {
+                            await cancelReservation(btn.dataset.id);
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error('Failed to load reservations:', error);
+                container.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Reservations</h3>
+                        <p>${error.message || 'Please try again later'}</p>
+                        <button onclick="displayUserReservations()">
+                            <i class="fas fa-sync-alt"></i> Retry
+                        </button>
+                    </div>
+                `;
             }
-            return res;
-          });
-          
-          localStorage.setItem('reservations', JSON.stringify(updatedReservations));
-          loadReservations();
-          alert('Reservation cancelled successfully');
         }
-      }
-      
-      // For demo purposes, let's add some sample reservations if none exist
-      if (!localStorage.getItem('reservations')) {
-        const sampleReservations = [
-          {
-            id: 'res1',
-            serviceName: 'Luxury Hotel in Riyadh',
-            date: '2023-12-15',
-            time: '14:00',
-            location: 'Riyadh, Saudi Arabia',
-            guests: 2,
-            price: 1200,
-            status: 'Confirmed'
-          },
-          {
-            id: 'res2',
-            serviceName: 'Desert Safari Tour',
-            date: '2023-12-18',
-            time: '08:00',
-            location: 'Al-Ula, Saudi Arabia',
-            guests: 4,
-            price: 800,
-            status: 'Confirmed'
-          }
-        ];
-        localStorage.setItem('reservations', JSON.stringify(sampleReservations));
-        loadReservations();
-      }
-    });
-  </script>
+
+        // Cancel reservation
+        async function cancelReservation(reservationId) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showLoginMessage('manage reservations');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to cancel reservation');
+
+                showErrorToUser('Reservation cancelled successfully', 3000);
+                displayUserReservations(); // Refresh the list
+            } catch (error) {
+                console.error('Error cancelling reservation:', error);
+                showErrorToUser(error.message || 'Failed to cancel reservation');
+            }
+        }
+
+        // Show login message
+        function showLoginMessage(action) {
+            const loginMessage = document.createElement("div");
+            loginMessage.className = "login-message";
+            loginMessage.innerHTML = `
+                <div class="login-message-content">
+                    <p>Please login to ${action}.</p>
+                    <div class="login-actions">
+                        <button onclick="window.location.href='login.html'">
+                            Go to Login Page
+                        </button>
+                        <button onclick="this.closest('.login-message').remove()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loginMessage);
+        }
+
+        // Check authentication state
+        function checkAuthState() {
+            try {
+                const token = localStorage.getItem('token');
+                const usernameDisplay = document.getElementById('usernameDisplay');
+
+                if (token && usernameDisplay) {
+                    try {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        usernameDisplay.textContent = payload.name || 'User';
+                    } catch (e) {
+                        usernameDisplay.textContent = 'User';
+                    }
+                } else if (!token) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Error checking auth state:', error);
+            }
+        }
+
+        // View reservation details (placeholder - implement as needed)
+        function viewReservationDetails(reservationId) {
+            alert(`Viewing details for reservation ${reservationId}`);
+            // Implement detailed view modal or page as needed
+        }
+
+        // Initialize the page
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuthState();
+            displayUserReservations();
+
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
