@@ -2725,34 +2725,66 @@ async function handleReservation(serviceId, serviceType) {
 
     // For featured cards without specific service IDs
     if (!serviceId) {
-      // Create a temporary reservation object
-      const reservationData = {
-        serviceType,
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
-        guests: 1
-      };
-
-      const response = await fetch(`${API_BASE_URL}/reservations/generic`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(reservationData)
-      });
-
-      if (!response.ok) throw new Error('Generic reservation failed');
-      
-      showReservationModal(true, 'Reservation request received!');
-      return true;
+      return handleGenericReservation(serviceType, token);
     }
 
-    // Rest of your existing code for specific service reservations...
+    // For specific service reservations
+    const reservationData = {
+      serviceId,
+      serviceType,
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
+      guests: 1
+    };
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(reservationData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Reservation failed');
+    }
+
+    const data = await response.json();
+    showReservationModal(true, 'Reservation confirmed!');
+    return true;
   } catch (error) {
     console.error('Reservation error:', error);
     showReservationModal(false, error.message || 'Reservation failed');
     return false;
+  }
+}
+
+async function handleGenericReservation(serviceType, token) {
+  try {
+    const reservationData = {
+      serviceType,
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
+      guests: 1
+    };
+
+    const response = await fetch(`${API_BASE_URL}/reservations/generic`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(reservationData)
+    });
+
+    if (!response.ok) throw new Error('Generic reservation failed');
+    
+    showReservationModal(true, 'Reservation request received!');
+    return true;
+  } catch (error) {
+    throw error;
   }
 }
 
