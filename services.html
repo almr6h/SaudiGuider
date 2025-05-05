@@ -2968,7 +2968,6 @@ if (window.location.pathname.includes('reservations.html')) {
   // Refresh reservation count in header/nav
   updateReservationCount();
 }
-    refreshReservationDisplay();
     
     return true;
   } catch (error) {
@@ -3415,7 +3414,13 @@ function formatDate(dateString) {
       if (currentYearEl) {
         currentYearEl.textContent = new Date().getFullYear();
       }
-
+    if (window.location.pathname.includes('reservations.html')) {
+    displayUserReservations();
+  }
+  
+  // Update reservation count everywhere
+  updateReservationCount();
+});
       // Check authentication state
       checkAuthState();
 
@@ -3432,7 +3437,21 @@ function formatDate(dateString) {
 
       // Setup featured cards
       setupFeaturedCards();
-
+    async function updateReservationCount() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reservations/count`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    const { count } = await response.json();
+    document.querySelectorAll('.reservation-count').forEach(el => {
+      el.textContent = count;
+    });
+  } catch (error) {
+    console.error('Failed to update reservation count:', error);
+  }
+}
       const fetchAllBtn = document.getElementById('fetchAllBtn');
       if (fetchAllBtn) {
         fetchAllBtn.addEventListener('click', fetchAllServices);
