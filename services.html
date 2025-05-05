@@ -2700,63 +2700,57 @@
 
   // Handle reservations
   async function handleReservation(serviceId, serviceType) {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        showLoginMessage('make a reservation');
-        return false;
-      }
-
-      // Verify token is valid
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (!payload || !payload.id) {
-          throw new Error('Invalid token');
-        }
-      } catch (e) {
-        showLoginMessage('make a reservation');
-        return false;
-      }
-
-      let reservationData = { 
-        serviceId, 
-        serviceType,
-        timestamp: new Date().toISOString()
-      };
-
-      const response = await fetch(`${API_BASE_URL}/reservations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(reservationData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Booking failed');
-      }
-
-      const data = await response.json();
-      console.log('Booking response:', data);
-
-      // Show success message
-      showBookingSuccess();
-      
-      // Refresh reservations display if on reservations page
-      if (window.location.pathname.includes('reservations.html')) {
-        displayUserReservations();
-      }
-
-      return true;
-
-    } catch (error) {
-      logError("handleReservation", error);
-      alert(error.message || 'Failed to complete reservation');
+  try {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      showLoginMessage('make a reservation');
       return false;
     }
+
+    // Verify token is valid
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload || !payload.id) {
+        throw new Error('Invalid token');
+      }
+    } catch (e) {
+      showLoginMessage('make a reservation');
+      return false;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/reservations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        serviceId,
+        serviceType,
+        timestamp: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Booking failed');
+    }
+
+    const data = await response.json();
+    showBookingSuccess();
+    
+    if (window.location.pathname.includes('reservations.html')) {
+      displayUserReservations();
+    }
+
+    return true;
+  } catch (error) {
+    logError("handleReservation", error);
+    alert(error.message || 'Failed to complete reservation');
+    return false;
   }
+}
 
   // Show booking success message
   function showBookingSuccess() {
