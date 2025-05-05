@@ -687,34 +687,176 @@
   z-index: 999;
 }
 
+/* Comparison Modal Styling */
 .comparison-view {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
   z-index: 1000;
   padding: 2rem;
   overflow-y: auto;
   display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.comparison-view h2 {
+  color: var(--secondary);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.close-comparison {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--secondary-dark);
+  color: white;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.close-comparison:hover {
+  background: var(--secondary);
+  transform: rotate(90deg);
+}
+
+/* Comparison Table Styling */
+.comparison-table-container {
+  background: var(--dark-gray);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .comparison-table {
   width: 100%;
-  background: var(--dark-gray);
-  border-collapse: collapse;
-}
-
-.comparison-table th, .comparison-table td {
-  padding: 1rem;
-  border: 1px solid var(--border-gray);
-  text-align: left;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem 0;
 }
 
 .comparison-table th {
-  background: var(--secondary-dark);
+  background: linear-gradient(to right, var(--primary), var(--secondary-dark));
   color: white;
+  padding: 1rem;
+  text-align: left;
+  position: sticky;
+  top: 0;
+}
+
+.comparison-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-gray);
+  background: var(--medium-gray);
+  color: var(--light);
+}
+
+.comparison-table tr:hover td {
+  background: var(--dark-gray);
+}
+
+.comparison-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.comparison-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Comparison Bar Styling */
+.comparison-bar {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark-gray);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  display: none;
+  align-items: center;
+  box-shadow: var(--feature-shadow);
+  z-index: 999;
+  width: 90%;
+  max-width: 500px;
+  justify-content: space-between;
+  border: 1px solid var(--secondary);
+}
+
+#comparisonCount {
+  color: var(--secondary);
+  font-weight: bold;
+  margin-right: auto;
+  padding-left: 1rem;
+}
+
+#viewComparison, #clearComparison {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  transition: all var(--transition-speed);
+}
+
+#viewComparison:hover, #clearComparison:hover {
+  background: var(--secondary-dark);
+  transform: translateY(-2px);
+}
+
+#clearComparison {
+  background: var(--medium-gray);
+  color: var(--light);
+}
+
+#clearComparison:hover {
+  background: #5b6a7f;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .comparison-view {
+    padding: 1rem;
+  }
+  
+  .comparison-table-container {
+    padding: 0.5rem;
+  }
+  
+  .comparison-table th, 
+  .comparison-table td {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .comparison-bar {
+    bottom: 0.5rem;
+    padding: 0.8rem 1rem;
+  }
+  
+  #viewComparison, #clearComparison {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
       .location, .price, .rating {
@@ -3755,17 +3897,26 @@ function showBookingSuccess(pointsEarned = 0) {
 });
 </script>
       <!-- Comparison Bar (appears when items are selected) -->
-<div class="comparison-bar" id="comparisonBar">
-  <span id="comparisonCount">0 items selected</span>
-  <button id="viewComparison">View Comparison</button>
-  <button id="clearComparison">Clear All</button>
+<div class="comparison-view" id="comparisonView">
+  <button class="close-comparison" aria-label="Close comparison">
+    &times;
+  </button>
+  <h2>Compare Services</h2>
+  <div class="comparison-table-container">
+    <div class="comparison-table" id="comparisonTable"></div>
+  </div>
 </div>
 
-<!-- Comparison Modal -->
-<div class="comparison-view" id="comparisonView">
-  <button class="close-comparison">&times; Close</button>
-  <h2>Compare Services</h2>
-  <div class="comparison-table-container" id="comparisonTable"></div>
+<div class="comparison-bar" id="comparisonBar">
+  <span id="comparisonCount">0 items selected</span>
+  <div class="comparison-actions">
+    <button id="viewComparison">
+      <i class="fas fa-chart-bar"></i> Compare Now
+    </button>
+    <button id="clearComparison">
+      <i class="fas fa-trash-alt"></i> Clear
+    </button>
+  </div>
 </div>
   </body>
 </html>
