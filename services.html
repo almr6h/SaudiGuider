@@ -2434,57 +2434,50 @@
 <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
-// Enhanced error display
-function showErrorToUser(message, duration = 5000) {
-  // Remove existing errors
-  const existing = document.getElementById('booking-error');
-  if (existing) existing.remove();
 
-  // Create new error element
-  const errorEl = document.createElement('div');
-  errorEl.id = 'booking-error';
-  errorEl.innerHTML = `
-    <div class="error-content">
-      <i class="fas fa-exclamation-triangle"></i>
-      <h4>Booking Error</h4>
-      <p>${message}</p>
-      ${message.includes('already have a reservation') ? 
-        '<a href="reservations.html">View Existing Reservations</a>' : ''}
-    </div>
-  `;
-  document.body.appendChild(errorEl);
+  // Enhanced error display
+  function showErrorToUser(message, duration = 5000) {
+    const existing = document.getElementById('booking-error');
+    if (existing) existing.remove();
 
-  // Auto-hide after duration
-  setTimeout(() => {
-    errorEl.style.opacity = '0';
-    setTimeout(() => errorEl.remove(), 300);
-  }, duration);
-}
-    
+    const errorEl = document.createElement('div');
+    errorEl.id = 'booking-error';
+    errorEl.innerHTML = `
+      <div class="error-content">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h4>Booking Error</h4>
+        <p>${message}</p>
+        ${message.includes('already have a reservation') ? 
+          '<a href="reservations.html">View Existing Reservations</a>' : ''}
+      </div>
+    `;
+    document.body.appendChild(errorEl);
+
+    setTimeout(() => {
+      errorEl.style.opacity = '0';
+      setTimeout(() => errorEl.remove(), 300);
+    }, duration);
+  }
+
   function setupSorting() {
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
       sortSelect.addEventListener('change', function() {
         const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
                           document.querySelector('.search-form:not([style*="none"])');
-        
-        // Store the selected sort option
         const selectedValue = this.value;
         
         if (activeForm) {
-          // Apply sorting without form submission
           applySorting(selectedValue);
         } else {
           applySorting(selectedValue);
         }
         
-        // Maintain the selected value
         this.value = selectedValue;
       });
     }
   }
 
-  // Service type mapping
   const typeMap = {
     'hotels': 'hotel',
     'restaurants': 'restaurant',
@@ -2492,7 +2485,6 @@ function showErrorToUser(message, duration = 5000) {
     'events': 'event'
   };
 
-  // Enhanced error logging function
   function logError(context, error, extra = {}) {
     console.groupCollapsed(`🚨 Error in ${context}`);
     console.error('Error:', error);
@@ -2504,7 +2496,6 @@ function showErrorToUser(message, duration = 5000) {
     console.groupEnd();
   }
 
-  // Helper function to safely get elements with validation
   function getElement(id, context = '') {
     try {
       const el = document.getElementById(id);
@@ -2525,7 +2516,6 @@ function showErrorToUser(message, duration = 5000) {
       const searchResults = document.getElementById('search-results');
       const resultsContainer = document.getElementById('results-container');
       
-      // Show loading state
       if (searchResults) {
         searchResults.innerHTML = `
           <div class="loading-state">
@@ -2536,37 +2526,25 @@ function showErrorToUser(message, duration = 5000) {
         searchResults.classList.add('active');
       }
 
-      // Clear previous results
-      if (resultsContainer) {
-        resultsContainer.innerHTML = '';
-      }
+      if (resultsContainer) resultsContainer.innerHTML = '';
 
-      // Make API request to get all services
       const response = await fetch(`${API_BASE_URL}/services/all`);
       
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       
       const data = await response.json();
       
-      // Verify response structure
       if (!data || typeof data !== 'object') {
         throw new Error('Invalid API response format');
       }
 
-      // Display all results grouped by type
       if (data.data && data.data.length > 0) {
-        // Group services by type
         const groupedServices = data.data.reduce((acc, service) => {
-          if (!acc[service.type]) {
-            acc[service.type] = [];
-          }
+          if (!acc[service.type]) acc[service.type] = [];
           acc[service.type].push(service);
           return acc;
         }, {});
 
-        // Create HTML for each service type
         let resultsHTML = '';
         for (const [type, services] of Object.entries(groupedServices)) {
           resultsHTML += `
@@ -2577,7 +2555,6 @@ function showErrorToUser(message, duration = 5000) {
           `;
         }
 
-        // Update results container
         if (searchResults) {
           searchResults.innerHTML = `
             <div class="sort-controls">
@@ -2597,7 +2574,6 @@ function showErrorToUser(message, duration = 5000) {
           `;
         }
 
-        // Display services for each type
         for (const [type, services] of Object.entries(groupedServices)) {
           displaySearchResults({ data: services }, type);
         }
@@ -2612,8 +2588,6 @@ function showErrorToUser(message, duration = 5000) {
       }
     } catch (error) {
       console.error('Fetch all failed:', error);
-      
-      // Show error state
       const searchResults = document.getElementById('search-results');
       if (searchResults) {
         searchResults.innerHTML = `
@@ -2628,24 +2602,14 @@ function showErrorToUser(message, duration = 5000) {
     }
   }
 
-  // Display search results
   function displaySearchResults(data, type) {
     try {
       const services = Array.isArray(data) ? data : (data.data || []);
-      let resultsContainer;
+      let resultsContainer = document.getElementById(`results-${type}`) || 
+                           document.getElementById('results-container');
       
-      // Check if we're showing all services (grouped by type)
-      if (document.getElementById(`results-${type}`)) {
-        resultsContainer = document.getElementById(`results-${type}`);
-      } else {
-        resultsContainer = document.getElementById('results-container');
-      }
-      
-      if (!resultsContainer) {
-        throw new Error('Results container not found');
-      }
+      if (!resultsContainer) throw new Error('Results container not found');
 
-      // Clear previous results for this type
       resultsContainer.innerHTML = '';
 
       if (services.length === 0) {
@@ -2658,18 +2622,15 @@ function showErrorToUser(message, duration = 5000) {
         return;
       }
 
-      // Create result cards
       services.forEach((service) => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
         
-        // Default values if properties are missing
         const title = service.title || service.name || 'Untitled Service';
         const location = service.location || service.city || 'Location not specified';
         const price = service.price ? `${service.price} SAR` : 'Price not available';
         const rating = service.rating ? `${'⭐'.repeat(Math.round(service.rating))} (${service.rating.toFixed(1)})` : 'No ratings';
         
-        // Generate amenities badges
         const amenitiesHTML = service.amenities && service.amenities.length > 0 
           ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
               `<span class="amenity-tag">${a}</span>`).join('')}</div>`
@@ -2694,9 +2655,7 @@ function showErrorToUser(message, duration = 5000) {
         resultsContainer.appendChild(resultItem);
       });
 
-      // Setup sorting for these results
       setupSorting();
-
     } catch (error) {
       console.error('Error displaying results:', error);
       const resultsContainer = document.getElementById('results-container') || document.body;
@@ -2721,7 +2680,6 @@ function showErrorToUser(message, duration = 5000) {
     const resultItems = Array.from(resultsContainer.querySelectorAll('.result-item'));
     
     resultItems.sort((a, b) => {
-      // Extract data from DOM elements
       const aPrice = parsePrice(a.querySelector('.price').textContent);
       const bPrice = parsePrice(b.querySelector('.price').textContent);
       const aRating = parseRating(a.querySelector('.rating').textContent);
@@ -2729,26 +2687,21 @@ function showErrorToUser(message, duration = 5000) {
       const aTitle = a.querySelector('h3').textContent.toLowerCase();
       const bTitle = b.querySelector('h3').textContent.toLowerCase();
 
-      // Sorting logic
       switch(sortOption) {
         case 'price-low': return aPrice - bPrice;
         case 'price-high': return bPrice - aPrice;
         case 'rating': return bRating - aRating;
         case 'name-asc': return aTitle.localeCompare(bTitle);
         case 'name-desc': return bTitle.localeCompare(aTitle);
-        default: return 0; // No sort
+        default: return 0;
       }
     });
 
-    // Re-insert sorted items
     resultsContainer.innerHTML = '';
     resultItems.forEach(item => resultsContainer.appendChild(item));
     
-    // Update the sort select to reflect current sort
     const sortSelect = document.getElementById('sort-by');
-    if (sortSelect) {
-      sortSelect.value = sortOption;
-    }
+    if (sortSelect) sortSelect.value = sortOption;
   }
 
   function parsePrice(priceText) {
@@ -2759,7 +2712,6 @@ function showErrorToUser(message, duration = 5000) {
     return parseFloat(ratingText.match(/\d+(\.\d+)?/)?.[0]) || 0;
   }
 
-  // Helper function to get appropriate icon
   function getIconForType(type) {
     const icons = {
       hotel: 'fa-hotel',
@@ -2770,7 +2722,6 @@ function showErrorToUser(message, duration = 5000) {
     return icons[type] || 'fa-star';
   }
 
-  // Handle search form submission
   async function handleSearchFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -2778,7 +2729,6 @@ function showErrorToUser(message, duration = 5000) {
     const serviceType = typeMap[activeTab];
     
     try {
-      // Show loading state
       const searchResults = document.getElementById('search-results');
       const resultsContainer = document.getElementById('results-container');
       
@@ -2794,15 +2744,12 @@ function showErrorToUser(message, duration = 5000) {
 
       if (resultsContainer) resultsContainer.innerHTML = '';
 
-      // Build query params
       const params = new URLSearchParams();
       params.append('type', serviceType);
 
-      // Location
       const location = form.querySelector('[id*="destination"]')?.value?.trim();
       if (location) params.append('location', location);
 
-      // Dates
       if (serviceType === 'hotel') {
         const checkIn = form.querySelector('#check-in')?.value;
         const checkOut = form.querySelector('#check-out')?.value;
@@ -2818,11 +2765,9 @@ function showErrorToUser(message, duration = 5000) {
         if (date) params.append('startDate', date);
       }
 
-      // Capacity/Guests
       const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
       if (capacityInput?.value) params.append('capacity', capacityInput.value);
 
-      // Price Range
       const priceRange = form.querySelector('[id*="price-range"]')?.value;
       if (priceRange && priceRange !== 'all') {
         const [minPrice, maxPrice] = priceRange.split('-').map(Number);
@@ -2830,11 +2775,9 @@ function showErrorToUser(message, duration = 5000) {
         if (!isNaN(maxPrice)) params.append('maxPrice', maxPrice);
       }
 
-      // Rating
       const minRating = form.querySelector('[id*="min-rating"]')?.value;
       if (minRating && minRating !== '0') params.append('rating', minRating);
 
-      // Amenities/Categories
       const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
       if (amenitiesSelect) {
         const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
@@ -2843,12 +2786,10 @@ function showErrorToUser(message, duration = 5000) {
         if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
       }
       
-      // Get current sort value
       const sortSelect = document.getElementById('sort-by');
       const sortBy = sortSelect ? sortSelect.value : 'recommended';
       params.append('sort', sortBy);
       
-      // Make API request
       const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
       console.log('API Request:', apiUrl);
       
@@ -2858,7 +2799,6 @@ function showErrorToUser(message, duration = 5000) {
       const data = await response.json();
       if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
 
-      // Display results
       if (data.data?.length > 0) {
         if (searchResults) {
           searchResults.innerHTML = `
@@ -2878,10 +2818,7 @@ function showErrorToUser(message, duration = 5000) {
             <div id="results-container" class="results-grid"></div>
           `;
           
-          // Set the sort select to current value
-          if (sortSelect) {
-            document.getElementById('sort-by').value = sortBy;
-          }
+          if (sortSelect) document.getElementById('sort-by').value = sortBy;
         }
         displaySearchResults(data, serviceType);
       } else {
@@ -2909,270 +2846,218 @@ function showErrorToUser(message, duration = 5000) {
     }
   }
 
-  // Global retry function
   window.retrySearch = function() {
     const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
                       document.querySelector('.search-form');
-    if (activeForm) {
-      activeForm.dispatchEvent(new Event('submit'));
-    }
+    if (activeForm) activeForm.dispatchEvent(new Event('submit'));
   };
 
-  // Handle reservations
-// Improved handleReservation function
-async function handleReservation(serviceId, serviceType) {
-  const button = event.target.closest('.book-btn');
-  const originalText = button.innerHTML;
-  
-  try {
-    // Set loading state
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-    // Get required dates
-    const { startDate, endDate } = getReservationDates(serviceType);
+  async function handleReservation(serviceId, serviceType, event) {
+    const button = event.target.closest('.book-btn');
+    const originalText = button.innerHTML;
     
-    // Validate input
-    if (!serviceId || !startDate || !endDate) {
-      throw new Error('Please complete all required fields');
-    }
+    try {
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-    // Make API request
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        serviceId,
-        serviceType,
-        startDate,
-        endDate
-      })
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Booking failed');
-    }
-
-    // Show success and refresh
-    showBookingSuccess();
-      // In your handleReservation function after successful API call:
-showBookingSuccess();
-if (window.location.pathname.includes('reservations.html')) {
-  displayUserReservations();
-} else {
-  // Refresh reservation count in header/nav
-  updateReservationCount();
-}
-    
-    return true;
-  } catch (error) {
-    console.error('Reservation error:', error);
-    showErrorToUser(error.message);
-    return false;
-  } finally {
-    button.disabled = false;
-    button.innerHTML = originalText;
-  }
-}
-
-// Helper function to get dates based on service type
-function getReservationDates(serviceType) {
-  switch(serviceType) {
-    case 'hotel':
-      return {
-        startDate: document.getElementById('check-in')?.value,
-        endDate: document.getElementById('check-out')?.value
-      };
-    case 'car':
-      return {
-        startDate: document.getElementById('car-pickup-date')?.value,
-        endDate: document.getElementById('car-dropoff-date')?.value
-      };
-    default:
-      const date = document.querySelector(`#${serviceType}-date`)?.value;
-      return {
-        startDate: date || new Date().toISOString(),
-        endDate: date ? new Date(new Date(date).getTime() + 86400000).toISOString() : ''
-      };
-  }
-}
-
-// Improved success notification
-function showBookingSuccess() {
-  // Remove any existing messages
-  const existingMsg = document.querySelector('.booking-message');
-  if (existingMsg) existingMsg.remove();
-
-  // Create success message element
-  const successMsg = document.createElement('div');
-  successMsg.className = 'booking-message success';
-  successMsg.innerHTML = `
-    <div class="message-content">
-      <i class="fas fa-check-circle"></i>
-      <div>
-        <h4>Reservation Confirmed!</h4>
-        <p>Your booking was successful.</p>
-      </div>
-      <button class="close-message">&times;</button>
-    </div>
-    <div class="message-actions">
-      <button onclick="window.location.href='reservations.html'">
-        View My Reservations
-      </button>
-    </div>
-  `;
-
-  // Add to DOM
-  document.body.appendChild(successMsg);
-
-  // Close button handler
-  successMsg.querySelector('.close-message').addEventListener('click', () => {
-    successMsg.remove();
-  });
-
-  // Auto-hide after 5 seconds
-  setTimeout(() => {
-    successMsg.style.opacity = '0';
-    setTimeout(() => successMsg.remove(), 300);
-  }, 5000);
-}
-
-// Refresh reservations display
-function refreshReservationDisplay() {
-  if (window.location.pathname.includes('reservations.html')) {
-    displayUserReservations();
-  }
-}
-
-  // Show booking success message
-  function showBookingSuccess() {
-    const successMsg = document.createElement('div');
-    successMsg.className = 'booking-success';
-    successMsg.innerHTML = `
-      <div class="success-content">
-        <i class="fas fa-check-circle"></i>
-        <h4>Booking Successful!</h4>
-        <p>Your reservation has been confirmed.</p>
-        <button onclick="this.closest('.booking-success').remove()">OK</button>
-      </div>
-    `;
-    document.body.appendChild(successMsg);
-  }
-
-  // Display user reservations (for reservations page)
-  async function displayUserReservations() {
-  const container = document.getElementById('reservations-container');
-  if (!container) return;
-
-  try {
-    // Show loading state
-    container.innerHTML = `
-      <div class="loading-state">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Loading your reservations...</p>
-      </div>
-    `;
-
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const { startDate, endDate } = getReservationDates(serviceType);
+      
+      if (!serviceId || !startDate || !endDate) {
+        throw new Error('Please complete all required fields');
       }
-    });
 
-    if (!response.ok) throw new Error('Failed to load reservations');
-
-    const { data: reservations } = await response.json();
-
-    if (reservations.length === 0) {
-      container.innerHTML = `
-        <div class="no-reservations">
-          <i class="fas fa-calendar-times"></i>
-          <h3>No Reservations Found</h3>
-          <p>You haven't made any reservations yet.</p>
-          <button onclick="window.location.href='services.html'">
-            Book Now
-          </button>
-        </div>
-      `;
-      return;
-    }
-
-    // Build reservations list
-    container.innerHTML = `
-      <h2>My Reservations</h2>
-      <div class="reservations-list">
-        ${reservations.map(reservation => `
-          <div class="reservation-card" data-id="${reservation._id}">
-            <div class="reservation-header">
-              <h3>${reservation.service?.title || 'Unknown Service'}</h3>
-              <span class="status-badge ${reservation.status}">
-                ${reservation.status}
-              </span>
-            </div>
-            
-            <div class="reservation-details">
-              <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
-              <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
-              <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
-            </div>
-            
-            <div class="reservation-actions">
-              <button class="cancel-btn" data-id="${reservation._id}">
-                <i class="fas fa-times"></i> Cancel
-              </button>
-              <button class="details-btn" onclick="viewReservationDetails('${reservation._id}')">
-                <i class="fas fa-info-circle"></i> Details
-              </button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-
-    // Add cancel handlers
-    document.querySelectorAll('.cancel-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        if (confirm('Are you sure you want to cancel this reservation?')) {
-          await cancelReservation(btn.dataset.id);
-        }
+      const response = await fetch(`${API_BASE_URL}/reservations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          serviceId,
+          serviceType,
+          startDate,
+          endDate
+        })
       });
-    });
 
-  } catch (error) {
-    console.error('Failed to load reservations:', error);
-    container.innerHTML = `
-      <div class="error-state">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>Error Loading Reservations</h3>
-        <p>${error.message || 'Please try again later'}</p>
-        <button onclick="displayUserReservations()">
-          <i class="fas fa-sync-alt"></i> Retry
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.message || 'Booking failed');
+
+      showBookingSuccess();
+      if (window.location.pathname.includes('reservations.html')) {
+        displayUserReservations();
+      } else {
+        updateReservationCount();
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Reservation error:', error);
+      showErrorToUser(error.message);
+      return false;
+    } finally {
+      button.disabled = false;
+      button.innerHTML = originalText;
+    }
+  }
+
+  function getReservationDates(serviceType) {
+    switch(serviceType) {
+      case 'hotel':
+        return {
+          startDate: document.getElementById('check-in')?.value,
+          endDate: document.getElementById('check-out')?.value
+        };
+      case 'car':
+        return {
+          startDate: document.getElementById('car-pickup-date')?.value,
+          endDate: document.getElementById('car-dropoff-date')?.value
+        };
+      default:
+        const date = document.querySelector(`#${serviceType}-date`)?.value;
+        return {
+          startDate: date || new Date().toISOString(),
+          endDate: date ? new Date(new Date(date).getTime() + 86400000).toISOString() : ''
+        };
+    }
+  }
+
+  function showBookingSuccess() {
+    const existingMsg = document.querySelector('.booking-message');
+    if (existingMsg) existingMsg.remove();
+
+    const successMsg = document.createElement('div');
+    successMsg.className = 'booking-message success';
+    successMsg.innerHTML = `
+      <div class="message-content">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <h4>Reservation Confirmed!</h4>
+          <p>Your booking was successful.</p>
+        </div>
+        <button class="close-message">&times;</button>
+      </div>
+      <div class="message-actions">
+        <button onclick="window.location.href='reservations.html'">
+          View My Reservations
         </button>
       </div>
     `;
+
+    document.body.appendChild(successMsg);
+
+    successMsg.querySelector('.close-message').addEventListener('click', () => {
+      successMsg.remove();
+    });
+
+    setTimeout(() => {
+      successMsg.style.opacity = '0';
+      setTimeout(() => successMsg.remove(), 300);
+    }, 5000);
   }
-}
 
-// Helper function to format dates
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-}
+  async function displayUserReservations() {
+    const container = document.getElementById('reservations-container');
+    if (!container) return;
 
-  // Cancel reservation
-  async function cancelReservation(reservationId) {
     try {
-      if (!confirm('Are you sure you want to cancel this reservation?')) {
+      container.innerHTML = `
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading your reservations...</p>
+        </div>
+      `;
+
+      const response = await fetch(`${API_BASE_URL}/reservations`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to load reservations');
+
+      const { data: reservations } = await response.json();
+
+      if (reservations.length === 0) {
+        container.innerHTML = `
+          <div class="no-reservations">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No Reservations Found</h3>
+            <p>You haven't made any reservations yet.</p>
+            <button onclick="window.location.href='services.html'">
+              Book Now
+            </button>
+          </div>
+        `;
         return;
       }
+
+      container.innerHTML = `
+        <h2>My Reservations</h2>
+        <div class="reservations-list">
+          ${reservations.map(reservation => `
+            <div class="reservation-card" data-id="${reservation._id}">
+              <div class="reservation-header">
+                <h3>${reservation.service?.title || 'Unknown Service'}</h3>
+                <span class="status-badge ${reservation.status}">
+                  ${reservation.status}
+                </span>
+              </div>
+              
+              <div class="reservation-details">
+                <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
+                <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
+                <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
+              </div>
+              
+              <div class="reservation-actions">
+                <button class="cancel-btn" data-id="${reservation._id}">
+                  <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="details-btn" onclick="viewReservationDetails('${reservation._id}')">
+                  <i class="fas fa-info-circle"></i> Details
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      document.querySelectorAll('.cancel-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to cancel this reservation?')) {
+            await cancelReservation(btn.dataset.id);
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error('Failed to load reservations:', error);
+      container.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Error Loading Reservations</h3>
+          <p>${error.message || 'Please try again later'}</p>
+          <button onclick="displayUserReservations()">
+            <i class="fas fa-sync-alt"></i> Retry
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+
+  async function cancelReservation(reservationId) {
+    try {
+      if (!confirm('Are you sure you want to cancel this reservation?')) return;
 
       const token = localStorage.getItem('token');
       if (!token) {
@@ -3187,19 +3072,16 @@ function formatDate(dateString) {
         }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to cancel reservation');
-      }
+      if (!response.ok) throw new Error('Failed to cancel reservation');
 
-      alert('Reservation cancelled successfully');
-      displayUserReservations(); // Refresh the list
+      showErrorToUser('Reservation cancelled successfully', 3000);
+      displayUserReservations();
     } catch (error) {
       console.error('Error cancelling reservation:', error);
-      alert(error.message || 'Failed to cancel reservation');
+      showErrorToUser(error.message || 'Failed to cancel reservation');
     }
   }
 
-  // Show login message
   function showLoginMessage(action) {
     const loginMessage = document.createElement("div");
     loginMessage.className = "login-message";
@@ -3219,7 +3101,6 @@ function formatDate(dateString) {
     document.body.appendChild(loginMessage);
   }
 
-  // Setup featured cards
   function setupFeaturedCards() {
     try {
       document.querySelectorAll('.view-details-btn').forEach(button => {
@@ -3237,11 +3118,10 @@ function formatDate(dateString) {
         button.addEventListener('click', function() {
           const card = this.closest('.service-card');
           const serviceType = card.querySelector('.view-details-btn').getAttribute('data-service');
-          handleReservation(null, serviceType);
+          handleReservation(null, serviceType, event);
         });
       });
 
-      // Close modal handlers
       document.querySelectorAll('.close-modal').forEach(button => {
         button.addEventListener('click', function() {
           this.closest('.modal').style.display = 'none';
@@ -3249,7 +3129,6 @@ function formatDate(dateString) {
         });
       });
 
-      // Close modal when clicking outside
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', function(e) {
           if (e.target === this) {
@@ -3263,7 +3142,6 @@ function formatDate(dateString) {
     }
   }
 
-  // Setup date inputs
   function setupDateInputs() {
     try {
       const today = new Date();
@@ -3305,7 +3183,6 @@ function formatDate(dateString) {
     }
   }
 
-  // Setup search tabs
   function setupSearchTabs() {
     try {
       const tabs = document.querySelectorAll(".search-tab");
@@ -3349,7 +3226,6 @@ function formatDate(dateString) {
     }
   }
 
-  // Check authentication state
   function checkAuthState() {
     try {
       const token = localStorage.getItem('token');
@@ -3377,7 +3253,6 @@ function formatDate(dateString) {
     }
   }
 
-  // Mobile navigation toggle
   function setupMobileNav() {
     try {
       const mobileToggle = document.querySelector(".mobile-nav-toggle");
@@ -3405,78 +3280,55 @@ function formatDate(dateString) {
     }
   }
 
-  // Initialize the page
+  async function updateReservationCount() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/reservations/count`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const { count } = await response.json();
+      document.querySelectorAll('.reservation-count').forEach(el => {
+        el.textContent = count;
+      });
+    } catch (error) {
+      console.error('Failed to update reservation count:', error);
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     console.log('DOM fully loaded and parsed');
     try {
-      // Set current year in footer
       const currentYearEl = getElement("current-year");
-      if (currentYearEl) {
-        currentYearEl.textContent = new Date().getFullYear();
+      if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+
+      if (window.location.pathname.includes('reservations.html')) {
+        displayUserReservations();
       }
-    if (window.location.pathname.includes('reservations.html')) {
-    displayUserReservations();
-  }
-  
-  // Update reservation count everywhere
-  updateReservationCount();
-});
-      // Check authentication state
+      
+      updateReservationCount();
       checkAuthState();
-
-      // Setup mobile navigation
       setupMobileNav();
-
-      // Setup search tabs
       setupSearchTabs();
-    
       setupSorting();
-
-      // Setup date inputs
       setupDateInputs();
-
-      // Setup featured cards
       setupFeaturedCards();
-    async function updateReservationCount() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/reservations/count`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    const { count } = await response.json();
-    document.querySelectorAll('.reservation-count').forEach(el => {
-      el.textContent = count;
-    });
-  } catch (error) {
-    console.error('Failed to update reservation count:', error);
-  }
-}
-      const fetchAllBtn = document.getElementById('fetchAllBtn');
-      if (fetchAllBtn) {
-        fetchAllBtn.addEventListener('click', fetchAllServices);
-      }
 
-      // Attach search form handlers
+      const fetchAllBtn = document.getElementById('fetchAllBtn');
+      if (fetchAllBtn) fetchAllBtn.addEventListener('click', fetchAllServices);
+
       document.querySelectorAll('.search-form').forEach(form => {
         form.addEventListener('submit', handleSearchFormSubmit);
       });
 
-      // Add click handlers to all book buttons
       document.addEventListener('click', function(e) {
         if (e.target.classList.contains('book-btn')) {
           const serviceId = e.target.getAttribute('data-id');
           const serviceType = e.target.getAttribute('data-type');
-          handleReservation(serviceId, serviceType);
+          handleReservation(serviceId, serviceType, e);
         }
       });
 
-      // Check if we're on reservations page
-      if (window.location.pathname.includes('reservations.html')) {
-        displayUserReservations();
-      }
-
-      // Logout functionality
       const logoutBtn = getElement('logoutBtn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
