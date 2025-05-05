@@ -2723,12 +2723,7 @@ async function handleReservation(serviceId, serviceType) {
       return false;
     }
 
-    // For featured cards without specific service IDs
-    if (!serviceId) {
-      return handleGenericReservation(serviceType, token);
-    }
-
-    // For specific service reservations
+    // Prepare reservation data
     const reservationData = {
       serviceId,
       serviceType,
