@@ -2240,21 +2240,22 @@
  <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
+
   function setupSorting() {
-  const sortSelect = document.getElementById('sort-by');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-      const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
-                        document.querySelector('.search-form:not([style*="none"])');
-      if (activeForm) {
-        activeForm.dispatchEvent(new Event('submit'));
-      } else {
-        // If no active form, apply client-side sorting
-        applySorting(this.value);
-      }
-    });
+    const sortSelect = document.getElementById('sort-by');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
+                          document.querySelector('.search-form:not([style*="none"])');
+        if (activeForm) {
+          activeForm.dispatchEvent(new Event('submit'));
+        } else {
+          applySorting(this.value);
+        }
+      });
+    }
   }
-}
+
   // Service type mapping
   const typeMap = {
     'hotels': 'hotel',
@@ -2290,385 +2291,382 @@
       return null;
     }
   }
-async function fetchAllServices() {
-  try {
-    const searchResults = document.getElementById('search-results');
-    const resultsContainer = document.getElementById('results-container');
-    
-    // Show loading state
-    if (searchResults) {
-      searchResults.innerHTML = `
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p>Loading all services...</p>
-        </div>
-      `;
-      searchResults.classList.add('active');
-    }
 
-    // Clear previous results
-    if (resultsContainer) {
-      resultsContainer.innerHTML = '';
-    }
-
-    // Make API request to get all services
-    const response = await fetch(`${API_BASE_URL}/services/all`);
-    
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Verify response structure
-    if (!data || typeof data !== 'object') {
-      throw new Error('Invalid API response format');
-    }
-
-    // Display all results grouped by type
-    if (data.data && data.data.length > 0) {
-      // Group services by type
-      const groupedServices = data.data.reduce((acc, service) => {
-        if (!acc[service.type]) {
-          acc[service.type] = [];
-        }
-        acc[service.type].push(service);
-        return acc;
-      }, {});
-
-      // Create HTML for each service type
-      let resultsHTML = '';
-      for (const [type, services] of Object.entries(groupedServices)) {
-        resultsHTML += `
-          <div class="service-type-group">
-            <h3 class="service-type-title">${type.charAt(0).toUpperCase() + type.slice(1)}s</h3>
-            <div class="results-grid" id="results-${type}"></div>
-          </div>
-        `;
-      }
-
-      // Update results container
+  async function fetchAllServices() {
+    try {
+      const searchResults = document.getElementById('search-results');
+      const resultsContainer = document.getElementById('results-container');
+      
+      // Show loading state
       if (searchResults) {
         searchResults.innerHTML = `
-          <div class="sort-controls">
-            <div class="sort-options">
-              <label for="sort-by">Sort by:</label>
-              <select id="sort-by">
-                <option value="recommended">Recommended</option>
-                <option value="price-low">Price (Low to High)</option>
-                <option value="price-high">Price (High to Low)</option>
-                <option value="rating">Rating</option>
-                <option value="name">Name (A-Z)</option>
-              </select>
-            </div>
-            <div class="results-count">${data.data.length} total services found</div>
+          <div class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading all services...</p>
           </div>
-          ${resultsHTML}
+        `;
+        searchResults.classList.add('active');
+      }
+
+      // Clear previous results
+      if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+      }
+
+      // Make API request to get all services
+      const response = await fetch(`${API_BASE_URL}/services/all`);
+      
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Verify response structure
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid API response format');
+      }
+
+      // Display all results grouped by type
+      if (data.data && data.data.length > 0) {
+        // Group services by type
+        const groupedServices = data.data.reduce((acc, service) => {
+          if (!acc[service.type]) {
+            acc[service.type] = [];
+          }
+          acc[service.type].push(service);
+          return acc;
+        }, {});
+
+        // Create HTML for each service type
+        let resultsHTML = '';
+        for (const [type, services] of Object.entries(groupedServices)) {
+          resultsHTML += `
+            <div class="service-type-group">
+              <h3 class="service-type-title">${type.charAt(0).toUpperCase() + type.slice(1)}s</h3>
+              <div class="results-grid" id="results-${type}"></div>
+            </div>
+          `;
+        }
+
+        // Update results container
+        if (searchResults) {
+          searchResults.innerHTML = `
+            <div class="sort-controls">
+              <div class="sort-options">
+                <label for="sort-by">Sort by:</label>
+                <select id="sort-by">
+                  <option value="recommended">Recommended</option>
+                  <option value="price-low">Price (Low to High)</option>
+                  <option value="price-high">Price (High to Low)</option>
+                  <option value="rating">Rating</option>
+                  <option value="name-asc">Name (A-Z)</option>
+                </select>
+              </div>
+              <div class="results-count">${data.data.length} total services found</div>
+            </div>
+            ${resultsHTML}
+          `;
+        }
+
+        // Display services for each type
+        for (const [type, services] of Object.entries(groupedServices)) {
+          displaySearchResults({ data: services }, type);
+        }
+      } else {
+        searchResults.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h4>No services found</h4>
+            <p>Try again later</p>
+          </div>
         `;
       }
-
-      // Display services for each type
-      for (const [type, services] of Object.entries(groupedServices)) {
-        displaySearchResults({ data: services }, type);
+    } catch (error) {
+      console.error('Fetch all failed:', error);
+      
+      // Show error state
+      const searchResults = document.getElementById('search-results');
+      if (searchResults) {
+        searchResults.innerHTML = `
+          <div class="error-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Failed to load services</h4>
+            <p>${error.message || 'Please try again later'}</p>
+            <button onclick="fetchAllServices()" class="retry-btn">Try Again</button>
+          </div>
+        `;
       }
-    } else {
-      searchResults.innerHTML = `
-        <div class="no-results">
-          <i class="fas fa-search"></i>
-          <h4>No services found</h4>
-          <p>Try again later</p>
-        </div>
-      `;
     }
-  } catch (error) {
-    console.error('Fetch all failed:', error);
-    
-    // Show error state
-    const searchResults = document.getElementById('search-results');
-    if (searchResults) {
-      searchResults.innerHTML = `
+  }
+
+  // Display search results
+  function displaySearchResults(data, type) {
+    try {
+      const services = Array.isArray(data) ? data : (data.data || []);
+      let resultsContainer;
+      
+      // Check if we're showing all services (grouped by type)
+      if (document.getElementById(`results-${type}`)) {
+        resultsContainer = document.getElementById(`results-${type}`);
+      } else {
+        resultsContainer = document.getElementById('results-container');
+      }
+      
+      if (!resultsContainer) {
+        throw new Error('Results container not found');
+      }
+
+      // Clear previous results for this type
+      resultsContainer.innerHTML = '';
+
+      if (services.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h4>No ${type} found</h4>
+          </div>
+        `;
+        return;
+      }
+
+      // Create result cards
+      services.forEach((service) => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'result-item';
+        
+        // Default values if properties are missing
+        const title = service.title || service.name || 'Untitled Service';
+        const location = service.location || service.city || 'Location not specified';
+        const price = service.price ? `${service.price} SAR` : 'Price not available';
+        const rating = service.rating ? `${'⭐'.repeat(Math.round(service.rating))} (${service.rating.toFixed(1)})` : 'No ratings';
+        
+        // Generate amenities badges
+        const amenitiesHTML = service.amenities && service.amenities.length > 0 
+          ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
+              `<span class="amenity-tag">${a}</span>`).join('')}</div>`
+          : '';
+
+        resultItem.innerHTML = `
+          <div class="result-image">
+            <i class="fas ${service.icon || getIconForType(type)}"></i>
+          </div>
+          <div class="result-details">
+            <h3>${title}</h3>
+            <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
+            <p class="price">${price}</p>
+            <p class="rating">${rating}</p>
+            ${amenitiesHTML}
+            <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">
+              Book Now
+            </button>
+          </div>
+        `;
+
+        resultsContainer.appendChild(resultItem);
+      });
+
+      // Setup sorting for these results
+      setupSorting();
+
+    } catch (error) {
+      console.error('Error displaying results:', error);
+      const resultsContainer = document.getElementById('results-container') || document.body;
+      resultsContainer.innerHTML = `
         <div class="error-state">
           <i class="fas fa-exclamation-triangle"></i>
-          <h4>Failed to load services</h4>
-          <p>${error.message || 'Please try again later'}</p>
-          <button onclick="fetchAllServices()" class="retry-btn">Try Again</button>
+          <h4>Error Displaying Results</h4>
+          <p>${error.message}</p>
         </div>
       `;
     }
   }
-}
-  // Display search results
- // In your displaySearchResults function:
-function displaySearchResults(data, type) {
-  try {
-    const services = Array.isArray(data) ? data : (data.data || []);
-    let resultsContainer;
-    
-    // Check if we're showing all services (grouped by type)
-    if (document.getElementById(`results-${type}`)) {
-      resultsContainer = document.getElementById(`results-${type}`);
-    } else {
-      resultsContainer = document.getElementById('results-container');
-    }
-    
+
+  function applySorting(sortOption, resultsContainer) {
     if (!resultsContainer) {
-      throw new Error('Results container not found');
+      resultsContainer = document.getElementById('results-container') || 
+                       document.querySelector('.results-grid');
     }
+    
+    if (!resultsContainer) return;
+    
+    const resultItems = Array.from(resultsContainer.querySelectorAll('.result-item'));
+    
+    resultItems.sort((a, b) => {
+      // Extract data from DOM elements
+      const aPrice = parsePrice(a.querySelector('.price').textContent);
+      const bPrice = parsePrice(b.querySelector('.price').textContent);
+      const aRating = parseRating(a.querySelector('.rating').textContent);
+      const bRating = parseRating(b.querySelector('.rating').textContent);
+      const aTitle = a.querySelector('h3').textContent.toLowerCase();
+      const bTitle = b.querySelector('h3').textContent.toLowerCase();
 
-    // Clear previous results for this type
+      // Sorting logic
+      switch(sortOption) {
+        case 'price-low': return aPrice - bPrice;
+        case 'price-high': return bPrice - aPrice;
+        case 'rating': return bRating - aRating;
+        case 'name-asc': return aTitle.localeCompare(bTitle);
+        case 'name-desc': return bTitle.localeCompare(aTitle);
+        default: return 0; // No sort
+      }
+    });
+
+    // Re-insert sorted items
     resultsContainer.innerHTML = '';
-
-    if (services.length === 0) {
-      resultsContainer.innerHTML = `
-        <div class="no-results">
-          <i class="fas fa-search"></i>
-          <h4>No ${type} found</h4>
-        </div>
-      `;
-      return;
-    }
-     const sortSelect = document.getElementById('sort-by');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-      applySorting(this.value);
-    });
+    resultItems.forEach(item => resultsContainer.appendChild(item));
   }
-});
-    // Create result cards
-    services.forEach((service) => {
-      const resultItem = document.createElement('div');
-      resultItem.className = 'result-item';
-      
-      // Default values if properties are missing
-      const title = service.title || service.name || 'Untitled Service';
-      const location = service.location || service.city || 'Location not specified';
-      const price = service.price ? `${service.price} SAR` : 'Price not available';
-      const rating = service.rating ? `${'⭐'.repeat(Math.round(service.rating))} (${service.rating.toFixed(1)})` : 'No ratings';
-      
-      // Generate amenities badges
-      const amenitiesHTML = service.amenities && service.amenities.length > 0 
-        ? `<div class="amenities">${service.amenities.slice(0, 3).map(a => 
-            `<span class="amenity-tag">${a}</span>`).join('')}</div>`
-        : '';
 
-      resultItem.innerHTML = `
-  <div class="result-image">
-    <i class="fas ${service.icon || getIconForType(type)}"></i>
-  </div>
-        <div class="result-details">
-          <h3>${title}</h3>
-          <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
-          <p class="price">${price}</p>
-          <p class="rating">${rating}</p>
-          ${amenitiesHTML}
-          <button class="book-btn" data-id="${service._id || service.id}" data-type="${type}">
-            Book Now
-          </button>
-        </div>
-      `;
-
-      resultsContainer.appendChild(resultItem);
-    });
-
-  } catch (error) {
-    console.error('Error displaying results:', error);
-    const resultsContainer = document.getElementById('results-container') || document.body;
-    resultsContainer.innerHTML = `
-      <div class="error-state">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h4>Error Displaying Results</h4>
-        <p>${error.message}</p>
-      </div>
-    `;
+  function parsePrice(priceText) {
+    return parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
   }
-}
-     // Add this after your displaySearchResults function
-function applySorting(sortOption, resultsContainer) {
-  if (!resultsContainer) {
-    resultsContainer = document.getElementById('results-container');
+
+  function parseRating(ratingText) {
+    return parseFloat(ratingText.match(/\d+(\.\d+)?/)?.[0]) || 0;
   }
-  
-  const resultItems = Array.from(resultsContainer.querySelectorAll('.result-item'));
-  
-  resultItems.sort((a, b) => {
-    // Extract data from DOM elements
-    const aPrice = parsePrice(a.querySelector('.price').textContent);
-    const bPrice = parsePrice(b.querySelector('.price').textContent);
-    const aRating = parseRating(a.querySelector('.rating').textContent);
-    const bRating = parseRating(b.querySelector('.rating').textContent);
-    const aTitle = a.querySelector('h3').textContent.toLowerCase();
-    const bTitle = b.querySelector('h3').textContent.toLowerCase();
 
-    // Sorting logic
-    switch(sortOption) {
-      case 'price-low': return aPrice - bPrice;
-      case 'price-high': return bPrice - aPrice;
-      case 'rating': return bRating - aRating;
-      case 'name-asc': return aTitle.localeCompare(bTitle);
-      case 'name-desc': return bTitle.localeCompare(aTitle);
-      default: return 0; // No sort
-    }
-  });
-
-  // Re-insert sorted items
-  resultsContainer.innerHTML = '';
-  resultItems.forEach(item => resultsContainer.appendChild(item));
-}
-
-// Helper functions
-function parsePrice(priceText) {
-  return parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
-}
-
-function parseRating(ratingText) {
-  return parseFloat(ratingText.match(/\d+(\.\d+)?/)?.[0]) || 0;
-}
-
-// Initialize when DOM loads
-document.addEventListener('DOMContentLoaded', function() {
- 
-
-// Helper function to get appropriate icon
-function getIconForType(type) {
-  const icons = {
-    hotel: 'fa-hotel',
-    restaurant: 'fa-utensils',
-    car: 'fa-car',
-    event: 'fa-ticket-alt'
-  };
-  return icons[type] || 'fa-star';
-}
+  // Helper function to get appropriate icon
+  function getIconForType(type) {
+    const icons = {
+      hotel: 'fa-hotel',
+      restaurant: 'fa-utensils',
+      car: 'fa-car',
+      event: 'fa-ticket-alt'
+    };
+    return icons[type] || 'fa-star';
+  }
 
   // Handle search form submission
-async function handleSearchFormSubmit(e) {
-  e.preventDefault();
-  const form = e.target;
-  const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
-  const serviceType = typeMap[activeTab];
-  
-  try {
-    // Show loading state
-    const searchResults = document.getElementById('search-results');
-    const resultsContainer = document.getElementById('results-container');
+  async function handleSearchFormSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const activeTab = document.querySelector('.search-tab.active')?.dataset.tab;
+    const serviceType = typeMap[activeTab];
     
-    if (searchResults) {
-      searchResults.innerHTML = `
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p>Searching for ${activeTab}...</p>
-        </div>
-      `;
-      searchResults.classList.add('active');
-    }
-
-    if (resultsContainer) resultsContainer.innerHTML = '';
-
-    // Build query params
-    const params = new URLSearchParams();
-    params.append('type', serviceType);
-
-    // Location
-    const location = form.querySelector('[id*="destination"]')?.value?.trim();
-    if (location) params.append('location', location);
-
-    // Dates
-    if (serviceType === 'hotel') {
-      const checkIn = form.querySelector('#check-in')?.value;
-      const checkOut = form.querySelector('#check-out')?.value;
-      if (checkIn) params.append('startDate', checkIn);
-      if (checkOut) params.append('endDate', checkOut);
-    } else if (serviceType === 'car') {
-      const pickupDate = form.querySelector('#car-pickup-date')?.value;
-      const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
-      if (pickupDate) params.append('startDate', pickupDate);
-      if (dropoffDate) params.append('endDate', dropoffDate);
-    } else {
-      const date = form.querySelector('[id*="date"]')?.value;
-      if (date) params.append('startDate', date);
-    }
-
-    // Capacity/Guests
-    const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
-    if (capacityInput?.value) params.append('capacity', capacityInput.value);
-
-    // Price Range
-    const priceRange = form.querySelector('[id*="price-range"]')?.value;
-    if (priceRange && priceRange !== 'all') {
-      const [minPrice, maxPrice] = priceRange.split('-').map(Number);
-      if (!isNaN(minPrice)) params.append('minPrice', minPrice);
-      if (!isNaN(maxPrice)) params.append('maxPrice', maxPrice);
-    }
-
-    // Rating
-    const minRating = form.querySelector('[id*="min-rating"]')?.value;
-    if (minRating && minRating !== '0') params.append('rating', minRating);
-
-    // Amenities/Categories
-    const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
-    if (amenitiesSelect) {
-      const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
-        .map(option => option.value)
-        .filter(val => val);
-      if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
-    }
-    
-    // Make API request
-    const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
-    console.log('API Request:', apiUrl);
-    
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error(`Server error: ${response.status}`);
-    
-    const data = await response.json();
-    if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
-
-       const sortBy = document.getElementById('sort-by')?.value || 'recommended';
-  params.append('sort', sortBy);
-    // Display results
-    if (data.data?.length > 0) {
+    try {
+      // Show loading state
+      const searchResults = document.getElementById('search-results');
+      const resultsContainer = document.getElementById('results-container');
+      
       if (searchResults) {
         searchResults.innerHTML = `
-          <div class="sort-controls">
-            <div class="sort-options">
-              <label for="sort-by">Sort by:</label>
-              <select id="sort-by">
-                <option value="recommended">Recommended</option>
-                <option value="price-low">Price (Low to High)</option>
-                <option value="price-high">Price (High to Low)</option>
-                <option value="rating">Rating</option>
-                <option value="name">Name (A-Z)</option>
-              </select>
-            </div>
-            <div class="results-count">${data.data.length} results found</div>
+          <div class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Searching for ${activeTab}...</p>
           </div>
-          <div id="results-container" class="results-grid"></div>
+        `;
+        searchResults.classList.add('active');
+      }
+
+      if (resultsContainer) resultsContainer.innerHTML = '';
+
+      // Build query params
+      const params = new URLSearchParams();
+      params.append('type', serviceType);
+
+      // Location
+      const location = form.querySelector('[id*="destination"]')?.value?.trim();
+      if (location) params.append('location', location);
+
+      // Dates
+      if (serviceType === 'hotel') {
+        const checkIn = form.querySelector('#check-in')?.value;
+        const checkOut = form.querySelector('#check-out')?.value;
+        if (checkIn) params.append('startDate', checkIn);
+        if (checkOut) params.append('endDate', checkOut);
+      } else if (serviceType === 'car') {
+        const pickupDate = form.querySelector('#car-pickup-date')?.value;
+        const dropoffDate = form.querySelector('#car-dropoff-date')?.value;
+        if (pickupDate) params.append('startDate', pickupDate);
+        if (dropoffDate) params.append('endDate', dropoffDate);
+      } else {
+        const date = form.querySelector('[id*="date"]')?.value;
+        if (date) params.append('startDate', date);
+      }
+
+      // Capacity/Guests
+      const capacityInput = form.querySelector('[id*="guests"], [id*="tickets"]');
+      if (capacityInput?.value) params.append('capacity', capacityInput.value);
+
+      // Price Range
+      const priceRange = form.querySelector('[id*="price-range"]')?.value;
+      if (priceRange && priceRange !== 'all') {
+        const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+        if (!isNaN(minPrice)) params.append('minPrice', minPrice);
+        if (!isNaN(maxPrice)) params.append('maxPrice', maxPrice);
+      }
+
+      // Rating
+      const minRating = form.querySelector('[id*="min-rating"]')?.value;
+      if (minRating && minRating !== '0') params.append('rating', minRating);
+
+      // Amenities/Categories
+      const amenitiesSelect = form.querySelector('[id*="amenities"], [id*="categories"]');
+      if (amenitiesSelect) {
+        const selectedOptions = Array.from(amenitiesSelect.selectedOptions)
+          .map(option => option.value)
+          .filter(val => val);
+        if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
+      }
+      
+      // Make API request
+      const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
+      console.log('API Request:', apiUrl);
+      
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      
+      const data = await response.json();
+      if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
+
+      const sortBy = document.getElementById('sort-by')?.value || 'recommended';
+      params.append('sort', sortBy);
+
+      // Display results
+      if (data.data?.length > 0) {
+        if (searchResults) {
+          searchResults.innerHTML = `
+            <div class="sort-controls">
+              <div class="sort-options">
+                <label for="sort-by">Sort by:</label>
+                <select id="sort-by">
+                  <option value="recommended">Recommended</option>
+                  <option value="price-low">Price (Low to High)</option>
+                  <option value="price-high">Price (High to Low)</option>
+                  <option value="rating">Rating</option>
+                  <option value="name-asc">Name (A-Z)</option>
+                </select>
+              </div>
+              <div class="results-count">${data.data.length} results found</div>
+            </div>
+            <div id="results-container" class="results-grid"></div>
+          `;
+        }
+        displaySearchResults(data, serviceType);
+      } else {
+        searchResults.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search"></i>
+            <h4>No ${activeTab} found</h4>
+            <p>Try adjusting your search criteria</p>
+          </div>
         `;
       }
-      displaySearchResults(data, serviceType);
-    } else {
-      searchResults.innerHTML = `
-        <div class="no-results">
-          <i class="fas fa-search"></i>
-          <h4>No ${activeTab} found</h4>
-          <p>Try adjusting your search criteria</p>
-        </div>
-      `;
-    }
-  } catch (error) {
-    console.error('Search failed:', error);
-    const searchResults = document.getElementById('search-results');
-    if (searchResults) {
-      searchResults.innerHTML = `
-        <div class="error-state">
-          <i class="fas fa-exclamation-triangle"></i>
-          <h4>Search Failed</h4>
-          <p>${error.message || 'Please try again later'}</p>
-          <button onclick="retrySearch()" class="retry-btn">Try Again</button>
-        </div>
-      `;
+    } catch (error) {
+      console.error('Search failed:', error);
+      const searchResults = document.getElementById('search-results');
+      if (searchResults) {
+        searchResults.innerHTML = `
+          <div class="error-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Search Failed</h4>
+            <p>${error.message || 'Please try again later'}</p>
+            <button onclick="retrySearch()" class="retry-btn">Try Again</button>
+          </div>
+        `;
+      }
     }
   }
-}
 
   // Global retry function
   window.retrySearch = function() {
@@ -2952,18 +2950,15 @@ async function handleSearchFormSubmit(e) {
       // Setup featured cards
       setupFeaturedCards();
 
-         const fetchAllBtn = document.getElementById('fetchAllBtn');
-  if (fetchAllBtn) {
-    fetchAllBtn.addEventListener('click', fetchAllServices);
-  }
+      const fetchAllBtn = document.getElementById('fetchAllBtn');
+      if (fetchAllBtn) {
+        fetchAllBtn.addEventListener('click', fetchAllServices);
+      }
+
       // Attach search form handlers
       document.querySelectorAll('.search-form').forEach(form => {
         form.addEventListener('submit', handleSearchFormSubmit);
       });
-
-         document.getElementById('sort-by')?.addEventListener('change', function() {
-  applySorting(this.value);
-});
 
       // Logout functionality
       const logoutBtn = getElement('logoutBtn');
