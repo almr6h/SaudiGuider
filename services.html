@@ -2240,7 +2240,26 @@
 <script>
   // API Configuration
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
-
+    function showReservationModal(success, message = '') {
+  const modal = document.createElement('div');
+  modal.className = 'reservation-modal';
+  modal.innerHTML = `
+    <div class="reservation-content">
+      <i class="fas ${success ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+      <h4>${success ? 'Reservation Successful!' : 'Reservation Failed'}</h4>
+      <p>${message || (success ? 'Your reservation has been confirmed.' : 'Please try again.')}</p>
+      <div class="reservation-actions">
+        <button onclick="window.location.href='reservations.html'">
+          View Reservations
+        </button>
+        <button onclick="this.closest('.reservation-modal').remove()">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
   function setupSorting() {
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
