@@ -2944,23 +2944,17 @@
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-    // Get and validate dates
+    // Get dates with proper fallbacks
     const { startDate, endDate } = getReservationDates(serviceType);
-    console.log('Reservation dates:', { startDate, endDate }); // Debug log
-
-    if (!serviceId || !startDate || !endDate) {
-      throw new Error('Please complete all required fields');
+    
+    // Final validation
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const now = new Date();
+    
+    if (start <= now) {
+      throw new Error('Please select a future date for your reservation');
     }
-
-    // Prepare the request body
-    const requestBody = {
-      serviceId,
-      serviceType,
-      startDate,
-      endDate,
-      guests: 1 // Default value
-    };
-    console.log('Request body:', requestBody); // Debug log
 
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
@@ -2968,43 +2962,26 @@
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify({
+        serviceId,
+        serviceType,
+        startDate,
+        endDate,
+        guests: 1
+      })
     });
 
-    const data = await response.json();
-    console.log('Response data:', data); // Debug log
-    
     if (!response.ok) {
-      // Enhanced error handling
-      let errorMsg = 'Booking failed';
-      if (data && data.error) {
-        errorMsg = data.error;
-      } else if (response.status === 400) {
-        errorMsg = 'Invalid request data. Please check your inputs.';
-      } else if (response.status === 500) {
-        errorMsg = 'Server error. Please try again later.';
-      }
-      throw new Error(errorMsg);
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Booking failed. Please try again.');
     }
 
     showBookingSuccess();
-    if (window.location.pathname.includes('reservations.html')) {
-      await displayUserReservations();
-    } else {
-      await updateReservationCount();
-    }
+    await updateReservationCount();
     
-    return true;
   } catch (error) {
-    console.error('Full reservation error:', {
-      error: error.message,
-      serviceId,
-      serviceType,
-      timestamp: new Date().toISOString()
-    });
-    
+    console.error('Booking error:', error);
     showErrorToUser(error.message);
-    return false;
   } finally {
     button.disabled = false;
     button.innerHTML = originalText;
@@ -3016,39 +2993,44 @@
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
 
-  // Helper function to format dates for the API
-  const formatForAPI = (date) => {
-    if (!(date instanceof Date)) {
-      date = new Date(date);
-    }
-    return date.toISOString();
-  };
+  // Default to today + tomorrow if no dates selected
+  let startDate = now;
+  let endDate = tomorrow;
 
+  // Try to get dates from search form first
   switch(serviceType) {
     case 'hotel':
       const checkIn = document.getElementById('check-in')?.value;
       const checkOut = document.getElementById('check-out')?.value;
-      return {
-        startDate: checkIn ? formatForAPI(checkIn) : formatForAPI(tomorrow),
-        endDate: checkOut ? formatForAPI(checkOut) : formatForAPI(new Date(tomorrow.getTime() + 86400000))
-      };
+      if (checkIn) startDate = new Date(checkIn);
+      if (checkOut) endDate = new Date(checkOut);
+      break;
       
     case 'car':
       const pickupDate = document.getElementById('car-pickup-date')?.value;
       const dropoffDate = document.getElementById('car-dropoff-date')?.value;
-      return {
-        startDate: pickupDate ? formatForAPI(pickupDate) : formatForAPI(now),
-        endDate: dropoffDate ? formatForAPI(dropoffDate) : formatForAPI(tomorrow)
-      };
+      if (pickupDate) startDate = new Date(pickupDate);
+      if (dropoffDate) endDate = new Date(dropoffDate);
+      break;
       
     default:
       const dateInput = document.querySelector(`#${serviceType}-date`)?.value;
-      const selectedDate = dateInput ? new Date(dateInput) : now;
-      return {
-        startDate: formatForAPI(selectedDate),
-        endDate: formatForAPI(new Date(selectedDate.getTime() + 86400000))
-      };
+      if (dateInput) {
+        startDate = new Date(dateInput);
+        endDate = new Date(startDate.getTime() + 86400000); // Add 1 day
+      }
   }
+
+  // Ensure end date is after start date
+  if (endDate <= startDate) {
+    endDate = new Date(startDate.getTime() + 86400000);
+  }
+
+  // Format for API
+  return {
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString()
+  };
 }
 
   function showBookingSuccess() {
@@ -3320,51 +3302,40 @@
     }
   }
 
-  function setupDateInputs() {
-  try {
-    const now = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(now.getDate() + 1);
+ function setupDateInputs() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
 
-    const formatDate = (date) => date.toISOString().split('T')[0];
+  const formatDate = (date) => date.toISOString().split('T')[0];
 
-    const dateInputs = [
-      { id: "check-in", date: now },
-      { id: "check-out", date: tomorrow },
-      { id: "restaurant-date", date: now },
-      { id: "car-pickup-date", date: now },
-      { id: "car-dropoff-date", date: tomorrow },
-      { id: "event-date", date: now }
-    ];
+  // Set up all date inputs with proper min values
+  document.querySelectorAll('input[type="date"]').forEach(input => {
+    input.min = formatDate(now);
+    if (!input.value) {
+      // Set default values only if empty
+      if (input.id.includes('check-out') || input.id.includes('dropoff')) {
+        input.value = formatDate(tomorrow);
+      } else {
+        input.value = formatDate(now);
+      }
+    }
+  });
 
-    dateInputs.forEach(({id, date}) => {
-      const input = getElement(id);
-      if (input) {
-        input.min = formatDate(now);
-        if (!input.value) {
-          input.value = formatDate(date);
-        }
+  // Special handling for date ranges
+  const checkIn = document.getElementById('check-in');
+  const checkOut = document.getElementById('check-out');
+  if (checkIn && checkOut) {
+    checkIn.addEventListener('change', function() {
+      const selectedDate = new Date(this.value);
+      const nextDay = new Date(selectedDate);
+      nextDay.setDate(selectedDate.getDate() + 1);
+      
+      checkOut.min = formatDate(nextDay);
+      if (new Date(checkOut.value) < nextDay) {
+        checkOut.value = formatDate(nextDay);
       }
     });
-
-    // Ensure check-out is after check-in
-    const checkIn = getElement("check-in");
-    const checkOut = getElement("check-out");
-    
-    if (checkIn && checkOut) {
-      checkIn.addEventListener("change", function() {
-        const selectedDate = new Date(this.value);
-        const nextDay = new Date(selectedDate);
-        nextDay.setDate(selectedDate.getDate() + 1);
-        
-        checkOut.min = formatDate(nextDay);
-        if (new Date(checkOut.value) < nextDay) {
-          checkOut.value = formatDate(nextDay);
-        }
-      });
-    }
-  } catch (error) {
-    logError("setupDateInputs", error);
   }
 }
 
