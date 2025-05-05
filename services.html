@@ -2510,6 +2510,27 @@
     }, duration);
   }
 
+  // Success message display
+  function showSuccessMessage(message, duration = 3000) {
+    const existing = document.querySelector('.success-message');
+    if (existing) existing.remove();
+
+    const successEl = document.createElement('div');
+    successEl.className = 'success-message';
+    successEl.innerHTML = `
+      <div class="success-content">
+        <i class="fas fa-check-circle"></i>
+        <p>${message}</p>
+      </div>
+    `;
+    document.body.appendChild(successEl);
+
+    setTimeout(() => {
+      successEl.style.opacity = '0';
+      setTimeout(() => successEl.remove(), 300);
+    }, duration);
+  }
+
   function setupSorting() {
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
@@ -3009,175 +3030,179 @@
   }
 
   async function displayUserReservations() {
-  const container = document.getElementById('reservations-container');
-  if (!container) return;
+    const container = document.getElementById('reservations-container');
+    if (!container) return;
 
-  try {
-    container.innerHTML = `
-      <div class="loading-state">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Loading your reservations...</p>
-      </div>
-    `;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = 'login.html';
-      return;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    if (!response.ok) throw new Error('Failed to load reservations');
-
-    const { data: reservations } = await response.json();
-
-    if (!reservations || reservations.length === 0) {
+    try {
       container.innerHTML = `
-        <div class="no-reservations">
-          <i class="fas fa-calendar-times"></i>
-          <h3>No Reservations Found</h3>
-          <p>You haven't made any reservations yet.</p>
-          <button onclick="window.location.href='services.html'">
-            Book Now
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading your reservations...</p>
+        </div>
+      `;
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/reservations`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!response.ok) throw new Error('Failed to load reservations');
+
+      const { data: reservations } = await response.json();
+
+      if (!reservations || reservations.length === 0) {
+        container.innerHTML = `
+          <div class="no-reservations">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No Reservations Found</h3>
+            <p>You haven't made any reservations yet.</p>
+            <button onclick="window.location.href='services.html'">
+              Book Now
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <h2>My Reservations</h2>
+        <div class="reservations-list">
+          ${reservations.map(reservation => `
+            <div class="reservation-card" data-id="${reservation._id}">
+              <div class="reservation-header">
+                <h3>${reservation.service?.title || 'Unknown Service'}</h3>
+                <span class="status-badge ${reservation.status}">
+                  ${reservation.status}
+                  ${reservation.isActive ? ' (Active)' : ''}
+                </span>
+              </div>
+              
+              <div class="reservation-image">
+                <i class="fas ${reservation.service?.icon || 'fa-image'}"></i>
+              </div>
+              
+              <div class="reservation-details">
+                <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
+                <p><i class="fas fa-clock"></i> ${reservation.durationDays} ${reservation.durationDays === 1 ? 'day' : 'days'}</p>
+                <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
+                <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
+                
+                ${reservation.service?.amenities?.length > 0 ? `
+                  <div class="amenities">
+                    ${reservation.service.amenities.slice(0, 3).map(amenity => `
+                      <span class="amenity-tag">${amenity}</span>
+                    `).join('')}
+                  </div>
+                ` : ''}
+                
+                ${reservation.specialRequests ? `
+                  <div class="special-requests">
+                    <p><i class="fas fa-comment"></i> Special Requests:</p>
+                    <p>${reservation.specialRequests}</p>
+                  </div>
+                ` : ''}
+              </div>
+              
+              <div class="reservation-actions">
+                ${reservation.status === 'confirmed' ? `
+                  <button class="cancel-btn" data-id="${reservation._id}">
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                ` : ''}
+                <button class="details-btn" data-id="${reservation._id}">
+                  <i class="fas fa-info-circle"></i> Details
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Event delegation for cancel and details buttons
+      container.addEventListener('click', async (e) => {
+        const cancelBtn = e.target.closest('.cancel-btn');
+        if (cancelBtn) {
+          e.stopPropagation();
+          if (confirm('Are you sure you want to cancel this reservation?')) {
+            cancelBtn.disabled = true;
+            cancelBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+            try {
+              await cancelReservation(cancelBtn.dataset.id);
+            } finally {
+              cancelBtn.disabled = false;
+              cancelBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+            }
+          }
+        }
+        
+        const detailsBtn = e.target.closest('.details-btn');
+        if (detailsBtn) {
+          e.stopPropagation();
+          viewReservationDetails(detailsBtn.dataset.id);
+        }
+      });
+
+    } catch (error) {
+      console.error('Failed to load reservations:', error);
+      container.innerHTML = `
+        <div class="error-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>Error Loading Reservations</h3>
+          <p>${error.message || 'Please try again later'}</p>
+          <button onclick="displayUserReservations()">
+            <i class="fas fa-sync-alt"></i> Retry
           </button>
         </div>
       `;
-      return;
     }
-
-    container.innerHTML = `
-      <h2>My Reservations</h2>
-      <div class="reservations-list">
-        ${reservations.map(reservation => `
-          <div class="reservation-card" data-id="${reservation._id}">
-            <div class="reservation-header">
-              <h3>${reservation.service?.title || 'Unknown Service'}</h3>
-              <span class="status-badge ${reservation.status}">
-                ${reservation.status}
-                ${reservation.isActive ? ' (Active)' : ''}
-              </span>
-            </div>
-            
-            <div class="reservation-image">
-              <i class="fas ${reservation.service?.icon || 'fa-image'}"></i>
-            </div>
-            
-            <div class="reservation-details">
-              <p><i class="fas fa-calendar-alt"></i> ${formatDate(reservation.startDate)} - ${formatDate(reservation.endDate)}</p>
-              <p><i class="fas fa-clock"></i> ${reservation.durationDays} ${reservation.durationDays === 1 ? 'day' : 'days'}</p>
-              <p><i class="fas fa-map-marker-alt"></i> ${reservation.service?.location || 'Location not specified'}</p>
-              <p><i class="fas fa-tag"></i> ${reservation.service?.price ? `${reservation.service.price} SAR` : 'Price not available'}</p>
-              
-              ${reservation.service?.amenities?.length > 0 ? `
-                <div class="amenities">
-                  ${reservation.service.amenities.slice(0, 3).map(amenity => `
-                    <span class="amenity-tag">${amenity}</span>
-                  `).join('')}
-                </div>
-              ` : ''}
-              
-              ${reservation.specialRequests ? `
-                <div class="special-requests">
-                  <p><i class="fas fa-comment"></i> Special Requests:</p>
-                  <p>${reservation.specialRequests}</p>
-                </div>
-              ` : ''}
-            </div>
-            
-            <div class="reservation-actions">
-              ${reservation.status === 'confirmed' ? `
-                <button class="cancel-btn" data-id="${reservation._id}">
-                  <i class="fas fa-times"></i> Cancel
-                </button>
-              ` : ''}
-              <button class="details-btn" data-id="${reservation._id}">
-                <i class="fas fa-info-circle"></i> Details
-              </button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-
-    // Add event listeners
-    document.querySelectorAll('.cancel-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to cancel this reservation?')) {
-          await cancelReservation(btn.dataset.id);
-        }
-      });
-    });
-
-    document.querySelectorAll('.details-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        viewReservationDetails(btn.dataset.id);
-      });
-    });
-
-  } catch (error) {
-    console.error('Failed to load reservations:', error);
-    container.innerHTML = `
-      <div class="error-state">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h3>Error Loading Reservations</h3>
-        <p>${error.message || 'Please try again later'}</p>
-        <button onclick="displayUserReservations()">
-          <i class="fas fa-sync-alt"></i> Retry
-        </button>
-      </div>
-    `;
   }
-}
 
- // Enhanced formatDate function
-function formatDate(dateString) {
-  if (!dateString) return 'Not specified';
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return 'Invalid date';
-  
-  return date.toLocaleDateString('en-US', { 
-    weekday: 'short', 
-    month: 'short', 
-    day: 'numeric',
-    year: 'numeric'
-  });
-}
+  // Enhanced formatDate function
+  function formatDate(dateString) {
+    if (!dateString) return 'Not specified';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid date';
+    
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
 
-// Enhanced cancelReservation function
-async function cancelReservation(reservationId) {
-  try {
-    if (!confirm('Are you sure you want to cancel this reservation?')) return;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      showLoginMessage('manage reservations');
-      return;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
+  // Enhanced cancelReservation function
+  async function cancelReservation(reservationId) {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        showLoginMessage('cancel reservations');
+        return;
       }
-    });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to cancel reservation');
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to cancel reservation');
+      }
+
+      showSuccessMessage('Reservation cancelled successfully');
+      displayUserReservations();
+    } catch (error) {
+      console.error('Error cancelling reservation:', error);
+      showErrorToUser(error.message || 'Failed to cancel reservation');
     }
-
-    showSuccessMessage('Reservation cancelled successfully');
-    displayUserReservations();
-  } catch (error) {
-    console.error('Error cancelling reservation:', error);
-    showErrorToUser(error.message || 'Failed to cancel reservation');
   }
-}
 
   function showLoginMessage(action) {
     const loginMessage = document.createElement("div");
@@ -3391,6 +3416,14 @@ async function cancelReservation(reservationId) {
     } catch (error) {
       console.error('Failed to update reservation count:', error);
     }
+  }
+
+  function viewReservationDetails(reservationId) {
+    // Implement your reservation details view logic here
+    console.log('Viewing details for reservation:', reservationId);
+    // You might want to show a modal with detailed information
+    // or navigate to a details page
+    alert(`Showing details for reservation ${reservationId}`);
   }
 
   document.addEventListener("DOMContentLoaded", function() {
