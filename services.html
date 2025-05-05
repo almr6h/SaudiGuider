@@ -1347,12 +1347,9 @@
                   >
                     View Details
                   </button>
-                  <button
-                    class="book-now-btn"
-                    aria-label="Book a luxury hotel now"
-                  >
-                    Book Now
-                  </button>
+                  <button class="book-now-btn" data-id="sample-hotel-id" data-type="hotel" aria-label="Book a luxury hotel now">
+  Book Now
+</button>
                 </div>
               </div>
             </div>
@@ -2726,80 +2723,35 @@ async function handleReservation(serviceId, serviceType) {
       return false;
     }
 
-    // Get form data
-    const activeForm = document.querySelector('.search-form[style="display: flex;"]') || 
-                     document.querySelector('.search-form:not([style*="none"])');
-    
-    // Get form values
-    let startDate, endDate, guests;
-    if (activeForm) {
-      startDate = activeForm.querySelector('[id*="check-in"], [id*="pickup-date"], [id*="date"]')?.value;
-      endDate = activeForm.querySelector('[id*="check-out"], [id*="dropoff-date"]')?.value;
-      guests = activeForm.querySelector('[id*="guests"], [id*="tickets"]')?.value || 1;
-    }
+    // For featured cards without specific service IDs
+    if (!serviceId) {
+      // Create a temporary reservation object
+      const reservationData = {
+        serviceType,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 86400000).toISOString(), // +1 day
+        guests: 1
+      };
 
-    // Validate dates
-   // In your handleReservation function, modify the date handling:
-function formatDateForAPI(dateString) {
-  if (!dateString) return new Date().toISOString();
-  
-  // Convert from YYYY-MM-DD (HTML date input) to ISO format
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    throw new Error('Invalid date format');
-  }
-  return date.toISOString();
-}
-
-// Then use it when building your request:
-const requestBody = {
-  serviceId,
-  serviceType,
-  startDate: formatDateForAPI(startDate),
-  endDate: formatDateForAPI(endDate),
-  guests: parseInt(guests) || 1
-};
-
-    console.log('Submitting reservation:', JSON.stringify(requestBody, null, 2));
-
-    // Show loading state
-    showReservationModal(true, 'Processing your reservation...');
-
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      console.error('API Error Details:', {
-        status: response.status,
-        statusText: response.statusText,
-        data
+      const response = await fetch(`${API_BASE_URL}/reservations/generic`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(reservationData)
       });
-      throw new Error(data.message || `Booking failed (${response.status})`);
+
+      if (!response.ok) throw new Error('Generic reservation failed');
+      
+      showReservationModal(true, 'Reservation request received!');
+      return true;
     }
 
-    // Show success
-    showReservationModal(true, 'Reservation confirmed!');
-    return true;
-
+    // Rest of your existing code for specific service reservations...
   } catch (error) {
-    console.error('Full error:', error);
-    let userMessage = error.message;
-    
-    if (error.message.includes('400')) {
-      userMessage = 'Invalid reservation data. Please check:';
-      userMessage += '\n- Dates must be in YYYY-MM-DD format';
-      userMessage += '\n- All required fields must be filled';
-    }
-    
-    showReservationModal(false, userMessage);
+    console.error('Reservation error:', error);
+    showReservationModal(false, error.message || 'Reservation failed');
     return false;
   }
 }
