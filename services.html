@@ -2597,7 +2597,7 @@ async function handleSearchFormSubmit(e) {
         .filter(val => val);
       if (selectedOptions.length) params.append('amenities', selectedOptions.join(','));
     }
-
+    
     // Make API request
     const apiUrl = `${API_BASE_URL}/services?${params.toString()}`;
     console.log('API Request:', apiUrl);
@@ -2608,6 +2608,8 @@ async function handleSearchFormSubmit(e) {
     const data = await response.json();
     if (!data || typeof data !== 'object') throw new Error('Invalid API response format');
 
+       const sortBy = document.getElementById('sort-by')?.value || 'recommended';
+  params.append('sort', sortBy);
     // Display results
     if (data.data?.length > 0) {
       if (searchResults) {
