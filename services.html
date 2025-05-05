@@ -2703,9 +2703,28 @@
   try {
     const token = localStorage.getItem('token');
     if (!token) {
-      showLoginMessage();
+      showLoginMessage('make a reservation');
       return false;
     }
+
+    // Verify the token structure first
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload?.id) throw new Error('Invalid token structure');
+    } catch (e) {
+      localStorage.removeItem('token');
+      showLoginMessage('make a reservation');
+      return false;
+    }
+
+    // Create the request body
+    const requestBody = {
+      serviceId,
+      serviceType,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('Making reservation with:', requestBody); // Debug log
 
     const response = await fetch(`${API_BASE_URL}/reservations`, {
       method: 'POST',
@@ -2713,30 +2732,22 @@
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ serviceId, serviceType })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      
-      // Handle specific auth errors
-      if (errorData.error === 'auth/user-not-found') {
-        localStorage.removeItem('token');
-        alert('Your account is no longer available. Please contact support.');
-        window.location.href = '/login.html';
-        return false;
-      }
-      
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Reservation failed:', errorData); // Debug log
       throw new Error(errorData.message || 'Booking failed');
     }
 
-    // Success case
+    const data = await response.json();
     showBookingSuccess();
     return true;
 
   } catch (error) {
     console.error('Reservation error:', error);
-    alert(error.message || 'Could not complete booking');
+    alert(error.message || 'Failed to complete reservation. Please try again.');
     return false;
   }
 }
