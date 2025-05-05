@@ -2492,33 +2492,41 @@
   const API_BASE_URL = 'https://saudiguiderbackend.onrender.com/api';
 
   // Enhanced error display
- function showErrorToUser(message, duration = 5000) {
+function showErrorToUser(message, duration = 5000) {
   const existing = document.getElementById('booking-error');
   if (existing) existing.remove();
 
-  // Special handling for date errors
-  if (message.includes('Start date must be in the future') || 
-      message.includes('End date must be after start date')) {
-    message = 'Please select future dates for your reservation. ' + message;
-    
-    // Highlight date inputs
-    document.querySelectorAll('#check-in, #check-out, #car-pickup-date, #car-dropoff-date, [id$="-date"]').forEach(input => {
-      input.style.border = '1px solid #ff0000';
-      setTimeout(() => input.style.border = '', 3000);
-    });
-  }
-
+  // Create error element with dark background
   const errorEl = document.createElement('div');
   errorEl.id = 'booking-error';
+  errorEl.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--dark-gray);
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    z-index: 1000;
+    text-align: center;
+    max-width: 90%;
+    width: 400px;
+    border-top: 4px solid #f44336;
+    animation: fadeIn 0.3s;
+  `;
+
   errorEl.innerHTML = `
     <div class="error-content">
-      <i class="fas fa-exclamation-triangle"></i>
+      <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 3rem; margin-bottom: 1rem;"></i>
       <h4>Booking Error</h4>
       <p>${message}</p>
       ${message.includes('already have a reservation') ? 
-        '<a href="reservations.html">View Existing Reservations</a>' : ''}
+        '<a href="reservations.html" style="color: var(--secondary);">View Existing Reservations</a>' : ''}
     </div>
   `;
+  
   document.body.appendChild(errorEl);
 
   setTimeout(() => {
@@ -2950,11 +2958,18 @@
     if (activeForm) activeForm.dispatchEvent(new Event('submit'));
   };
 
- async function handleReservation(serviceId, serviceType, event) {
-  const button = event.target.closest('.book-btn');
+async function handleReservation(serviceId, serviceType, event) {
+  const button = event.target.closest('.book-now-btn') || event.target.closest('.book-btn');
   const originalText = button.innerHTML;
   
   try {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      showLoginMessage('make reservations');
+      return;
+    }
+
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
@@ -2974,7 +2989,7 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         serviceId,
@@ -2990,7 +3005,10 @@
       throw new Error(errorData.message || 'Booking failed. Please try again.');
     }
 
-    showBookingSuccess();
+    const bookingData = await response.json();
+    const pointsEarned = bookingData.pointsEarned || 0;
+    
+    showBookingSuccess(pointsEarned);
     await updateReservationCount();
     
   } catch (error) {
@@ -3047,39 +3065,44 @@
   };
 }
 
-  function showBookingSuccess() {
-    const existingMsg = document.querySelector('.booking-message');
-    if (existingMsg) existingMsg.remove();
+  function showBookingSuccess(pointsEarned = 0) {
+  const existingMsg = document.querySelector('.booking-message');
+  if (existingMsg) existingMsg.remove();
 
-    const successMsg = document.createElement('div');
-    successMsg.className = 'booking-message success';
-    successMsg.innerHTML = `
-      <div class="message-content">
-        <i class="fas fa-check-circle"></i>
-        <div>
-          <h4>Reservation Confirmed!</h4>
-          <p>Your booking was successful.</p>
-        </div>
-        <button class="close-message">&times;</button>
+  const pointsMessage = pointsEarned > 0 
+    ? `<p>You earned ${pointsEarned} loyalty points!</p>`
+    : '';
+
+  const successMsg = document.createElement('div');
+  successMsg.className = 'booking-message success';
+  successMsg.innerHTML = `
+    <div class="message-content">
+      <i class="fas fa-check-circle"></i>
+      <div>
+        <h4>Reservation Confirmed!</h4>
+        <p>Your booking was successful.</p>
+        ${pointsMessage}
       </div>
-      <div class="message-actions">
-        <button onclick="window.location.href='reservations.html'">
-          View My Reservations
-        </button>
-      </div>
-    `;
+      <button class="close-message">&times;</button>
+    </div>
+    <div class="message-actions">
+      <button onclick="window.location.href='reservations.html'">
+        View My Reservations
+      </button>
+    </div>
+  `;
 
-    document.body.appendChild(successMsg);
+  document.body.appendChild(successMsg);
 
-    successMsg.querySelector('.close-message').addEventListener('click', () => {
-      successMsg.remove();
-    });
+  successMsg.querySelector('.close-message').addEventListener('click', () => {
+    successMsg.remove();
+  });
 
-    setTimeout(() => {
-      successMsg.style.opacity = '0';
-      setTimeout(() => successMsg.remove(), 300);
-    }, 5000);
-  }
+  setTimeout(() => {
+    successMsg.style.opacity = '0';
+    setTimeout(() => successMsg.remove(), 300);
+  }, 5000);
+}
 
   async function displayUserReservations() {
     const container = document.getElementById('reservations-container');
@@ -3257,64 +3280,72 @@
   }
 
   function showLoginMessage(action) {
-    const loginMessage = document.createElement("div");
-    loginMessage.className = "login-message";
-    loginMessage.innerHTML = `
-      <div class="login-message-content">
-        <p>Please login to ${action}.</p>
-        <div class="login-actions">
-          <button onclick="window.location.href='login.html'">
-            Go to Login Page
-          </button>
-          <button onclick="this.closest('.login-message').remove()">
-            Cancel
-          </button>
-        </div>
+  const loginMessage = document.createElement("div");
+  loginMessage.className = "login-message";
+  loginMessage.innerHTML = `
+    <div class="login-message-content" style="background: var(--dark-gray); color: white; padding: 2rem; border-radius: 8px; text-align: center; max-width: 400px; width: 90%;">
+      <p>Please login to ${action}.</p>
+      <div class="login-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+        <button onclick="window.location.href='login.html'" style="background-color: var(--secondary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s;">
+          Go to Login Page
+        </button>
+        <button onclick="this.closest('.login-message').remove()" style="background-color: var(--dark); color: var(--light); border: 1px solid var(--secondary); padding: 0.8rem 1.5rem; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: background-color 0.3s;">
+          Cancel
+        </button>
       </div>
-    `;
-    document.body.appendChild(loginMessage);
-  }
+    </div>
+  `;
+  document.body.appendChild(loginMessage);
+}
 
-  function setupFeaturedCards() {
-    try {
-      document.querySelectorAll('.view-details-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const serviceType = this.getAttribute('data-service');
-          const modal = getElement(`${serviceType}Modal`);
-          if (modal) {
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-          }
-        });
+ function setupFeaturedCards() {
+  try {
+    document.querySelectorAll('.view-details-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const serviceType = this.getAttribute('data-service');
+        const modal = getElement(`${serviceType}Modal`);
+        if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
       });
+    });
 
-      document.querySelectorAll('.book-now-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const card = this.closest('.service-card');
-          const serviceType = card.querySelector('.view-details-btn').getAttribute('data-service');
-          handleReservation(null, serviceType, event);
-        });
+    document.querySelectorAll('.book-now-btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          showLoginMessage('make reservations');
+          return;
+        }
+        
+        // If logged in, scroll to search section
+        const searchSection = document.querySelector('.search-section');
+        if (searchSection) {
+          searchSection.scrollIntoView({ behavior: 'smooth' });
+        }
       });
+    });
 
-      document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', function() {
-          this.closest('.modal').style.display = 'none';
+    document.querySelectorAll('.close-modal').forEach(button => {
+      button.addEventListener('click', function() {
+        this.closest('.modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.style.display = 'none';
           document.body.style.overflow = 'auto';
-        });
+        }
       });
-
-      document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-          if (e.target === this) {
-            this.style.display = 'none';
-            document.body.style.overflow = 'auto';
-          }
-        });
-      });
-    } catch (error) {
-      logError("setupFeaturedCards", error);
-    }
+    });
+  } catch (error) {
+    logError("setupFeaturedCards", error);
   }
+}
 
  function setupDateInputs() {
   const now = new Date();
