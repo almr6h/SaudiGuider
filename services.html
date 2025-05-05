@@ -2432,11 +2432,9 @@ function displaySearchResults(data, type) {
         : '';
 
       resultItem.innerHTML = `
-        <div class="result-image">
-          ${service.image ? 
-            `<img src="${service.image}" alt="${title}" loading="lazy">` : 
-            `<i class="fas ${getIconForType(type)}"></i>`}
-        </div>
+  <div class="result-image">
+    <i class="fas ${service.icon || getIconForType(type)}"></i>
+  </div>
         <div class="result-details">
           <h3>${title}</h3>
           <p class="location"><i class="fas fa-map-marker-alt"></i> ${location}</p>
